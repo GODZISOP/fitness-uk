@@ -30,22 +30,13 @@ export default function Loader() {
           <div className="loader-content">
             <div className="loader-circle-spinner"></div>
             
-            <motion.div
-              className="loader-logo-wrapper"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              <Image 
+            <div className="loader-logo-wrapper">
+              <img 
                 src="/logo.png" 
                 alt="World Fitness Zone" 
-                height={80} 
-                width={200} 
                 style={{ objectFit: "contain", height: "auto", width: "160px" }}
-                priority
-                unoptimized
               />
-            </motion.div>
+            </div>
           </div>
         </motion.div>
       )}
