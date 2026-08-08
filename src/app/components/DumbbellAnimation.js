@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 const STEPS = [
   {
@@ -21,21 +22,33 @@ const STEPS = [
 ];
 
 export default function DumbbellAnimation() {
+  const [isMobile, setIsMobile] = useState(false);
   const canvasRef  = useRef(null);
   const spacerRef  = useRef(null);
   const panelRef   = useRef(null);
   const textRefs   = useRef([]);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return;
+
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx    = canvas.getContext("2d");
     const spacer = spacerRef.current;
     const panel  = panelRef.current;
 
     const setSpacerHeight = () => {
       if (spacer) {
-        const multiplier = window.innerWidth < 768 ? 2.5 : 4;
-        spacer.style.height = (window.innerHeight * multiplier) + "px";
+        spacer.style.height = (window.innerHeight * 4) + "px";
       }
     };
     setSpacerHeight();
@@ -48,42 +61,82 @@ export default function DumbbellAnimation() {
     let initialized = false;
     let cropX = 0, cropY = 0, srcW = 0, srcH = 0;
 
-    // ── JS objectFit: responsive fill ────────────────────────────────────────
     function sizeCanvas() {
       if (!srcW || !srcH) return;
       const pw = window.innerWidth;
       const ph = window.innerHeight;
       const ia = srcW / srcH;
-      const isMobile = pw < 768;
+      const pa = pw / ph;
 
       let cW, cH;
-      if (isMobile) {
-        // On mobile portrait, scale up width so dumbbell fills screen vertically
-        cW = pw * 1.75;
-        cH = cW / ia;
-      } else {
-        const pa = pw / ph;
-        if (ia > pa) { cW = pw; cH = pw / ia; }
-        else         { cH = ph; cW = ph * ia; }
-      }
+      if (ia > pa) { cW = pw; cH = pw / ia; }
+      else         { cH = ph; cW = ph * ia; }
+
       canvas.style.width  = cW + "px";
       canvas.style.height = cH + "px";
     }
 
-    // ── Draw frame ───────────────────────────────────────────────────────────
-    function drawFrame(progress) {
-      if (!initialized) return;
-      let f = Math.round(Math.max(0, Math.min(1, progress)) * (frameCount - 1));
-      while (f >= 0 && (!images[f] || !images[f].complete)) f--;
-      if (f < 0) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(images[f], cropX, cropY, srcW, srcH, 0, 0, canvas.width, canvas.height);
+    function computeCropBounds(img) {
+      const temp    = document.createElement("canvas");
+      temp.width   = img.naturalWidth;
+      temp.height  = img.naturalHeight;
+      const tempCtx = temp.getContext("2d");
+      tempCtx.drawImage(img, 0, 0);
+
+      const pixels = tempCtx.getImageData(0, 0, temp.width, temp.height).data;
+      let minX = temp.width, minY = temp.height, maxX = 0, maxY = 0;
+
+      for (let y = 0; y < temp.height; y += 4) {
+        for (let x = 0; x < temp.width; x += 4) {
+          const i = (y * temp.width + x) * 4;
+          if (pixels[i + 3] > 10) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+
+      const pad = 20;
+      cropX = Math.max(0, minX - pad);
+      cropY = Math.max(0, minY - pad);
+      srcW  = Math.min(img.naturalWidth  - cropX, (maxX - minX) + pad * 2);
+      srcH  = Math.min(img.naturalHeight - cropY, (maxY - minY) + pad * 2);
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width  = srcW * dpr;
+      canvas.height = srcH * dpr;
+      ctx.scale(dpr, dpr);
+      sizeCanvas();
     }
 
-    // ── Text animation ───────────────────────────────────────────────────────
-    function animateText(progress) {
+    let loadedCount = 0;
+    for (let i = 0; i < frameCount; i++) {
+      const img = new window.Image();
+      img.src = currentFrame(i);
+      img.onload = () => {
+        images[i] = img;
+        loadedCount++;
+        if (i === 0 && !initialized) {
+          initialized = true;
+          computeCropBounds(img);
+          renderFrame(0);
+        }
+      };
+    }
+
+    function renderFrame(index) {
+      const img = images[index];
+      if (!img || !srcW) return;
+      ctx.clearRect(0, 0, srcW, srcH);
+      ctx.drawImage(img, cropX, cropY, srcW, srcH, 0, 0, srcW, srcH);
+    }
+
+    function updateStepText(progress) {
       const n = STEPS.length;
-      textRefs.current.forEach((el, i) => {
+      STEPS.forEach((_, i) => {
+        const el = textRefs.current[i];
         if (!el) return;
         const p = Math.max(0, Math.min(1, (progress - i / n) / (1 / n)));
         const opacity = p < 0.12 ? p / 0.12 : p > 0.88 ? (1 - p) / 0.12 : 1;
@@ -92,25 +145,18 @@ export default function DumbbellAnimation() {
       });
     }
 
-    // ── MAIN SCROLL HANDLER ──────────────────────────────────────────────────
     function onScroll() {
       const sRect = spacer.getBoundingClientRect();
       const vh    = window.innerHeight;
-
-      // Total scroll distance the spacer travels through the viewport
       const SPACER_H    = spacer.offsetHeight;
       const totalScroll = SPACER_H - vh;
-
-      // How far past the top of the viewport the spacer has scrolled
       const scrolledIn  = -sRect.top;
 
-      // Is user inside the section?
       const isInside = sRect.top <= 0 && sRect.bottom >= vh;
-      const isAbove  = sRect.top > 0;   // haven't reached section yet
-      const isBelow  = sRect.bottom < vh; // have passed section
+      const isAbove  = sRect.top > 0;
+      const isBelow  = sRect.bottom < vh;
 
       if (isAbove) {
-        // Section not reached yet — hide panel completely
         panel.style.visibility = "hidden";
         panel.style.opacity    = "0";
         panel.style.position   = "absolute";
@@ -119,7 +165,6 @@ export default function DumbbellAnimation() {
       }
 
       if (isBelow) {
-        // Passed section — hide panel and park it at bottom of spacer
         panel.style.visibility = "hidden";
         panel.style.opacity    = "0";
         panel.style.position   = "absolute";
@@ -127,87 +172,91 @@ export default function DumbbellAnimation() {
         return;
       }
 
-      // ── INSIDE SECTION: lock user in viewport ──
-      panel.style.visibility = "visible";
-      panel.style.position   = "fixed";
-      panel.style.top        = "0";
-      panel.style.left       = "0";
+      if (isInside) {
+        panel.style.visibility = "visible";
+        panel.style.opacity    = "1";
+        panel.style.position   = "fixed";
+        panel.style.top        = "0";
+        panel.style.left       = "0";
 
-      const progress = Math.max(0, Math.min(1, scrolledIn / totalScroll));
-
-      if (initialized) drawFrame(progress);
-      animateText(progress);
-
-      // Panel fade in on entry, fade out on exit
-      const panelOpacity =
-        progress < 0.05 ? progress / 0.05 :       // fade in first 5%
-        progress > 0.90 ? (1 - progress) / 0.10 : // fade out last 10%
-        1;
-      panel.style.opacity    = String(Math.max(0, panelOpacity));
-      canvas.style.opacity   = "1"; // canvas always full opacity inside section
+        const progress   = Math.max(0, Math.min(1, scrolledIn / totalScroll));
+        const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
+        renderFrame(frameIndex);
+        updateStepText(progress);
+      }
     }
 
-    // ── Preload ──────────────────────────────────────────────────────────────
-    const firstImg = new Image();
-    firstImg.onload = () => {
-      images[0] = firstImg;
-      cropX = Math.floor(firstImg.width  * 0.05);
-      cropY = Math.floor(firstImg.height * 0.08);
-      srcW  = firstImg.width  - cropX * 2;
-      srcH  = firstImg.height - cropY * 2;
-      canvas.width  = srcW;
-      canvas.height = srcH;
-      canvas.style.opacity = "1";
-      initialized = true;
+    const onResize = () => {
+      spacer.style.height = (window.innerHeight * 4) + "px";
       sizeCanvas();
-      drawFrame(0);
-      onScroll(); // re-run scroll logic now that we're initialized
+      onScroll();
     };
-    firstImg.src = currentFrame(0);
 
-    for (let i = 1; i < frameCount; i++) {
-      const img = new Image();
-      img.onload = () => { images[i] = img; };
-      img.src = currentFrame(i);
-    }
-
-    const onResize = () => { setSpacerHeight(); sizeCanvas(); onScroll(); };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
-    onScroll(); // initial call
+    onScroll();
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [isMobile]);
 
+  // ── MOBILE LAYOUT (Single Full Viewport Section, 1 Image: ezgif-frame-161.png) ──
+  if (isMobile) {
+    return (
+      <section className="mobile-single-dumbbell-section">
+        <div className="mobile-single-dumbbell-container">
+          <span className="mobile-badge">PRECISION ENGINEERED</span>
+          
+          <h2 className="mobile-single-title">
+            Built for<br />Performance
+          </h2>
+
+          <p className="mobile-single-desc">
+            Every component engineered to maximise your output. Technique and form — refined through expert guidance.
+          </p>
+
+          <div className="mobile-single-img-wrapper">
+            <Image
+              src="/dumbbell-frames/ezgif-frame-161.png"
+              alt="Precision Engineered Dumbbell"
+              width={800}
+              height={400}
+              priority
+              style={{
+                width: "100%",
+                height: "auto",
+                maxHeight: "320px",
+                objectFit: "contain",
+                display: "block",
+                margin: "0 auto",
+              }}
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ── DESKTOP/LAPTOP LAYOUT (Original 168-Frame Canvas Animation) ──
   return (
-    /* Outer wrapper — position:relative so absolute-parked panel stays within section */
-    <div style={{ position: "relative", width: "100%", background: "#FFFFFF", margin: 0, padding: 0 }}>
+    <div style={{ position: "relative", width: "100%", margin: 0, padding: 0 }}>
+      {/* Scroll spacer */}
+      <div ref={spacerRef} style={{ width: "100%", pointerEvents: "none" }} />
 
-      {/* Spacer — creates the scroll height (4× viewport = generous animation time) */}
-      <div
-        ref={spacerRef}
-        style={{ width: "100%", height: "400vh", pointerEvents: "none" }}
-      />
-
-      {/* Panel — initially hidden, becomes fixed when user scrolls into section */}
+      {/* Fixed viewport panel */}
       <div
         ref={panelRef}
         style={{
-          position: "absolute",    // starts absolute (parked at top of spacer)
+          position: "absolute",
           top: 0, left: 0,
           width: "100%", height: "100vh",
-          background: "#FFFFFF",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          zIndex: 50,
-          visibility: "hidden",   // hidden until user reaches section
+          visibility: "hidden",
           opacity: 0,
+          zIndex: 10,
+          overflow: "hidden",
+          backgroundColor: "#FFFFFF",
         }}
       >
         {/* Text above dumbbell */}
@@ -255,11 +304,18 @@ export default function DumbbellAnimation() {
           ))}
         </div>
 
-        {/* Dumbbell canvas */}
-        <canvas
-          ref={canvasRef}
-          style={{ display: "block", opacity: 1, position: "relative", zIndex: 1 }}
-        />
+        {/* Canvas centered below text */}
+        <div style={{
+          position: "absolute",
+          bottom: 0, left: 0, right: 0,
+          height: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1,
+        }}>
+          <canvas ref={canvasRef} style={{ display: "block" }} />
+        </div>
       </div>
     </div>
   );

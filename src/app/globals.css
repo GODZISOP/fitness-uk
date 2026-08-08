@@ -1524,6 +1524,46 @@ h6 {
   .row-scroll-btn { width: 36px; height: 36px; font-size: 1.3rem; }
 }
 
+/* Mobile Single Dumbbell Full Viewport Section */
+.mobile-single-dumbbell-section {
+  width: 100%;
+  min-height: 80vh;
+  padding: 5rem 5% 3rem;
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mobile-single-dumbbell-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.mobile-single-title {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: clamp(2.2rem, 7vw, 3rem);
+  font-weight: 900;
+  color: var(--color-deep-navy);
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin: 0.75rem 0;
+}
+
+.mobile-single-desc {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.mobile-single-img-wrapper {
+  width: 100%;
+  padding: 1rem 0;
+}
+
 /* =========================================
    What We Do Section (Pinned Scroll)
 ========================================= */
