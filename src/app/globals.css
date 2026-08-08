@@ -2327,9 +2327,9 @@ h6 {
     position: absolute;
     top: 20px;
     bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 3px;
+    left: 24px;
+    transform: none;
+    width: 4px;
     background: linear-gradient(180deg, var(--color-primary) 0%, rgba(21, 94, 239, 0.15) 100%);
     z-index: 1;
     border-radius: 2px;
@@ -2347,16 +2347,21 @@ h6 {
     top: 0 !important;
     transform: none !important;
     width: 100%;
-    text-align: center;
+    text-align: left;
+    padding-left: 65px;
+    padding-right: 10px;
   }
   .node-dot {
-    margin: 0 auto 1rem;
+    position: absolute;
+    left: 10px;
+    top: 0;
+    margin: 0;
   }
   .node-number-bg {
-    left: 50%;
-    transform: translateX(-50%);
-    top: -20px;
-    font-size: 8rem;
+    left: 40px;
+    transform: none;
+    top: -10px;
+    font-size: 6rem;
   }
 }
 
