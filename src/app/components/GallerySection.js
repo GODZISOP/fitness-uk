@@ -31,16 +31,16 @@ export default function GallerySection() {
   // GSAP Horizontal Scroll for Desktop (runs only when window >= 768px)
   useGSAP(() => {
     if (typeof window === "undefined" || window.innerWidth < 768) return;
-    
+
     let timeoutId;
     let triggers = [];
 
     timeoutId = setTimeout(() => {
       if (!containerRef.current || !trackRef.current) return;
-      
+
       const track = trackRef.current;
       const container = containerRef.current;
-      
+
       const getScrollAmount = () => {
         const trackWidth = track.scrollWidth;
         const rightSectionWidth = track.parentElement.offsetWidth;
@@ -86,7 +86,7 @@ export default function GallerySection() {
         }
       });
       triggers.push(t3);
-      
+
       ScrollTrigger.refresh();
     }, 100);
 
@@ -131,11 +131,11 @@ export default function GallerySection() {
             <div className="gallery-left">
               <div className="gallery-left-content">
                 <h2 className="gallery-title">
-                  <span className="title-light">Visual</span><br/>
+                  <span className="title-light">Visual</span><br />
                   <span className="title-bold">Narratives</span>
                 </h2>
                 <p className="gallery-description">
-                  Scroll down to explore this curated collection of visual aesthetics. 
+                  Scroll down to explore this curated collection of visual aesthetics.
                   Each image tells a unique story through form, shadow, and light.
                 </p>
                 <div className="scroll-prompt">
@@ -147,18 +147,19 @@ export default function GallerySection() {
             <div className="gallery-right">
               <div className="gallery-track" ref={trackRef}>
                 {cards.map((card, index) => (
-                  <div 
-                    className="gallery-card desktop-gallery-card" 
+                  <div
+                    className="gallery-card desktop-gallery-card"
                     key={card.id}
                     onClick={() => setSelectedIdx(index)}
                     style={{ cursor: "pointer" }}
                   >
-                    <Image 
-                      src={card.src} 
-                      alt={card.title} 
-                      fill 
-                      className="gallery-img" 
+                    <Image
+                      src={card.src}
+                      alt={card.title}
+                      fill
+                      className="gallery-img"
                       placeholder="blur"
+                      priority
                     />
                     <div className="card-overlay"></div>
                     <div className="card-number">{card.id}</div>
@@ -178,7 +179,7 @@ export default function GallerySection() {
       <div className="mobile-only-gallery">
         <section className="clean-gallery-section" id="gallery-mobile">
           <div className="clean-gallery-container">
-            <motion.div 
+            <motion.div
               className="clean-gallery-header"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -193,8 +194,8 @@ export default function GallerySection() {
             </motion.div>
 
             <div className="gallery-carousel-wrapper">
-              <button 
-                className="row-scroll-btn left" 
+              <button
+                className="row-scroll-btn left"
                 onClick={scrollRowLeft}
                 aria-label="Scroll Left"
               >
@@ -203,7 +204,7 @@ export default function GallerySection() {
 
               <div className="gallery-row-scroll" ref={scrollRef}>
                 {cards.map((card, index) => (
-                  <motion.div 
+                  <motion.div
                     className="gallery-row-card"
                     key={card.id}
                     onClick={() => setSelectedIdx(index)}
@@ -214,11 +215,12 @@ export default function GallerySection() {
                     whileTap={{ scale: 0.96 }}
                   >
                     <div className="card-img-wrapper" style={{ height: "340px", position: "relative", overflow: "hidden", background: "var(--color-deep-navy)" }}>
-                      <Image 
-                        src={card.src} 
-                        alt={card.title} 
+                      <Image
+                        src={card.src}
+                        alt={card.title}
                         fill
                         sizes="280px"
+                        priority
                         style={{
                           objectFit: "contain",
                           objectPosition: "center center",
@@ -242,8 +244,8 @@ export default function GallerySection() {
                 ))}
               </div>
 
-              <button 
-                className="row-scroll-btn right" 
+              <button
+                className="row-scroll-btn right"
                 onClick={scrollRowRight}
                 aria-label="Scroll Right"
               >
@@ -257,14 +259,14 @@ export default function GallerySection() {
       {/* Lightbox Full-Screen Modal (Works on both Laptop & Mobile) */}
       <AnimatePresence>
         {selectedIdx !== null && (
-          <motion.div 
+          <motion.div
             className="gallery-lightbox-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedIdx(null)}
           >
-            <motion.div 
+            <motion.div
               className="gallery-lightbox-modal"
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -272,7 +274,7 @@ export default function GallerySection() {
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
+              <button
                 className="lightbox-close-btn"
                 onClick={() => setSelectedIdx(null)}
                 aria-label="Close"
@@ -288,12 +290,12 @@ export default function GallerySection() {
               </button>
 
               <div className="lightbox-img-container">
-                <Image 
-                  src={cards[selectedIdx].src} 
-                  alt={cards[selectedIdx].title} 
-                  fill 
-                  className="lightbox-img" 
-                  priority 
+                <Image
+                  src={cards[selectedIdx].src}
+                  alt={cards[selectedIdx].title}
+                  fill
+                  className="lightbox-img"
+                  priority
                 />
               </div>
 

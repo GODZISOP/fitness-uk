@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="preload" href="/logo.png" as="image" />
+        <link rel="preload" href="/logo-compressed.webp" as="image" />
         <link rel="preload" href="/dumbbell-frames/ezgif-frame-001.png" as="image" />
       </head>
       <body className={`${inter.variable} ${outfit.variable}`}>

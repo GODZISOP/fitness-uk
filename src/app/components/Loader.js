@@ -39,7 +39,7 @@ export default function Loader() {
             
             <div className="loader-logo-wrapper">
               <img 
-                src="/logo.png" 
+                src="/logo-compressed.webp" 
                 alt="World Fitness Zone" 
                 style={{ objectFit: "contain", height: "auto", width: "160px" }}
               />
