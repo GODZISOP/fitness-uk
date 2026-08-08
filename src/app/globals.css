@@ -999,14 +999,15 @@ h6 {
 
 .about-image {
   width: 100%;
-  max-width: 480px;
+  max-width: 620px;
   height: auto;
-  max-height: 600px;
+  max-height: 750px;
   object-fit: contain;
   position: relative;
   z-index: 2;
   display: block;
   margin: 0 auto;
+  transform: scale(1.15);
 }
 
 /* Floating Elements */
@@ -1187,6 +1188,340 @@ h6 {
   .about-right {
     align-items: center;
   }
+}
+
+/* Desktop vs Mobile Gallery Toggle */
+.desktop-only-gallery { display: block; }
+.mobile-only-gallery { display: none; }
+
+@media (max-width: 767px) {
+  .desktop-only-gallery { display: none !important; }
+  .mobile-only-gallery { display: block !important; }
+}
+
+/* Carousel Wrapper & Floating Side Buttons */
+.gallery-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.row-scroll-btn {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  background: rgba(7, 26, 43, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.row-scroll-btn.left { left: 4px; }
+.row-scroll-btn.right { right: 4px; }
+
+.row-scroll-btn:hover {
+  background: var(--color-primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* ==========================================================================
+   CLEAN WORKOUT GALLERY (Horizontal Row + Lightbox Modal)
+   ========================================================================== */
+.clean-gallery-section {
+  padding: 6rem 5%;
+  background: var(--color-white);
+  position: relative;
+  overflow: hidden;
+}
+
+.clean-gallery-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.clean-gallery-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.gallery-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--color-primary);
+  background: rgba(21, 94, 239, 0.08);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 0.75rem;
+}
+
+.clean-gallery-title {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--color-deep-navy);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.clean-gallery-subtitle {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Horizontal Scroll Row */
+.gallery-row-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding: 1rem 0.5rem 2rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+}
+
+.gallery-row-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.gallery-row-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+.gallery-row-card {
+  flex: 0 0 280px;
+  height: 440px;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: center;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--color-deep-navy);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-row-card:hover {
+  box-shadow: 0 15px 40px rgba(21, 94, 239, 0.25);
+}
+
+.card-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background-color: var(--color-deep-navy);
+}
+
+.card-img {
+  object-fit: contain !important;
+  object-position: center center !important;
+  transition: transform 0.6s ease;
+}
+
+.gallery-row-card:hover .card-img {
+  transform: scale(1.06);
+}
+
+.card-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(7, 26, 43, 0.85) 100%);
+}
+
+.zoom-icon-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  color: var(--color-white);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.gallery-row-card:hover .zoom-icon-badge {
+  background: var(--color-primary);
+}
+
+.card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.25rem 1.5rem;
+  z-index: 2;
+}
+
+.mobile-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  background: var(--color-deep-navy);
+  padding: 0.85rem 1.25rem;
+  z-index: 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--color-action-yellow);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.card-name {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-white);
+}
+
+/* Lightbox Fullscreen Modal */
+.gallery-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 26, 43, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.gallery-lightbox-modal {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: var(--color-deep-navy);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+  background: var(--color-primary);
+}
+
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.lightbox-nav-btn:hover {
+  background: var(--color-primary);
+}
+
+.lightbox-nav-btn.prev { left: 15px; }
+.lightbox-nav-btn.next { right: 15px; }
+
+.lightbox-img-container {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 350px;
+}
+
+.lightbox-img {
+  object-fit: contain !important;
+}
+
+.lightbox-caption {
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.lightbox-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--color-action-yellow);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.lightbox-title {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-white);
+}
+
+@media (max-width: 767px) {
+  .about-image { max-width: 95vw !important; max-height: 540px !important; transform: scale(1.1) !important; }
+  .clean-gallery-section { padding-top: 6rem; padding-bottom: 3rem; }
+  .gallery-row-card { flex: 0 0 280px; max-width: 82vw; }
+  .mobile-card-info { padding: 1.25rem 1.5rem; text-align: left; }
+  .mobile-card-info .card-name { font-size: 1.35rem; line-height: 1.2; word-break: break-word; }
+  .lightbox-img-container { height: 45vh; min-height: 250px; }
+  .lightbox-nav-btn { width: 38px; height: 38px; font-size: 1.5rem; }
+  .lightbox-nav-btn.prev { left: 8px; }
+  .lightbox-nav-btn.next { right: 8px; }
+  .row-scroll-btn { width: 36px; height: 36px; font-size: 1.3rem; }
 }
 
 /* =========================================
