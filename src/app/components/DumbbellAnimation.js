@@ -48,7 +48,7 @@ export default function DumbbellAnimation() {
 
     const setSpacerHeight = () => {
       if (spacer) {
-        spacer.style.height = (window.innerHeight * 4) + "px";
+        spacer.style.height = (window.innerHeight * 6) + "px";
       }
     };
     setSpacerHeight();
@@ -100,7 +100,9 @@ export default function DumbbellAnimation() {
 
       const pad = 20;
       cropX = Math.max(0, minX - pad);
-      cropY = Math.max(0, minY - pad);
+      // Force crop out the top baked-in text and black line (approx top 20-25% of the image)
+      const forceTopCrop = Math.floor(img.naturalHeight * 0.22);
+      cropY = Math.max(forceTopCrop, minY - pad);
       srcW  = Math.min(img.naturalWidth  - cropX, (maxX - minX) + pad * 2);
       srcH  = Math.min(img.naturalHeight - cropY, (maxY - minY) + pad * 2);
 
@@ -187,7 +189,7 @@ export default function DumbbellAnimation() {
     }
 
     const onResize = () => {
-      spacer.style.height = (window.innerHeight * 4) + "px";
+      spacer.style.height = (window.innerHeight * 6) + "px";
       sizeCanvas();
       onScroll();
     };
