@@ -8,14 +8,21 @@ export default function Loader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Lock scrolling on mobile and desktop
+    document.body.style.overflow = "hidden";
+
     // 2.5 seconds optimal loader time. 
     // In the background, Next.js preloads all priority images, 
     // and DumbbellAnimation fetches 168 frames in parallel.
     const timer = setTimeout(() => {
       setIsLoading(false);
+      document.body.style.overflow = "unset";
     }, 2500); 
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = "unset";
+    };
   }, []);
 
   return (
