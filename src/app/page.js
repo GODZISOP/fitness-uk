@@ -11,6 +11,7 @@ import ProcessSection from "./components/ProcessSection";
 import DumbbellAnimation from "./components/DumbbellAnimation";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
+import Loader from "./components/Loader";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -40,6 +41,7 @@ export default function Home() {
 
   return (
     <>
+    <Loader />
     <Navbar isScrolled={isScrolled} />
     <div id="home"><HeroSection /></div>
     <DumbbellAnimation />
