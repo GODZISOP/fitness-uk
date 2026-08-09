@@ -3012,7 +3012,7 @@ h6 {
 }
 
 .split-image-wrapper.large {
-  height: 680px;
+  height: 780px;
 }
 
 .split-image-wrapper.small {
@@ -3036,8 +3036,8 @@ h6 {
     gap: 2.5rem;
   }
   .split-image-wrapper.large {
-    height: 380px !important;
-    min-height: 380px !important;
+    height: 480px !important;
+    min-height: 480px !important;
     width: 100% !important;
   }
   .split-image-wrapper.small {
@@ -3049,8 +3049,8 @@ h6 {
 
 @media (max-width: 480px) {
   .split-image-wrapper.large {
-    height: 350px !important;
-    min-height: 350px !important;
+    height: 440px !important;
+    min-height: 440px !important;
     width: 100% !important;
   }
   .split-image-wrapper.small {
