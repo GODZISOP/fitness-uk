@@ -79,8 +79,8 @@ export default function EventsSection() {
         </div>
 
         {/* Blogs Split Layout */}
-        <div className="split-section reverse">
-          {/* Bottom Row Image (Left) with Pricing Deck style micro-hover */}
+        <div className="split-section">
+          {/* Bottom Row Image (Right) with Pricing Deck style micro-hover */}
           <motion.div 
             className="split-image-wrapper small"
             whileHover={{ y: -8, scale: 1.02 }}
