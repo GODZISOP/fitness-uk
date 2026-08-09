@@ -145,8 +145,8 @@ export default function ProcessSection() {
           {/* Yellow Circle Backdrop */}
           <motion.div 
             className="faq-bg-circle"
-            initial={{ opacity: 0, scale: 0.5 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.5, x: "-50%", y: "-50%" }}
+            whileInView={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           />
