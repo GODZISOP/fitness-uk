@@ -111,7 +111,7 @@ export default function EventsSection() {
               alt="Our Services" 
               fill 
               sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
+              className="split-image first-service-image" 
               priority 
             />
           </motion.div>

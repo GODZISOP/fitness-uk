@@ -3029,6 +3029,11 @@ h6 {
   filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
 }
 
+.first-service-image {
+  transform: scale(1.4) !important;
+  transform-origin: center center !important;
+}
+
 @media (max-width: 768px) {
   .split-section,
   .split-section.reverse {
@@ -3044,6 +3049,10 @@ h6 {
     height: 340px !important;
     min-height: 340px !important;
     width: 100% !important;
+  }
+  .first-service-image {
+    transform: scale(1.6) !important;
+    transform-origin: center center !important;
   }
 }
 
