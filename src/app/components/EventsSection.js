@@ -104,7 +104,7 @@ export default function EventsSection() {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
+            style={{ position: 'relative', width: '100%' }}
           >
             <Image 
               src={serviceImage1} 
@@ -129,7 +129,7 @@ export default function EventsSection() {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
+            style={{ position: 'relative', width: '100%' }}
           >
             <Image 
               src={serviceImage2} 
