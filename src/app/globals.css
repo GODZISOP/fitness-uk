@@ -2905,11 +2905,11 @@ h6 {
   align-items: center;
   justify-content: space-between;
   gap: 4rem;
-  flex-direction: row-reverse;
+  flex-direction: row;
 }
 
 .split-section.reverse {
-  flex-direction: row;
+  flex-direction: row-reverse;
 }
 
 .split-text {

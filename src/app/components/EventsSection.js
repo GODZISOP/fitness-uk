@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import serviceImage1 from '../image copy 7.png';
-import serviceImage2 from '../image copy 8.png';
+import serviceImage2 from '../image copy 4.png';
 
 export default function EventsSection() {
   const serviceFeatures = [
@@ -29,28 +29,8 @@ export default function EventsSection() {
 
       <div className="events-container split-layout-container">
         
-        {/* Services Split Layout */}
+        {/* Services Split Layout (Top Row: Text Left, Image Right) */}
         <div className="split-section">
-          {/* Top Row Image (Right) with Pricing Deck style micro-hover */}
-          <motion.div 
-            className="split-image-wrapper large"
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
-          >
-            <Image 
-              src={serviceImage1} 
-              alt="Our Services" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
-              priority 
-            />
-            <div className="events-badge events-badge-top-left">
-              ⚡ HIGH INTENSITY
-            </div>
-          </motion.div>
-
           {/* Top Row Text (Left) */}
           <div className="split-text">
             <h2 className="split-title">OUR SERVICES</h2>
@@ -77,11 +57,31 @@ export default function EventsSection() {
               GET STARTED NOW
             </motion.button>
           </div>
+
+          {/* Top Row Image (Right - Battle Ropes Athlete) */}
+          <motion.div 
+            className="split-image-wrapper large"
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
+          >
+            <Image 
+              src={serviceImage1} 
+              alt="Our Services" 
+              fill 
+              sizes="(max-width: 768px) 100vw, 50vw" 
+              className="split-image" 
+              priority 
+            />
+            <div className="events-badge events-badge-top-left">
+              ⚡ HIGH INTENSITY
+            </div>
+          </motion.div>
         </div>
 
-        {/* Blogs Split Layout */}
-        <div className="split-section">
-          {/* Bottom Row Image (Right) with Pricing Deck style micro-hover */}
+        {/* Blogs Split Layout (Bottom Row: Image Left, Text Right) */}
+        <div className="split-section reverse">
+          {/* Bottom Row Image (Left - image copy 4.png) */}
           <motion.div 
             className="split-image-wrapper small"
             whileHover={{ y: -8, scale: 1.02 }}
@@ -93,7 +93,7 @@ export default function EventsSection() {
               alt="Recent Blogs" 
               fill 
               sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
+              className="split-image split-image-cover" 
               priority
             />
             <div className="events-badge events-badge-bottom-right">
