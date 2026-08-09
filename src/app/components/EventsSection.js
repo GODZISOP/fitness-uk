@@ -36,7 +36,7 @@ export default function EventsSection() {
             className="split-text"
             initial={{ opacity: 0, y: 55, rotateX: 18 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
           >
             <h2 className="split-title">OUR SERVICES</h2>
@@ -69,7 +69,7 @@ export default function EventsSection() {
             className="split-image-wrapper large"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.02 }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
@@ -95,7 +95,7 @@ export default function EventsSection() {
             className="split-image-wrapper small"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.02 }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
@@ -118,7 +118,7 @@ export default function EventsSection() {
             className="split-text"
             initial={{ opacity: 0, y: 55, rotateX: 18 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
             <h2 className="split-title">RECENT BLOG POSTS</h2>
