@@ -114,9 +114,6 @@ export default function EventsSection() {
               className="split-image" 
               priority 
             />
-            <div className="events-badge events-badge-top-left">
-              ⚡ HIGH INTENSITY
-            </div>
           </motion.div>
         </div>
 

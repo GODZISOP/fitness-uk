@@ -2997,12 +2997,15 @@ h6 {
   flex: 1;
   position: relative;
   width: 100%;
-  min-width: 380px;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto;
   background: transparent;
   border: none;
   box-shadow: none;
   backdrop-filter: none;
-  overflow: visible;
+  overflow: hidden;
+  border-radius: 1.25rem;
   display: flex;
   justify-content: center;
   align-items: center;
