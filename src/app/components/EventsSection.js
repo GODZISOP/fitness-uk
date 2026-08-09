@@ -21,10 +21,10 @@ export default function EventsSection() {
         <div className="split-section">
           <motion.div 
             className="split-image-wrapper large"
-            initial={{ opacity: 0, x: 50, y: -30 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.25, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.88, y: 40, rotateY: -10 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
           >
             <Image 
               src={serviceImage1} 
@@ -38,10 +38,10 @@ export default function EventsSection() {
 
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: -50, y: -40 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
+            initial={{ opacity: 0, x: -60, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.85, delay: 0.15, ease: "easeOut" }}
           >
             <h2 className="split-title">OUR SERVICES</h2>
             <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
@@ -49,7 +49,13 @@ export default function EventsSection() {
               We provide world-class personal training, custom nutrition plans, and expert guidance. 
               Click the button below to start achieving your fitness goals today.
             </p>
-            <button className="split-btn">GET STARTED NOW</button>
+            <motion.button 
+              className="split-btn"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              GET STARTED NOW
+            </motion.button>
           </motion.div>
         </div>
 
@@ -57,10 +63,10 @@ export default function EventsSection() {
         <div className="split-section reverse">
           <motion.div 
             className="split-image-wrapper small"
-            initial={{ opacity: 0, x: -50, y: -30 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.4, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.88, y: 40, rotateY: 10 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.95, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
             <Image 
               src={serviceImage2} 
@@ -73,10 +79,10 @@ export default function EventsSection() {
 
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: 50, y: -40 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.55, ease: "easeOut" }}
+            initial={{ opacity: 0, x: 60, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.85, delay: 0.25, ease: "easeOut" }}
           >
             <h2 className="split-title">RECENT BLOG POSTS</h2>
             <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
@@ -84,7 +90,13 @@ export default function EventsSection() {
               Read our latest articles on strength training, recovery, and building a sustainable lifestyle.
               We share everything you need to know to stay on top of your game.
             </p>
-            <button className="split-btn">READ MORE</button>
+            <motion.button 
+              className="split-btn"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              READ MORE
+            </motion.button>
           </motion.div>
         </div>
 
