@@ -35,6 +35,12 @@ export default function AboutSection() {
     { label: "YEARS OF EXPERIENCE", value: "12", suffix: "+" },
   ];
 
+  const titleLines = [
+    "WE ARE PUSHING",
+    "THE LIMIT OF YOUR",
+    "CORE STRENGTH"
+  ];
+
   return (
     <section className="about-section" id="about">
       <div className="about-container">
@@ -42,34 +48,64 @@ export default function AboutSection() {
         {/* Left Content */}
         <motion.div 
           className="about-left"
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, margin: "-50px" }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <div className="about-watermark">ABOUT</div>
-          <h2 className="about-title">
-            <div>WE ARE PUSHING</div>
-            <div>THE LIMIT OF YOUR</div>
-            <div><span className="text-action">CORE STRENGTH</span></div>
-          </h2>
-          <p className="about-description">
+          <motion.div 
+            className="about-watermark"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 0.08, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.9 }}
+          >
+            ABOUT
+          </motion.div>
+
+          <div className="about-title">
+            {titleLines.map((line, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.6, delay: i * 0.12 }}
+              >
+                {i === 2 ? <span className="text-action">{line}</span> : line}
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.p 
+            className="about-description"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+          >
             We understand that your lifestyle changes, that's why we've made fitness straightforward and stress-free. Join today on a no lock-in contract membership and start achieving your fitness goals, fun value flexibility all 24/7.
-          </p>
-          <div>
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 15 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+          >
             <button className="about-btn">
               GET STARTED TODAY <span className="arrow">&rarr;</span>
             </button>
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Center Image */}
+        {/* Center Image with 3D Tilt Reveal */}
         <div className="about-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, margin: "-50px" }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 50, scale: 0.92 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
           >
             <Image
               src={aboutImage}
@@ -79,18 +115,23 @@ export default function AboutSection() {
             />
           </motion.div>
 
+          {/* Floating Badge with Spring Spin */}
           <motion.div 
             className="floating-badge"
-            initial={{ opacity: 0, scale: 0.5 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, margin: "-50px" }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, scale: 0, rotate: -25 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ type: "spring", stiffness: 220, damping: 15, delay: 0.3 }}
           >
             <span className="badge-text">100%</span>
             <span className="badge-sub">EFFORT</span>
           </motion.div>
 
-          <div className="decorative-gym gym-icon-1">
+          <motion.div 
+            className="decorative-gym gym-icon-1"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
             <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="rgba(7, 26, 43, 0.15)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="4" y1="12" x2="20" y2="12"></line>
               <rect x="2" y="9" width="4" height="6" fill="rgba(7, 26, 43, 0.1)"></rect>
@@ -98,28 +139,38 @@ export default function AboutSection() {
               <rect x="6" y="7" width="2" height="10" fill="rgba(7, 26, 43, 0.15)"></rect>
               <rect x="16" y="7" width="2" height="10" fill="rgba(7, 26, 43, 0.15)"></rect>
             </svg>
-          </div>
+          </motion.div>
 
-          <div className="decorative-gym gym-icon-2">
+          <motion.div 
+            className="decorative-gym gym-icon-2"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          >
             <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="14" r="7" fill="rgba(21, 94, 239, 0.1)"></circle>
               <path d="M9 11V6a3 3 0 0 1 6 0v5"></path>
             </svg>
-          </div>
+          </motion.div>
 
-          <div className="decorative-ring" />
+          <motion.div 
+            className="decorative-ring"
+            initial={{ scale: 0.7, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          />
         </div>
 
-        {/* Right Stats */}
+        {/* Right Stats with 3D Entrance */}
         <div className="about-right">
           {stats.map((stat, index) => (
             <motion.div 
               className="about-stat-card" 
               key={index}
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
+              initial={{ opacity: 0, x: 50, rotateY: -15 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.65, delay: index * 0.15, ease: "easeOut" }}
             >
               <div className="stat-label">
                 <span className="slash">///</span> {stat.label}
