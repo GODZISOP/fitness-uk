@@ -3013,10 +3013,16 @@ h6 {
 
 .split-image-wrapper.large {
   height: 600px;
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .split-image-wrapper.small {
   height: 560px;
+  overflow: hidden;
+  border-radius: 1.25rem;
 }
 
 .split-image {
@@ -3024,14 +3030,16 @@ h6 {
   object-position: center center !important;
   width: 100% !important;
   height: 100% !important;
-  border-radius: 1.25rem;
   transition: transform 0.7s ease;
-  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
 }
 
 .first-service-image {
+  object-fit: contain !important;
+  object-position: center center !important;
   transform: scale(1.0) !important;
   transform-origin: center center !important;
+  filter: none !important;
+  border-radius: 0 !important;
 }
 
 @media (max-width: 768px) {
@@ -3044,6 +3052,7 @@ h6 {
     height: 480px !important;
     min-height: 480px !important;
     width: 100% !important;
+    overflow: visible !important;
   }
   .split-image-wrapper.small {
     height: 340px !important;
@@ -3051,8 +3060,8 @@ h6 {
     width: 100% !important;
   }
   .first-service-image {
-    transform: scale(1.45) !important;
-    transform-origin: center center !important;
+    transform: scale(1.0) !important;
+    object-position: center center !important;
   }
 }
 

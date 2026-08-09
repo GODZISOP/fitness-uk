@@ -99,7 +99,7 @@ export default function EventsSection() {
 
           {/* Top Row Right Image */}
           <motion.div 
-            className="split-image-wrapper large gsap-image-container relative overflow-hidden rounded-2xl"
+            className="split-image-wrapper large relative"
             initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
