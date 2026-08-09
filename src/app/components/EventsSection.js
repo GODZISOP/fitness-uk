@@ -2,7 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import serviceImage1 from '../image copy 7.png';
+import serviceImage1 from '../image copy 9.png';
 import serviceImage2 from '../image copy 4.png';
 
 export default function EventsSection() {
