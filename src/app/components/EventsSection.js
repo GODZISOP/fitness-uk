@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import serviceImage1 from '../image copy 7.png';
 import serviceImage2 from '../image copy 4.png';
+import StaggerText from './StaggerText';
 
 export default function EventsSection() {
   const serviceFeatures = [
@@ -39,8 +40,12 @@ export default function EventsSection() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="split-title">OUR SERVICES</h2>
-            <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
+            <h2 className="split-title">
+              <StaggerText divideBy="letter" delay={0.1}>OUR SERVICES</StaggerText>
+            </h2>
+            <h3 className="split-subtitle">
+              <StaggerText divideBy="word" delay={0.25}>A STEP TO CHANGE YOUR LIFE</StaggerText>
+            </h3>
             <p className="split-desc">
               We provide world-class personal training, custom nutrition plans, and expert guidance. 
               Click the button below to start achieving your fitness goals today.
@@ -121,8 +126,12 @@ export default function EventsSection() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="split-title">RECENT BLOG POSTS</h2>
-            <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
+            <h2 className="split-title">
+              <StaggerText divideBy="letter" delay={0.1}>RECENT BLOG POSTS</StaggerText>
+            </h2>
+            <h3 className="split-subtitle">
+              <StaggerText divideBy="word" delay={0.25}>LATEST FITNESS INSIGHTS</StaggerText>
+            </h3>
             <p className="split-desc">
               Read our latest articles on strength training, recovery, and building a sustainable lifestyle.
               We share everything you need to know to stay on top of your game.
