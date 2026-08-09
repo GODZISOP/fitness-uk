@@ -1,120 +1,188 @@
 "use client";
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import faqImage from '../zjBzVg-Photoroom.png';
 
 export default function ProcessSection() {
-  const processSteps = [
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const faqItems = [
     {
-      id: 1,
-      title: "Discovery & Goals",
-      desc: "We analyze your starting point, lifestyle, and define the exact results you want to achieve.",
-      x: "15%",
-      y: "85%",
+      id: "01",
+      title: "Personal Training",
+      desc: "Our personal trainers can help you create a personalized fitness plan, correct your form in real-time, and track your progress to guarantee your goals."
     },
     {
-      id: 2,
-      title: "Custom Blueprint",
-      desc: "A tailored training and nutrition system built specifically around your body and schedule.",
-      x: "50%",
-      y: "50%",
+      id: "02",
+      title: "Expert Trainer",
+      desc: "Our gym is proud to offer a team of highly skilled and certified trainers dedicated to helping you achieve your ultimate health & fitness goals."
     },
     {
-      id: 3,
-      title: "Execution & Results",
-      desc: "We implement the plan with daily accountability, tracking data to ensure guaranteed progress.",
-      x: "85%",
-      y: "15%",
+      id: "03",
+      title: "Flexible Time & 24/7 Access",
+      desc: "There are many fitness classes that are offered during off-peak and peak hours, such as early morning, afternoon, or late evening to fit your busy life."
+    },
+    {
+      id: "04",
+      title: "Customized Nutrition & Progress Tracking",
+      desc: "Receive personalized meal guidelines, macro calculations, and continuous body composition tracking to accelerate your transformation."
     }
   ];
 
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? -1 : index);
+  };
+
   return (
-    <section className="process-section">
-      <div className="process-container">
-        
-        {/* Left Side Text Content */}
-        <motion.div 
-          className="process-content"
-          initial={{ opacity: 0, x: -30 }}
+    <section className="faq-process-section" id="process">
+      {/* Top Wavy White Edge */}
+      <div className="faq-wave-top">
+        <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path fill="var(--color-white)" d="M0,0 L1440,0 L1440,40 C1200,100 960,10 720,60 C480,110 240,20 0,70 Z"></path>
+        </svg>
+      </div>
+
+      <div className="faq-process-container">
+
+        {/* Left Side FAQ / Why Choose Content */}
+        <motion.div
+          className="faq-left-content"
+          initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="process-label">WORLD FITNESS ZONE METHODOLOGY</span>
-          <h2 className="process-title">We have the best team and the best process</h2>
-          <p className="process-desc">
-            Vision is nothing without execution. We don't just hand you a program and hope for the best. 
-            We build a comprehensive ecosystem around your lifestyle to ensure your fitness transformation is 
-            straightforward, stress-free, and inevitable.
-          </p>
-          <button className="process-btn">Get Started</button>
-        </motion.div>
+          <span className="faq-eyebrow">WHY CHOOSE US</span>
+          <h2 className="faq-main-title">
+            Why Should People Choose <span className="highlight-brand">World Fitness Zone</span> Services
+          </h2>
 
-        {/* Right Side Timeline Area */}
-        <div className="process-timeline-area">
-          
-          {/* Background huge faded circle */}
-          <div className="process-bg-circle"></div>
+          <div className="faq-accordion-list">
+            {faqItems.map((item, index) => {
+              const isOpen = openIndex === index;
+              return (
+                <div
+                  key={index}
+                  className={`faq-item ${isOpen ? 'active' : ''}`}
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <div className="faq-item-header">
+                    <div className="faq-item-title-wrap">
+                      <span className="faq-check-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                      <h3 className="faq-item-title">{item.title}</h3>
+                    </div>
+                    <span className="faq-toggle-icon">
+                      {isOpen ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      )}
+                    </span>
+                  </div>
 
-          {/* Vertical connecting line for Mobile */}
-          <div className="mobile-timeline-line"></div>
-
-          {/* The SVG Curved Path for Desktop */}
-          <div className="process-svg-container">
-            <svg viewBox="0 0 1000 400" preserveAspectRatio="none" className="process-svg">
-              <motion.path 
-                d="M 0 350 C 100 450, 350 200, 500 200 S 800 50, 1000 50" 
-                fill="none" 
-                stroke="var(--color-primary)" 
-                strokeWidth="4"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: false, amount: 0.2 }}
-                transition={{ duration: 1.2, ease: "easeInOut" }}
-              />
-            </svg>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        className="faq-item-body"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <p className="faq-item-desc">{item.desc}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
 
-          {/* Nodes */}
-          {processSteps.map((step, index) => (
-            <motion.div 
-              className="process-node" 
-              key={step.id}
-              style={{ left: step.x, top: step.y }}
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: false, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
-            >
-              <div className="node-number-bg">{step.id}</div>
-              <div className="node-dot">
-                <motion.div 
-                  className="node-dot-inner"
-                  animate={{ 
-                    scale: [1, 1.3, 1],
-                    boxShadow: [
-                      "0 0 0 0px rgba(21, 94, 239, 0.4)",
-                      "0 0 0 10px rgba(21, 94, 239, 0)",
-                      "0 0 0 0px rgba(21, 94, 239, 0)"
-                    ]
-                  }}
-                  transition={{ 
-                    duration: 2, 
-                    repeat: Infinity, 
-                    delay: index * 0.4,
-                    ease: "easeInOut" 
-                  }}
-                />
-              </div>
-              <div className="node-content">
-                <h4 className="node-title">{step.title}</h4>
-                <p className="node-desc">{step.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+          <div className="faq-cta-wrap">
+            <button className="faq-join-btn">
+              JOIN TODAY &rarr;
+            </button>
+          </div>
+        </motion.div>
 
-        </div>
+        {/* Right Side Image & Floating Stat Cards */}
+        <motion.div
+          className="faq-right-image-area"
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Yellow Circle Backdrop */}
+          <div className="faq-bg-circle"></div>
+
+          {/* Full Character Image Wrapper */}
+          <div className="faq-image-wrapper">
+            <Image
+              src={faqImage}
+              alt="World Fitness Zone Athlete"
+              className="faq-model-img"
+              priority
+            />
+          </div>
+
+          {/* Floating Stat Card 1: Heart Rate */}
+          <motion.div
+            className="faq-stat-card card-top-right"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="stat-icon heart-bg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </div>
+            <div className="stat-info">
+              <div className="stat-value">70 bpm</div>
+              <div className="stat-label">Heart Rate</div>
+            </div>
+          </motion.div>
+
+          {/* Floating Stat Card 2: Fat Burning */}
+          <motion.div
+            className="faq-stat-card card-bottom-left"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          >
+            <div className="stat-icon flame-bg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.5 1.5c-1.2 2.4-2.8 4.2-3.9 6.3-1.1 2.1-1.6 4.3-1.6 6.5 0 4.4 3.6 8 8 8s8-3.6 8-8c0-2.2-.5-4.4-1.6-6.5-1.1-2.1-2.7-3.9-3.9-6.3L13.5 1.5zm1 14c-1.4 0-2.5-1.1-2.5-2.5 0-.8.4-1.5 1-2 .6.5 1.5 1.2 1.5 2 0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5c0-.8-.4-1.5-1-2 .6.5 1.5 1.2 1.5 2 0 1.4-1.1 2.5-2.5 2.5z" />
+              </svg>
+            </div>
+            <div className="stat-info">
+              <div className="stat-value">24%</div>
+              <div className="stat-label">Fat Burning</div>
+            </div>
+          </motion.div>
+
+        </motion.div>
+
+      </div>
+
+      {/* Bottom Wavy White Edge */}
+      <div className="faq-wave-bottom">
+        <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path fill="var(--color-white)" d="M0,120 L1440,120 L1440,80 C1200,20 960,110 720,60 C480,10 240,100 0,50 Z"></path>
+        </svg>
       </div>
     </section>
   );
 }
+
+
+
