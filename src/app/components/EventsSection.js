@@ -19,11 +19,27 @@ export default function EventsSection() {
         
         {/* Services Split Layout */}
         <div className="split-section">
-          {/* 1. Top Row Left Text */}
+          <motion.div 
+            className="split-image-wrapper large"
+            initial={{ opacity: 0, x: 50, y: -30 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.25, ease: "easeOut" }}
+          >
+            <Image 
+              src={serviceImage1} 
+              alt="Our Services" 
+              fill 
+              sizes="(max-width: 768px) 100vw, 50vw" 
+              className="split-image" 
+              priority 
+            />
+          </motion.div>
+
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: -60 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50, y: -40 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
           >
@@ -35,35 +51,16 @@ export default function EventsSection() {
             </p>
             <button className="split-btn">GET STARTED NOW</button>
           </motion.div>
-
-          {/* 2. Top Row Right Image */}
-          <motion.div 
-            className="split-image-wrapper large"
-            initial={{ opacity: 0, x: 60, scale: 0.95 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.3, ease: "easeOut" }}
-          >
-            <Image 
-              src={serviceImage1} 
-              alt="Our Services" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
-              priority 
-            />
-          </motion.div>
         </div>
 
         {/* Blogs Split Layout */}
         <div className="split-section reverse">
-          {/* 3. Bottom Row Left Image */}
           <motion.div 
             className="split-image-wrapper small"
-            initial={{ opacity: 0, x: -60, scale: 0.95 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            initial={{ opacity: 0, x: -50, y: -30 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.45, ease: "easeOut" }}
+            transition={{ duration: 0.75, delay: 0.4, ease: "easeOut" }}
           >
             <Image 
               src={serviceImage2} 
@@ -74,13 +71,12 @@ export default function EventsSection() {
             />
           </motion.div>
 
-          {/* 4. Bottom Row Right Text */}
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: 60 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: 50, y: -40 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.75, delay: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.75, delay: 0.55, ease: "easeOut" }}
           >
             <h2 className="split-title">RECENT BLOG POSTS</h2>
             <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
