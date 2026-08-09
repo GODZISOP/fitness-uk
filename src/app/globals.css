@@ -3005,6 +3005,33 @@ h6 {
   transform: scale(1.04);
 }
 
+/* Floating Badges for EventsSection */
+.events-badge {
+  position: absolute;
+  z-index: 10;
+  background: var(--color-action-yellow);
+  color: var(--color-deep-navy);
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 0.55rem 1.25rem;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.events-badge-top-left {
+  top: 30px;
+  left: 10px;
+}
+
+.events-badge-bottom-right {
+  bottom: 30px;
+  right: 10px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
 
