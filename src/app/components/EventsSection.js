@@ -89,7 +89,7 @@ export default function EventsSection() {
         </div>
 
         {/* Blogs Split Layout (Bottom Row: Image Left, Text Right) */}
-        <div className="split-section reverse">
+        <div className="split-section">
           {/* Bottom Row Image (Left - image copy 4.png) */}
           <motion.div 
             className="split-image-wrapper small"
