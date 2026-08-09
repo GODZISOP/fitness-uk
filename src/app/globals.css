@@ -3160,13 +3160,13 @@ h6 {
 }
 
 .events-badge-top-left {
-  top: 30px;
-  left: 10px;
+  top: 15px;
+  left: 15px;
 }
 
 .events-badge-bottom-right {
-  bottom: 30px;
-  right: 10px;
+  bottom: 15px;
+  right: 15px;
 }
 
 /* Responsive adjustments */
