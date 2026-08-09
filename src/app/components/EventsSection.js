@@ -19,7 +19,31 @@ export default function EventsSection() {
         
         {/* Services Split Layout */}
         <div className="split-section">
-          <div className="split-image-wrapper large">
+          {/* 1. Top Row Left Text */}
+          <motion.div 
+            className="split-text"
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
+          >
+            <h2 className="split-title">OUR SERVICES</h2>
+            <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
+            <p className="split-desc">
+              We provide world-class personal training, custom nutrition plans, and expert guidance. 
+              Click the button below to start achieving your fitness goals today.
+            </p>
+            <button className="split-btn">GET STARTED NOW</button>
+          </motion.div>
+
+          {/* 2. Top Row Right Image */}
+          <motion.div 
+            className="split-image-wrapper large"
+            initial={{ opacity: 0, x: 60, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.3, ease: "easeOut" }}
+          >
             <Image 
               src={serviceImage1} 
               alt="Our Services" 
@@ -28,22 +52,19 @@ export default function EventsSection() {
               className="split-image" 
               priority 
             />
-          </div>
-
-          <div className="split-text">
-            <h2 className="split-title">OUR SERVICES</h2>
-            <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
-            <p className="split-desc">
-              We provide world-class personal training, custom nutrition plans, and expert guidance. 
-              Click the button below to start achieving your fitness goals today.
-            </p>
-            <button className="split-btn">GET STARTED NOW</button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Blogs Split Layout */}
         <div className="split-section reverse">
-          <div className="split-image-wrapper small">
+          {/* 3. Bottom Row Left Image */}
+          <motion.div 
+            className="split-image-wrapper small"
+            initial={{ opacity: 0, x: -60, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.45, ease: "easeOut" }}
+          >
             <Image 
               src={serviceImage2} 
               alt="Recent Blogs" 
@@ -51,9 +72,16 @@ export default function EventsSection() {
               sizes="(max-width: 768px) 100vw, 50vw" 
               className="split-image split-image-cover" 
             />
-          </div>
+          </motion.div>
 
-          <div className="split-text">
+          {/* 4. Bottom Row Right Text */}
+          <motion.div 
+            className="split-text"
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.6, ease: "easeOut" }}
+          >
             <h2 className="split-title">RECENT BLOG POSTS</h2>
             <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
             <p className="split-desc">
@@ -61,7 +89,7 @@ export default function EventsSection() {
               We share everything you need to know to stay on top of your game.
             </p>
             <button className="split-btn">READ MORE</button>
-          </div>
+          </motion.div>
         </div>
 
       </div>
