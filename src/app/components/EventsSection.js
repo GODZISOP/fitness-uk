@@ -92,6 +92,7 @@ export default function EventsSection() {
               fill 
               sizes="(max-width: 768px) 100vw, 50vw" 
               className="split-image split-image-cover" 
+              priority
             />
             <div className="events-badge events-badge-bottom-right">
               🔥 PRO RESULTS

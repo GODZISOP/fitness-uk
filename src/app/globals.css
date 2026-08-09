@@ -2998,6 +2998,7 @@ h6 {
   flex: 1;
   position: relative;
   width: 100%;
+  min-width: 320px;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -3028,6 +3029,9 @@ h6 {
 .split-image-cover {
   object-fit: contain !important;
   object-position: center center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 480px !important;
 }
 
 .split-section:hover .split-image {
