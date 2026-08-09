@@ -32,14 +32,8 @@ export default function EventsSection() {
         
         {/* Services Split Layout (Top Row: Text Left, Image Right) */}
         <div className="split-section">
-          {/* Top Row Text (Left) - 3D Flip Up */}
-          <motion.div 
-            className="split-text"
-            initial={{ opacity: 0, y: 55, rotateX: 18 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-          >
+          {/* Top Row Text (Left) */}
+          <div className="split-text">
             <h2 className="split-title">
               <StaggerText divideBy="letter" delay={0.1}>OUR SERVICES</StaggerText>
             </h2>
@@ -47,29 +41,41 @@ export default function EventsSection() {
               <StaggerText divideBy="word" delay={0.25}>A STEP TO CHANGE YOUR LIFE</StaggerText>
             </h3>
             <p className="split-desc">
-              We provide world-class personal training, custom nutrition plans, and expert guidance. 
-              Click the button below to start achieving your fitness goals today.
+              <StaggerText divideBy="word" delay={0.35}>
+                We provide world-class personal training, custom nutrition plans, and expert guidance. Click the button below to start achieving your fitness goals today.
+              </StaggerText>
             </p>
 
             <div className="split-features-list">
               {serviceFeatures.map((feature, idx) => (
-                <div key={idx} className="split-feature-item">
+                <motion.div 
+                  key={idx} 
+                  className="split-feature-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: 0.5 + idx * 0.1 }}
+                >
                   <span className="split-feature-icon">✓</span>
                   <span>{feature}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
 
             <motion.button 
               className="split-btn"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.5, delay: 0.7 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               GET STARTED NOW
             </motion.button>
-          </motion.div>
+          </div>
 
-          {/* Top Row Image (Right - Battle Ropes Athlete) - 3D Flip Up */}
+          {/* Top Row Image (Right - Battle Ropes Athlete) */}
           <motion.div 
             className="split-image-wrapper large"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
@@ -95,7 +101,7 @@ export default function EventsSection() {
 
         {/* Blogs Split Layout (Bottom Row: Image Left, Text Right) */}
         <div className="split-section">
-          {/* Bottom Row Image (Left - image copy 4.png) - 3D Flip Up */}
+          {/* Bottom Row Image (Left - image copy 4.png) */}
           <motion.div 
             className="split-image-wrapper small"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
@@ -118,14 +124,8 @@ export default function EventsSection() {
             </div>
           </motion.div>
 
-          {/* Bottom Row Text (Right) - 3D Flip Up */}
-          <motion.div 
-            className="split-text"
-            initial={{ opacity: 0, y: 55, rotateX: 18 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          >
+          {/* Bottom Row Text (Right) */}
+          <div className="split-text">
             <h2 className="split-title">
               <StaggerText divideBy="letter" delay={0.1}>RECENT BLOG POSTS</StaggerText>
             </h2>
@@ -133,27 +133,39 @@ export default function EventsSection() {
               <StaggerText divideBy="word" delay={0.25}>LATEST FITNESS INSIGHTS</StaggerText>
             </h3>
             <p className="split-desc">
-              Read our latest articles on strength training, recovery, and building a sustainable lifestyle.
-              We share everything you need to know to stay on top of your game.
+              <StaggerText divideBy="word" delay={0.35}>
+                Read our latest articles on strength training, recovery, and building a sustainable lifestyle. We share everything you need to know to stay on top of your game.
+              </StaggerText>
             </p>
 
             <div className="split-features-list">
               {blogFeatures.map((feature, idx) => (
-                <div key={idx} className="split-feature-item">
+                <motion.div 
+                  key={idx} 
+                  className="split-feature-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: 0.5 + idx * 0.1 }}
+                >
                   <span className="split-feature-icon">✓</span>
                   <span>{feature}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
 
             <motion.button 
               className="split-btn"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.5, delay: 0.7 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               READ MORE
             </motion.button>
-          </motion.div>
+          </div>
         </div>
 
       </div>
