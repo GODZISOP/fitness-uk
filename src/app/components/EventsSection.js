@@ -1,10 +1,13 @@
 "use client";
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import serviceImage1 from '../image copy 7.png';
 import serviceImage2 from '../image copy 4.png';
+import serviceImage3 from '../image copy 5.png';
+import serviceImage4 from '../image copy 8.png';
+import serviceImage5 from '../image copy 3.png';
 import StaggerText from './StaggerText';
+import EventGlideSlider from './EventGlideSlider';
 
 export default function EventsSection() {
   const serviceFeatures = [
@@ -19,6 +22,9 @@ export default function EventsSection() {
     "24/7 VIP Fitness Community Support"
   ];
 
+  const topSliderImages = [serviceImage1, serviceImage3, serviceImage5];
+  const bottomSliderImages = [serviceImage2, serviceImage4, serviceImage3];
+
   return (
     <section className="events-section">
       {/* Top Wavy SVG */}
@@ -30,7 +36,7 @@ export default function EventsSection() {
 
       <div className="events-container split-layout-container">
         
-        {/* Services Split Layout (Top Row: Text Left, Image Right) */}
+        {/* Services Split Layout (Top Row: Text Left, Glide.js Carousel Right) */}
         <div className="split-section">
           {/* Top Row Text (Left) */}
           <div className="split-text">
@@ -75,53 +81,39 @@ export default function EventsSection() {
             </motion.button>
           </div>
 
-          {/* Top Row Image (Right - Battle Ropes Athlete) */}
+          {/* Top Row Right: Glide.js Interactive Image Carousel */}
           <motion.div 
             className="split-image-wrapper large"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ y: -8, scale: 1.02 }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
-            <Image 
-              src={serviceImage1} 
-              alt="Our Services" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
-              priority 
+            <EventGlideSlider 
+              images={topSliderImages} 
+              badgeText="⚡ HIGH INTENSITY" 
+              badgeClass="events-badge-top-left" 
             />
-            <div className="events-badge events-badge-top-left">
-              ⚡ HIGH INTENSITY
-            </div>
           </motion.div>
         </div>
 
-        {/* Blogs Split Layout (Bottom Row: Image Left, Text Right) */}
-        <div className="split-section">
-          {/* Bottom Row Image (Left - image copy 4.png) */}
+        {/* Blogs Split Layout (Bottom Row: Glide.js Carousel Left, Text Right) */}
+        <div className="split-section reverse">
+          {/* Bottom Row Left: Glide.js Interactive Image Carousel */}
           <motion.div 
             className="split-image-wrapper small"
             initial={{ opacity: 0, y: 65, rotateX: 22, scale: 0.92 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ y: -8, scale: 1.02 }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
-            <Image 
-              src={serviceImage2} 
-              alt="Recent Blogs" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image split-image-cover" 
-              priority
+            <EventGlideSlider 
+              images={bottomSliderImages} 
+              badgeText="🔥 PRO RESULTS" 
+              badgeClass="events-badge-bottom-right" 
             />
-            <div className="events-badge events-badge-bottom-right">
-              🔥 PRO RESULTS
-            </div>
           </motion.div>
 
           {/* Bottom Row Text (Right) */}

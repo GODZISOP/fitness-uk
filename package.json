@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@glidejs/glide": "^3.7.1",
     "@gsap/react": "^2.1.2",
     "aos": "^2.3.4",
     "framer-motion": "^13.0.0",
