@@ -120,31 +120,9 @@ export default function EventsSection() {
           </motion.div>
         </div>
 
-        {/* Blogs Split Layout (Bottom Row: Image Left, Text Right) */}
-        <div className="split-section">
-          {/* Bottom Row Left Image */}
-          <motion.div 
-            className="split-image-wrapper small gsap-image-container relative overflow-hidden rounded-2xl"
-            initial={{ opacity: 0, y: 35, scale: 0.96 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{ position: 'relative', width: '100%' }}
-          >
-            <Image 
-              src={serviceImage2} 
-              alt="Recent Blogs" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
-              priority 
-            />
-            <div className="events-badge events-badge-bottom-right">
-              🔥 PRO RESULTS
-            </div>
-          </motion.div>
-
-          {/* Bottom Row Text (Right) */}
+        {/* Blogs Split Layout (Bottom Row: Image Left on Desktop, Text Top on Mobile) */}
+        <div className="split-section reverse">
+          {/* Bottom Row Text */}
           <motion.div 
             className="split-text"
             initial={{ opacity: 0, x: 35 }}
@@ -208,6 +186,28 @@ export default function EventsSection() {
                 READ MORE
               </button>
             </motion.div>
+          </motion.div>
+
+          {/* Bottom Row Image */}
+          <motion.div 
+            className="split-image-wrapper small gsap-image-container relative overflow-hidden rounded-2xl"
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            style={{ position: 'relative', width: '100%' }}
+          >
+            <Image 
+              src={serviceImage2} 
+              alt="Recent Blogs" 
+              fill 
+              sizes="(max-width: 768px) 100vw, 50vw" 
+              className="split-image" 
+              priority 
+            />
+            <div className="events-badge events-badge-bottom-right">
+              🔥 PRO RESULTS
+            </div>
           </motion.div>
         </div>
 
