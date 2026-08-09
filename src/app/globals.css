@@ -2427,7 +2427,7 @@ h6 {
 .faq-bg-circle {
   position: absolute;
   bottom: 0;
-  left: 50%;
+  left: 40%;
   transform: translateX(-50%);
   width: 440px;
   height: 440px;
