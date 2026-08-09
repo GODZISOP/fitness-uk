@@ -46,24 +46,45 @@ export default function ProcessSection() {
       <div className="faq-process-container">
 
         {/* Left Side FAQ / Why Choose Content */}
-        <div 
+        <motion.div 
           className="faq-left-content"
-          data-aos="fade-right"
-          data-aos-duration="800"
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <span className="faq-eyebrow">WHY CHOOSE US</span>
-          <h2 className="faq-main-title">
+          <motion.span 
+            className="faq-eyebrow"
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.5 }}
+          >
+            WHY CHOOSE US
+          </motion.span>
+
+          <motion.h2 
+            className="faq-main-title"
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             Why Should People Choose <span className="highlight-brand">World Fitness Zone</span> Services
-          </h2>
+          </motion.h2>
 
           <div className="faq-accordion-list">
             {faqItems.map((item, index) => {
               const isOpen = openIndex === index;
               return (
-                <div
+                <motion.div
                   key={index}
                   className={`faq-item ${isOpen ? 'active' : ''}`}
                   onClick={() => toggleFAQ(index)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false }}
+                  transition={{ duration: 0.5, delay: 0.15 + index * 0.1 }}
                 >
                   <div className="faq-item-header">
                     <div className="faq-item-title-wrap">
@@ -101,43 +122,64 @@ export default function ProcessSection() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
-          <div className="faq-cta-wrap">
+          <motion.div 
+            className="faq-cta-wrap"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
             <button className="faq-join-btn">
               JOIN TODAY &rarr;
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right Side Image & Floating Stat Cards */}
-        <div 
-          className="faq-right-image-area"
-          data-aos="zoom-in"
-          data-aos-delay="200"
-          data-aos-duration="900"
-        >
+        <div className="faq-right-image-area">
           {/* Yellow Circle Backdrop */}
-          <div className="faq-bg-circle"></div>
+          <motion.div 
+            className="faq-bg-circle"
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          />
 
           {/* Image Wrapper */}
-          <div className="faq-image-wrapper">
+          <motion.div 
+            className="faq-image-wrapper"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
             <Image
               src={faqImage}
               alt="World Fitness Zone Athlete"
               className="faq-model-img"
               priority
             />
-          </div>
+          </motion.div>
 
           {/* Floating Stat Card 1: Heart Rate */}
           <motion.div
             className="faq-stat-card card-top-right"
+            initial={{ opacity: 0, x: 40, scale: 0.8 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false }}
             animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ 
+              opacity: { duration: 0.6, delay: 0.4 },
+              x: { duration: 0.6, delay: 0.4 },
+              scale: { duration: 0.6, delay: 0.4 },
+              y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
+            }}
           >
             <div className="stat-icon heart-bg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -153,8 +195,16 @@ export default function ProcessSection() {
           {/* Floating Stat Card 2: Fat Burning */}
           <motion.div
             className="faq-stat-card card-bottom-left"
+            initial={{ opacity: 0, x: -40, scale: 0.8 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false }}
             animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            transition={{ 
+              opacity: { duration: 0.6, delay: 0.5 },
+              x: { duration: 0.6, delay: 0.5 },
+              scale: { duration: 0.6, delay: 0.5 },
+              y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+            }}
           >
             <div className="stat-icon flame-bg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
