@@ -19,13 +19,45 @@ export default function EventsSection() {
         
         {/* Services Split Layout */}
         <div className="split-section">
-          {/* Top Row Left Text */}
+          {/* 1st DOM child: Image (Appears on RIGHT due to row-reverse) */}
+          <motion.div 
+            className="split-image-wrapper large"
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Image 
+              src={serviceImage1} 
+              alt="Our Services" 
+              fill 
+              sizes="(max-width: 768px) 100vw, 50vw" 
+              className="split-image" 
+              priority 
+            />
+            <motion.div 
+              className="events-badge events-badge-top-left"
+              initial={{ opacity: 0, scale: 0.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              animate={{ y: [0, -8, 0] }}
+              transition={{
+                opacity: { duration: 0.5, delay: 0.4 },
+                scale: { duration: 0.5, delay: 0.4 },
+                y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              ⚡ HIGH INTENSITY
+            </motion.div>
+          </motion.div>
+
+          {/* 2nd DOM child: Text (Appears on LEFT due to row-reverse) */}
           <motion.div 
             className="split-text"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
           >
             <motion.h2 
               className="split-title"
@@ -70,49 +102,17 @@ export default function EventsSection() {
               GET STARTED NOW
             </motion.button>
           </motion.div>
-
-          {/* Top Row Right Image */}
-          <motion.div 
-            className="split-image-wrapper large"
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Image 
-              src={serviceImage1} 
-              alt="Our Services" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image" 
-              priority 
-            />
-            <motion.div 
-              className="events-badge events-badge-top-left"
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              animate={{ y: [0, -8, 0] }}
-              transition={{
-                opacity: { duration: 0.5, delay: 0.4 },
-                scale: { duration: 0.5, delay: 0.4 },
-                y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
-              }}
-            >
-              ⚡ HIGH INTENSITY
-            </motion.div>
-          </motion.div>
         </div>
 
         {/* Blogs Split Layout */}
         <div className="split-section reverse">
-          {/* Bottom Row Left Image */}
+          {/* 1st DOM child: Image (Appears on LEFT due to flex-direction: row) */}
           <motion.div 
             className="split-image-wrapper small"
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
             <Image 
               src={serviceImage2} 
@@ -137,7 +137,7 @@ export default function EventsSection() {
             </motion.div>
           </motion.div>
 
-          {/* Bottom Row Right Text */}
+          {/* 2nd DOM child: Text (Appears on RIGHT due to flex-direction: row) */}
           <motion.div 
             className="split-text"
             initial={{ opacity: 0, x: 40 }}
