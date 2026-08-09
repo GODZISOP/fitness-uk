@@ -1,75 +1,99 @@
 "use client";
+import React from 'react';
+
 export default function ProgramsSection() {
   const plans = [
     {
-      title: "Strength Core",
+      title: "BASE PLAN",
       price: "$49",
       period: "/month",
-      description: "Perfect for beginners looking to master the fundamentals of strength.",
-      features: ["3 Days/Week Program", "Basic Nutrition Guide", "Video Tutorials", "Monthly Check-in"],
-      isPopular: false,
+      subtitle: "Start Your Journey",
+      features: [
+        "3 Days/Week Fitness Access",
+        "Basic Nutrition Guide",
+        "Video Workout Tutorials",
+        "Monthly Progress Check-in"
+      ],
+      cardClass: "program-card-blue",
+      btnClass: "btn-yellow",
       delay: 0,
     },
     {
-      title: "Elite Conditioning",
+      title: "PRO PLAN",
       price: "$99",
       period: "/month",
-      description: "Our most comprehensive program designed for serious athletes.",
-      features: ["5 Days/Week Program", "Custom Meal Plan", "1-on-1 Coaching Calls", "Weekly Form Review", "24/7 Priority Support"],
+      subtitle: "Elevate Your Results",
+      features: [
+        "5 Days/Week Full Access",
+        "Customized Macro & Meal Plan",
+        "1-on-1 Certified Trainer Calls",
+        "Weekly Form & Progress Review",
+        "24/7 Priority VIP Support"
+      ],
+      cardClass: "program-card-yellow",
+      btnClass: "btn-navy",
       isPopular: true,
       delay: 200,
     },
     {
-      title: "Complete Transformation",
+      title: "ENTERPRISE PLAN",
       price: "$149",
       period: "/month",
-      description: "A total overhaul of your lifestyle, nutrition, and training.",
-      features: ["6 Days/Week Program", "Private Chef Integration", "Daily Accountability", "Supplement Protocol"],
-      isPopular: false,
+      subtitle: "Complete Transformation",
+      features: [
+        "Unlimited 24/7 VIP Gym Access",
+        "Private Nutritionist Integration",
+        "Daily Accountability & Tracking",
+        "Comprehensive Supplement Protocol"
+      ],
+      cardClass: "program-card-blue",
+      btnClass: "btn-yellow",
       delay: 400,
     }
   ];
 
   return (
-    <section className="programs-section">
+    <section className="programs-section" id="programs">
       <div className="programs-container">
         <div className="programs-header" data-aos="fade-up">
-          <h2 className="programs-title">Elevate Your Routine</h2>
-          <p className="programs-subtitle">Choose the perfect program designed to push your limits and guarantee results.</p>
+          <h2 className="programs-title">Choose Your Plan</h2>
+          <p className="programs-subtitle">Explore our packages and see why top fitness enthusiasts choose World Fitness Zone for guaranteed quality.</p>
         </div>
 
         <div className="programs-grid">
           {plans.map((plan, index) => (
             <div 
               key={index}
-              className={`program-card ${plan.isPopular ? 'program-card-popular' : ''}`}
+              className={`program-card ${plan.cardClass}`}
               data-aos="fade-up"
               data-aos-delay={plan.delay}
             >
-              {plan.isPopular && <div className="popular-badge">Most Popular</div>}
+              {plan.isPopular && <div className="popular-badge">MOST POPULAR</div>}
               
               <div className="program-card-header">
-                <h3 className="plan-title">{plan.title}</h3>
-                <p className="plan-desc">{plan.description}</p>
+                <span className="plan-badge-tag">{plan.title}</span>
                 <div className="program-price">
                   <span className="price">{plan.price}</span>
                   <span className="period">{plan.period}</span>
                 </div>
+                <p className="plan-subtitle">{plan.subtitle}</p>
               </div>
               
               <ul className="program-features">
                 {plan.features.map((feature, i) => (
                   <li key={i}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <span className="feature-check-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </span>
                     {feature}
                   </li>
                 ))}
               </ul>
               
-              <button className={`program-btn ${plan.isPopular ? 'btn-popular' : ''}`}>
-                Join Now
+              <button className={`program-btn ${plan.btnClass}`}>
+                Contact Us
               </button>
             </div>
           ))}

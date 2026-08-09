@@ -1,7 +1,32 @@
 "use client";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useInView, animate } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 import aboutImage from "../image copy 6.png";
+
+function CounterNumber({ value }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "-50px" });
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      const numericTarget = parseInt(value, 10);
+      const controls = animate(0, numericTarget, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate(latest) {
+          setDisplayValue(Math.floor(latest));
+        }
+      });
+      return () => controls.stop();
+    } else {
+      setDisplayValue(0);
+    }
+  }, [isInView, value]);
+
+  return <span ref={ref}>{displayValue}</span>;
+}
 
 export default function AboutSection() {
   const stats = [
@@ -11,7 +36,7 @@ export default function AboutSection() {
   ];
 
   return (
-    <section className="about-section">
+    <section className="about-section" id="about">
       <div className="about-container">
 
         {/* Left Content */}
@@ -100,7 +125,9 @@ export default function AboutSection() {
                 <span className="slash">///</span> {stat.label}
               </div>
               <div className="stat-value">
-                <span className="stat-number">{stat.value}</span>
+                <span className="stat-number">
+                  <CounterNumber value={stat.value} />
+                </span>
                 <span className="stat-suffix">{stat.suffix}</span>
               </div>
             </motion.div>
