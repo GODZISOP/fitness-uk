@@ -29,8 +29,8 @@ export default function EventsSection() {
 
       <div className="events-container split-layout-container">
         
-        {/* Services Split Layout (Top Row: Text Left, Image Right) */}
-        <div className="split-section">
+        {/* Services Split Layout (Top Row: Image Left, Text Right) */}
+        <div className="split-section reverse">
           {/* Top Row Text (Left) */}
           <div className="split-text">
             <h2 className="split-title">OUR SERVICES</h2>
