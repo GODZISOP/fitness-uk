@@ -3017,8 +3017,8 @@ h6 {
 }
 
 .split-image {
-  object-fit: cover !important;
-  object-position: center top !important;
+  object-fit: contain !important;
+  object-position: center center !important;
   width: 100% !important;
   height: 100% !important;
   border-radius: 1.25rem;
