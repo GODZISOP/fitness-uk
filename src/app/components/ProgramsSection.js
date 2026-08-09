@@ -66,7 +66,6 @@ export default function ProgramsSection() {
               key={index}
               className={`program-card ${plan.cardClass}`}
               data-aos="fade-up"
-              data-aos-delay={plan.delay}
             >
               {plan.isPopular && <div className="popular-badge">MOST POPULAR</div>}
               
