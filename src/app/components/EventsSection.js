@@ -29,10 +29,16 @@ export default function EventsSection() {
 
       <div className="events-container split-layout-container">
         
-        {/* Services Split Layout (Top Row: Image Left, Text Right) */}
-        <div className="split-section reverse">
+        {/* Services Split Layout (Top Row: Text Left, Image Right) */}
+        <div className="split-section">
           {/* Top Row Text (Left) */}
-          <div className="split-text">
+          <motion.div 
+            className="split-text"
+            initial={{ opacity: 0, x: -45 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <h2 className="split-title">OUR SERVICES</h2>
             <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
             <p className="split-desc">
@@ -56,13 +62,16 @@ export default function EventsSection() {
             >
               GET STARTED NOW
             </motion.button>
-          </div>
+          </motion.div>
 
           {/* Top Row Image (Right - Battle Ropes Athlete) */}
           <motion.div 
             className="split-image-wrapper large"
+            initial={{ opacity: 0, x: 45, scale: 0.9 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.75, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
             <Image 
@@ -84,8 +93,11 @@ export default function EventsSection() {
           {/* Bottom Row Image (Left - image copy 4.png) */}
           <motion.div 
             className="split-image-wrapper small"
+            initial={{ opacity: 0, x: -45, scale: 0.9 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
             style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
             <Image 
@@ -102,7 +114,13 @@ export default function EventsSection() {
           </motion.div>
 
           {/* Bottom Row Text (Right) */}
-          <div className="split-text">
+          <motion.div 
+            className="split-text"
+            initial={{ opacity: 0, x: 45 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+          >
             <h2 className="split-title">RECENT BLOG POSTS</h2>
             <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
             <p className="split-desc">
@@ -126,7 +144,7 @@ export default function EventsSection() {
             >
               READ MORE
             </motion.button>
-          </div>
+          </motion.div>
         </div>
 
       </div>
