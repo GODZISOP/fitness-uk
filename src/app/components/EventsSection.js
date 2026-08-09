@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import serviceImage1 from '../image copy 7.png';
-import serviceImage2 from '../image copy 4.png';
+import serviceImage2 from '../image copy 8.png';
 
 export default function EventsSection() {
   const serviceFeatures = [
@@ -36,6 +36,7 @@ export default function EventsSection() {
             className="split-image-wrapper large"
             whileHover={{ y: -8, scale: 1.02 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
             <Image 
               src={serviceImage1} 
@@ -85,13 +86,14 @@ export default function EventsSection() {
             className="split-image-wrapper small"
             whileHover={{ y: -8, scale: 1.02 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ position: 'relative', width: '100%', minHeight: '520px' }}
           >
             <Image 
               src={serviceImage2} 
               alt="Recent Blogs" 
               fill 
               sizes="(max-width: 768px) 100vw, 50vw" 
-              className="split-image split-image-cover" 
+              className="split-image" 
               priority
             />
             <div className="events-badge events-badge-bottom-right">
