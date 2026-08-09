@@ -762,40 +762,41 @@ h6 {
     transition-delay: 0s !important;
   }
 
-  /* Left Card default deeply tucked inside behind center */
+  /* Left Card default deeply tucked inside behind center, sitting lower down */
   .program-card:nth-child(1) {
     z-index: 2;
-    transform: translateX(320px) scale(0.88);
+    transform: translateX(320px) translateY(20px) scale(0.88);
     opacity: 0.7;
   }
 
-  /* Center Card elevated higher */
+  /* Center Card elevated higher & visually larger */
   .program-card:nth-child(2) {
     z-index: 5;
-    transform: translateY(-24px) scale(1.05);
+    transform: translateY(-40px) scale(1.08);
+    padding: 2.25rem 2rem;
   }
 
-  /* Right Card default deeply tucked inside behind center */
+  /* Right Card default deeply tucked inside behind center, sitting lower down */
   .program-card:nth-child(3) {
     z-index: 2;
-    transform: translateX(-320px) scale(0.88);
+    transform: translateX(-320px) translateY(20px) scale(0.88);
     opacity: 0.7;
   }
 
   /* Hovering ANY card or grid spreads BOTH left & right cards outward SIMULTANEOUSLY */
   .programs-grid:hover .program-card:nth-child(1) {
-    transform: translateX(-60px) scale(1);
+    transform: translateX(-60px) translateY(20px) scale(0.96);
     opacity: 1;
     z-index: 4;
   }
 
   .programs-grid:hover .program-card:nth-child(2) {
-    transform: translateY(-28px) scale(1.08);
+    transform: translateY(-48px) scale(1.1);
     z-index: 5;
   }
 
   .programs-grid:hover .program-card:nth-child(3) {
-    transform: translateX(60px) scale(1);
+    transform: translateX(60px) translateY(20px) scale(0.96);
     opacity: 1;
     z-index: 4;
   }
@@ -803,17 +804,17 @@ h6 {
   /* Hovering individual card brings it to front with lift */
   .programs-grid:hover .program-card:nth-child(1):hover {
     z-index: 10 !important;
-    transform: translateX(-60px) translateY(-32px) scale(1.06) !important;
+    transform: translateX(-60px) translateY(-10px) scale(1.04) !important;
   }
 
   .programs-grid:hover .program-card:nth-child(2):hover {
     z-index: 10 !important;
-    transform: translateY(-36px) scale(1.1) !important;
+    transform: translateY(-56px) scale(1.12) !important;
   }
 
   .programs-grid:hover .program-card:nth-child(3):hover {
     z-index: 10 !important;
-    transform: translateX(60px) translateY(-32px) scale(1.06) !important;
+    transform: translateX(60px) translateY(-10px) scale(1.04) !important;
   }
 }
 
