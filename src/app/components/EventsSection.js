@@ -6,6 +6,18 @@ import serviceImage1 from '../image copy 7.png';
 import serviceImage2 from '../image copy 4.png';
 
 export default function EventsSection() {
+  const serviceFeatures = [
+    "Certified 1-on-1 Personal Training",
+    "Custom Macro & Nutrition Meal Plans",
+    "Real-time Form Correction & Tracking"
+  ];
+
+  const blogFeatures = [
+    "Expert Strength & Recovery Strategies",
+    "Proven Fat Loss & Muscle Building Guides",
+    "24/7 VIP Fitness Community Support"
+  ];
+
   return (
     <section className="events-section">
       {/* Top Wavy SVG */}
@@ -19,13 +31,11 @@ export default function EventsSection() {
         
         {/* Services Split Layout */}
         <div className="split-section">
-          {/* 1st DOM child: Image (Appears on RIGHT due to row-reverse) */}
+          {/* Top Row Image (Right) with Pricing Deck style micro-hover */}
           <motion.div 
             className="split-image-wrapper large"
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <Image 
               src={serviceImage1} 
@@ -35,84 +45,46 @@ export default function EventsSection() {
               className="split-image" 
               priority 
             />
-            <motion.div 
-              className="events-badge events-badge-top-left"
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              animate={{ y: [0, -8, 0] }}
-              transition={{
-                opacity: { duration: 0.5, delay: 0.4 },
-                scale: { duration: 0.5, delay: 0.4 },
-                y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
-              }}
-            >
+            <div className="events-badge events-badge-top-left">
               ⚡ HIGH INTENSITY
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* 2nd DOM child: Text (Appears on LEFT due to row-reverse) */}
-          <motion.div 
-            className="split-text"
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-          >
-            <motion.h2 
-              className="split-title"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.5 }}
-            >
-              OUR SERVICES
-            </motion.h2>
-
-            <motion.h3 
-              className="split-subtitle"
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              A STEP TO CHANGE YOUR LIFE
-            </motion.h3>
-
-            <motion.p 
-              className="split-desc"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+          {/* Top Row Text (Left) */}
+          <div className="split-text">
+            <h2 className="split-title">OUR SERVICES</h2>
+            <h3 className="split-subtitle">A STEP TO CHANGE YOUR LIFE</h3>
+            <p className="split-desc">
               We provide world-class personal training, custom nutrition plans, and expert guidance. 
               Click the button below to start achieving your fitness goals today.
-            </motion.p>
+            </p>
+
+            <div className="split-features-list">
+              {serviceFeatures.map((feature, idx) => (
+                <div key={idx} className="split-feature-item">
+                  <span className="split-feature-icon">✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
 
             <motion.button 
               className="split-btn"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
             >
               GET STARTED NOW
             </motion.button>
-          </motion.div>
+          </div>
         </div>
 
         {/* Blogs Split Layout */}
         <div className="split-section reverse">
-          {/* 1st DOM child: Image (Appears on LEFT due to flex-direction: row) */}
+          {/* Bottom Row Image (Left) with Pricing Deck style micro-hover */}
           <motion.div 
             className="split-image-wrapper small"
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <Image 
               src={serviceImage2} 
@@ -121,73 +93,37 @@ export default function EventsSection() {
               sizes="(max-width: 768px) 100vw, 50vw" 
               className="split-image split-image-cover" 
             />
-            <motion.div 
-              className="events-badge events-badge-bottom-right"
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              animate={{ y: [0, 8, 0] }}
-              transition={{
-                opacity: { duration: 0.5, delay: 0.4 },
-                scale: { duration: 0.5, delay: 0.4 },
-                y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
-              }}
-            >
+            <div className="events-badge events-badge-bottom-right">
               🔥 PRO RESULTS
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* 2nd DOM child: Text (Appears on RIGHT due to flex-direction: row) */}
-          <motion.div 
-            className="split-text"
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-          >
-            <motion.h2 
-              className="split-title"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              RECENT BLOG POSTS
-            </motion.h2>
-
-            <motion.h3 
-              className="split-subtitle"
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              LATEST FITNESS INSIGHTS
-            </motion.h3>
-
-            <motion.p 
-              className="split-desc"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+          {/* Bottom Row Text (Right) */}
+          <div className="split-text">
+            <h2 className="split-title">RECENT BLOG POSTS</h2>
+            <h3 className="split-subtitle">LATEST FITNESS INSIGHTS</h3>
+            <p className="split-desc">
               Read our latest articles on strength training, recovery, and building a sustainable lifestyle.
               We share everything you need to know to stay on top of your game.
-            </motion.p>
+            </p>
+
+            <div className="split-features-list">
+              {blogFeatures.map((feature, idx) => (
+                <div key={idx} className="split-feature-item">
+                  <span className="split-feature-icon">✓</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
 
             <motion.button 
               className="split-btn"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
             >
               READ MORE
             </motion.button>
-          </motion.div>
+          </div>
         </div>
 
       </div>
@@ -195,7 +131,7 @@ export default function EventsSection() {
       {/* Bottom Wavy SVG */}
       <div className="events-wave-bottom">
         <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path fill="var(--color-primary)" fillOpacity="1" d="M0,128L48,160C96,192,192,256,288,250.7C384,245,480,171,576,160C672,149,768,203,864,197.3C960,192,1056,128,1152,106.7C1248,85,1344,107,1392,117.3L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+          <path fill="var(--color-primary)" fillOpacity="1" d="M0,128L48,160C96,192,256,288,250.7C384,245,480,171,576,160C672,149,768,203,864,197.3C960,192,1056,128,1152,106.7C1248,85,1344,107,1392,117.3L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
         </svg>
       </div>
     </section>
