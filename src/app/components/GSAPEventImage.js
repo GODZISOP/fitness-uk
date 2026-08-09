@@ -7,6 +7,7 @@ import { useGSAP } from '@gsap/react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 }
 
 export default function GSAPEventImage({ 
@@ -24,25 +25,26 @@ export default function GSAPEventImage({
   useGSAP(() => {
     if (!containerRef.current || !imageRef.current) return;
 
-    // Timeline for 60FPS GPU Hardware Accelerated Entrance
+    // Mobile & Desktop Responsive GSAP ScrollTrigger
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
-        start: 'top 85%',
+        start: 'top 98%',
         toggleActions: 'play none none reverse',
+        invalidateOnRefresh: true,
       }
     });
 
     // 1. Container Reveal
     tl.fromTo(containerRef.current, 
       { 
-        y: 40,
+        y: 30,
         opacity: 0
       },
       { 
         y: 0,
         opacity: 1,
-        duration: 0.9,
+        duration: 0.75,
         ease: 'power3.out',
         force3D: true,
       }
@@ -50,17 +52,17 @@ export default function GSAPEventImage({
 
     // 2. Parallax Zoom-out reveal inside image
     tl.fromTo(imageRef.current,
-      { scale: 1.12, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 1.0, ease: 'power3.out', force3D: true },
+      { scale: 1.08, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.85, ease: 'power3.out', force3D: true },
       '<0.05'
     );
 
     // 3. Staggered Badge Entrance
     if (badgeRef.current) {
       tl.fromTo(badgeRef.current,
-        { opacity: 0, y: 20, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
-        '-=0.5'
+        { opacity: 0, y: 12, scale: 0.85 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+        '-=0.35'
       );
     }
   }, { scope: containerRef });
@@ -69,8 +71,8 @@ export default function GSAPEventImage({
   const handleMouseEnter = () => {
     if (!imageRef.current) return;
     gsap.to(imageRef.current, {
-      scale: 1.05,
-      y: -6,
+      scale: 1.04,
+      y: -5,
       duration: 0.4,
       ease: 'power2.out',
       overwrite: 'auto'
@@ -98,7 +100,7 @@ export default function GSAPEventImage({
         position: 'relative',
         width: '100%',
         minHeight: '520px',
-        willChange: 'transform, clip-path, opacity',
+        willChange: 'transform, opacity',
         transform: 'translateZ(0)',
       }}
     >
