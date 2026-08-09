@@ -46,12 +46,10 @@ export default function ProcessSection() {
       <div className="faq-process-container">
 
         {/* Left Side FAQ / Why Choose Content */}
-        <motion.div
+        <div 
           className="faq-left-content"
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          data-aos="fade-right"
+          data-aos-duration="800"
         >
           <span className="faq-eyebrow">WHY CHOOSE US</span>
           <h2 className="faq-main-title">
@@ -113,20 +111,19 @@ export default function ProcessSection() {
               JOIN TODAY &rarr;
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right Side Image & Floating Stat Cards */}
-        <motion.div
+        <div 
           className="faq-right-image-area"
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          data-aos="zoom-in"
+          data-aos-delay="200"
+          data-aos-duration="900"
         >
           {/* Yellow Circle Backdrop */}
           <div className="faq-bg-circle"></div>
 
-          {/* Full Character Image Wrapper */}
+          {/* Image Wrapper */}
           <div className="faq-image-wrapper">
             <Image
               src={faqImage}
@@ -170,7 +167,7 @@ export default function ProcessSection() {
             </div>
           </motion.div>
 
-        </motion.div>
+        </div>
 
       </div>
 
