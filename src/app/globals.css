@@ -2879,8 +2879,7 @@ h6 {
 .events-wave-bottom svg {
   display: block;
   width: 100%;
-  height: 220px;
-  /* Increased height to make it much more wavy! */
+  height: 160px;
 }
 
 .events-container {
