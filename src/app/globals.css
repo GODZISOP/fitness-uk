@@ -752,7 +752,7 @@ h6 {
     align-items: center;
     gap: 0;
     position: relative;
-    padding: 3.5rem 0 2rem;
+    padding: 5.5rem 0 2rem;
   }
 
   .program-card {
@@ -770,10 +770,10 @@ h6 {
     opacity: 0.75;
   }
 
-  /* Center Card shifted higher */
+  /* Center Card shifted MUCH HIGHER in default resting state */
   .program-card:nth-child(2) {
     z-index: 5;
-    transform: translateY(-55px);
+    transform: translateY(-90px);
   }
 
   /* Right Card default tucked inside behind center */
@@ -791,7 +791,7 @@ h6 {
   }
 
   .programs-grid:hover .program-card:nth-child(2) {
-    transform: translateY(-62px);
+    transform: translateY(-96px);
     z-index: 5;
   }
 
@@ -809,7 +809,7 @@ h6 {
 
   .programs-grid:hover .program-card:nth-child(2):hover {
     z-index: 10 !important;
-    transform: translateY(-72px) !important;
+    transform: translateY(-106px) !important;
   }
 
   .programs-grid:hover .program-card:nth-child(3):hover {
