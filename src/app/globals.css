@@ -3012,11 +3012,11 @@ h6 {
 }
 
 .split-image-wrapper.large {
-  height: 780px;
+  height: 600px;
 }
 
 .split-image-wrapper.small {
-  height: 620px;
+  height: 560px;
 }
 
 .split-image {
@@ -3030,7 +3030,7 @@ h6 {
 }
 
 .first-service-image {
-  transform: scale(1.4) !important;
+  transform: scale(1.0) !important;
   transform-origin: center center !important;
 }
 
@@ -3051,7 +3051,7 @@ h6 {
     width: 100% !important;
   }
   .first-service-image {
-    transform: scale(1.6) !important;
+    transform: scale(1.45) !important;
     transform-origin: center center !important;
   }
 }
