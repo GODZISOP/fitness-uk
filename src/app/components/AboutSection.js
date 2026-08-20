@@ -4,20 +4,30 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import aboutImage from "../image copy 6.png";
 
+import ScrollHeading from "./ScrollHeading";
+
 function StatCard({ label, value, suffix, index }) {
   return (
-    <motion.div 
+    <motion.div
       className="about-stat-card"
-      initial={{ opacity: 0, x: 35, y: 15 }}
+      initial={{ opacity: 0, x: 35, y: 20 }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: false, amount: 0.2 }}
-      transition={{ duration: 0.6, delay: 0.15 + index * 0.1, ease: "easeOut" }}
+      transition={{ duration: 0.6, delay: 0.15 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="stat-label">
         <span className="slash">///</span> {label}
       </div>
       <div className="stat-value">
-        <span className="stat-number">{value}</span>
+        <motion.span
+          className="stat-number"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+        >
+          {value}
+        </motion.span>
         <span className="stat-suffix">{suffix}</span>
       </div>
     </motion.div>
@@ -36,44 +46,54 @@ export default function AboutSection() {
       <div className="about-container">
 
         {/* Left Content */}
-        <motion.div 
+        <motion.div
           className="about-left"
           initial={{ opacity: 0, x: -35 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <div className="about-watermark">
-            ABOUT
-          </div>
-
-          <motion.h2 
-            className="about-title"
-            initial={{ opacity: 0, y: 20 }}
+          <motion.div
+            className="about-watermark"
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
           >
-            WE ARE PUSHING<br />
-            THE LIMIT OF YOUR<br />
-            <span className="text-action">CORE STRENGTH</span>
-          </motion.h2>
+            ABOUT
+          </motion.div>
 
-          <motion.p 
+          <ScrollHeading
+            as="h2"
+            className="about-title"
+            once={false}
+            duration={0.95}
+            stagger={0.22}
+          >
+            {[
+              "WE ARE PUSHING",
+              "THE LIMIT OF YOUR",
+              <span key="core-strength" className="text-action">
+                CORE STRENGTH
+              </span>
+            ]}
+          </ScrollHeading>
+
+          <motion.p
             className="about-description"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
           >
             We understand that your lifestyle changes, that's why we've made fitness straightforward and stress-free. Join today on a no lock-in contract membership and start achieving your fitness goals, fun value flexibility all 24/7.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
           >
             <button className="about-btn">
               GET STARTED TODAY <span className="arrow">&rarr;</span>
@@ -82,7 +102,7 @@ export default function AboutSection() {
         </motion.div>
 
         {/* Center Athlete Image */}
-        <motion.div 
+        <motion.div
           className="about-center"
           initial={{ opacity: 0, y: 35, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -99,7 +119,7 @@ export default function AboutSection() {
           </div>
 
           {/* Floating Badge */}
-          <motion.div 
+          <motion.div
             className="floating-badge"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import heroImage from "../image.png";
 
 export default function HeroSection() {
@@ -142,8 +143,8 @@ export default function HeroSection() {
               It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
             </p>
             <div className="hero-actions">
-              <button className="btn-primary">Let&apos;s Get Started →</button>
-              <button className="btn-secondary">How It Works</button>
+              <a href="#contact" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
+              <Link href="/about" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>How It Works</Link>
             </div>
           </div>
 
@@ -206,8 +207,8 @@ export default function HeroSection() {
               </p>
 
               <div ref={actionsRef} className="hero-actions">
-                <button className="btn-primary">Let&apos;s Get Started →</button>
-                <button className="btn-secondary">How It Works</button>
+                <a href="#contact" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
+                <Link href="/about" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>How It Works</Link>
               </div>
             </div>
 

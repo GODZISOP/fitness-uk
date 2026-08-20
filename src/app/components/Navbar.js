@@ -4,79 +4,116 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import logoImage from "../logo.png";
 
-export default function Navbar({ isScrolled }) {
+export default function Navbar({ isScrolled, theme = "default" }) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isAboutPage = pathname === "/about";
 
   const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Services", href: "#services" },
-    { name: "About Us", href: "#about" },
-    { name: "Gallery", href: "#gallery" },
-    { name: "Process", href: "#process" },
-    { name: "Programs", href: "#programs" },
-    { name: "Contact Us", href: "#contact" },
+    { name: "Home", href: "/", isRoute: true, hash: "#home" },
+    { name: "Services", href: "/#services", isRoute: false, hash: "#services" },
+    { name: "About Us", href: "/about", isRoute: true, hash: "#about" },
+    { name: "Gallery", href: "/#gallery", isRoute: false, hash: "#gallery" },
+    { name: "Process", href: "/#process", isRoute: false, hash: "#process" },
+    { name: "Programs", href: "/#programs", isRoute: false, hash: "#programs" },
+    { name: "Contact Us", href: "/#contact", isRoute: false, hash: "#contact" },
   ];
 
-  const handleLinkClick = (e, href) => {
-    e.preventDefault();
+  const handleLinkClick = (e, link) => {
     setIsOpen(false);
 
-    if (href === "#home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (link.href === "/about") {
+      if (isAboutPage) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       return;
     }
 
-    const targetEl = document.querySelector(href);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: "smooth" });
+    if (link.name === "Home") {
+      if (!isAboutPage) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    // For hash links
+    if (!isAboutPage && link.hash) {
+      e.preventDefault();
+      const targetEl = document.querySelector(link.hash);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
+
+  const handleContactClick = (e) => {
+    setIsOpen(false);
+    if (!isAboutPage) {
+      e.preventDefault();
+      const targetEl = document.querySelector("#contact");
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+    router.push("/#contact");
+  };
+
+  const isDark = theme === "dark";
 
   return (
     <>
       <motion.nav
-        className={`navbar ${isScrolled ? "navbar-scrolled" : ""}`}
+        className={`navbar ${isScrolled ? "navbar-scrolled" : ""} ${isDark ? "navbar-dark-theme" : ""}`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <div className="nav-brand">
-          <a href="#home" onClick={(e) => handleLinkClick(e, "#home")} style={{ display: "flex", alignItems: "center" }}>
-            <Image 
-              src={logoImage} 
-              alt="World Fitness Zone" 
-              height={50} 
-              width={160} 
-              style={{ objectFit: "contain", height: "48px", width: "auto" }} 
-              priority 
+          <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src={logoImage}
+              alt="World Fitness Zone"
+              height={50}
+              width={160}
+              style={{ objectFit: "contain", height: "48px", width: "auto" }}
+              priority
             />
-          </a>
+          </Link>
         </div>
 
         <div className="nav-links">
-          {navLinks.map((link, idx) => (
-            <a 
-              key={idx} 
-              href={link.href} 
-              className="nav-link"
-              onClick={(e) => handleLinkClick(e, link.href)}
-            >
-              {link.name}
-            </a>
-          ))}
+          {navLinks.map((link, idx) => {
+            const isActive = (link.href === "/about" && isAboutPage) || (link.name === "Home" && !isAboutPage);
+            return (
+              <Link
+                key={idx}
+                href={link.href}
+                className={`nav-link ${isActive ? "nav-link-active" : ""}`}
+                onClick={(e) => handleLinkClick(e, link)}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
-        <button 
+        <button
           className="nav-cta"
-          onClick={(e) => handleLinkClick(e, "#contact")}
+          onClick={handleContactClick}
         >
           Contact Us &rarr;
         </button>
 
-        <button 
-          className="hamburger" 
+        <button
+          className="hamburger"
           aria-label="Toggle Menu"
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -96,18 +133,18 @@ export default function Navbar({ isScrolled }) {
           >
             <div className="mobile-nav-links">
               {navLinks.map((link, idx) => (
-                <a
+                <Link
                   key={idx}
                   href={link.href}
                   className="mobile-nav-link"
-                  onClick={(e) => handleLinkClick(e, link.href)}
+                  onClick={(e) => handleLinkClick(e, link)}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
-              <button 
+              <button
                 className="mobile-nav-cta"
-                onClick={(e) => handleLinkClick(e, "#contact")}
+                onClick={handleContactClick}
               >
                 Get Started Now &rarr;
               </button>
