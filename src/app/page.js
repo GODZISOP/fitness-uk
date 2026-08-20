@@ -22,7 +22,7 @@ export default function Home() {
     // Initialize AOS
     AOS.init({
       duration: 800,
-      once: false, // Ensure animations trigger every time you scroll up and down
+      once: true, // Only trigger animations once
       mirror: true, // Whether elements should animate out while scrolling past them
       offset: 100,
     });
@@ -35,6 +35,9 @@ export default function Home() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
+    handleScroll(); // Initialize state on mount
+    setTimeout(handleScroll, 200); // Check again after Next.js scroll restoration
+    setTimeout(handleScroll, 500); // Check again to be safe
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

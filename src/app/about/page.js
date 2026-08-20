@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   ArrowUpRight,
   ArrowDown,
@@ -23,14 +23,38 @@ import ScrollHeading from "../components/ScrollHeading";
 import "./about.css";
 
 // Project assets
-import runnerCharacterImg from "../image copy 10.png";
 import showcaseAthleteImg from "../zjBzVg-Photoroom.png";
+import runnerCharacterImg from "../image copy 10.png";
 import coachImg1 from "../image copy.png";
 import coachImg2 from "../image copy 2.png";
 import coachImg3 from "../image copy 4.png";
+import coachPortrait from "../image copy 6.png";
 import newCoachStrength from "../coach_strength.jpg";
-import newCoachMobility from "../coach_mobility.jpg";
-import newCoachPortrait from "../coach_portrait.jpg";
+import imageCopy11 from "../image copy 11.png";
+import imageCopy12 from "../image copy 12.png";
+
+const AnimatedCounter = ({ from = 0, to, duration = 1.5 }) => {
+  const [count, setCount] = useState(from);
+  const nodeRef = useRef(null);
+  const inView = useInView(nodeRef, { once: true, amount: 0.5 });
+
+  useEffect(() => {
+    if (inView) {
+      let start = null;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / (duration * 1000), 1);
+        setCount(Math.floor(progress * (to - from) + from));
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+  }, [inView, from, to, duration]);
+
+  return <span ref={nodeRef}>{count}%</span>;
+};
 
 export default function AboutPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,6 +87,9 @@ export default function AboutPage() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 40);
     };
+    handleScroll();
+    setTimeout(handleScroll, 200);
+    setTimeout(handleScroll, 500);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -95,14 +122,6 @@ export default function AboutPage() {
       {/* Universal Navbar */}
       <Navbar isScrolled={isScrolled} />
 
-      {/* Floating Back Navigation */}
-      <div className="about-top-bar">
-        <Link href="/" className="about-back-btn" aria-label="Back to home">
-          <ArrowLeft size={18} strokeWidth={2.5} />
-          <span>Home</span>
-        </Link>
-      </div>
-
       {/* ── HERO SECTION ── */}
       <section className="about-hero-section">
         {/* Hero Top Content Row: Left Typography & Right Character */}
@@ -112,14 +131,14 @@ export default function AboutPage() {
             className="about-hero-main"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <motion.div
               className="about-hero-tag"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6 }}
             >
               <span className="about-hero-tag-dot" />
@@ -144,7 +163,7 @@ export default function AboutPage() {
               className="about-hero-actions"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <Link href="/#contact" className="about-btn-yellow">
@@ -170,7 +189,7 @@ export default function AboutPage() {
             className="about-hero-character-wrapper"
             initial={{ opacity: 0, scale: 0.95, x: 30 }}
             whileInView={{ opacity: 1, scale: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
           >
             <div className="about-character-image-box">
@@ -192,7 +211,7 @@ export default function AboutPage() {
           className="about-bento-dock"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.15 }}
+          viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
           {/* Card 1: 10,000+ Satisfied Clients */}
@@ -296,9 +315,9 @@ export default function AboutPage() {
             </div>
 
             <div className="bento-card-yellow-content">
-              <ScrollHeading as="h3" className="bento-yellow-title" once={false} duration={0.7}>
+              <h3 className="bento-yellow-title">
                 Get 14 days for free
-              </ScrollHeading>
+              </h3>
               <p className="bento-yellow-desc">Just give us a call or message us in the chat</p>
             </div>
           </Link>
@@ -329,7 +348,7 @@ export default function AboutPage() {
             {/* Card 2 */}
             <motion.div className="strategic-card" initial={{opacity:0, y:30}} whileInView={{opacity:1, y:0}} viewport={{once:false, amount:0.2}} transition={{delay: 0.1}}>
               <div className="strategic-card-image">
-                <Image src={newCoachMobility} alt="Elite Mobility" fill style={{objectFit:"cover"}} />
+                <Image src={imageCopy11} alt="Elite Mobility" fill style={{objectFit:"cover", objectPosition: "center 80%", transform: "scale(1.1)"}} />
               </div>
               <div className="strategic-card-content">
                 <span className="strategic-card-num">02</span>
@@ -344,8 +363,16 @@ export default function AboutPage() {
             {/* Card 3 */}
             <motion.div className="strategic-card" initial={{opacity:0, y:30}} whileInView={{opacity:1, y:0}} viewport={{once:false, amount:0.2}} transition={{delay: 0.2}}>
               <div className="strategic-card-image">
-                <Image src={newCoachPortrait} alt="Nutrition Lab" fill style={{objectFit:"cover"}} />
-                <div className="strategic-yellow-block"></div>
+                <Image 
+                  src={imageCopy12} 
+                  alt="Nutrition Lab" 
+                  fill 
+                  style={{
+                    objectFit: "cover", 
+                    objectPosition: "center top",
+                    transform: "scale(1.15) translateY(-5%)"
+                  }} 
+                />
               </div>
               <div className="strategic-card-content">
                 <span className="strategic-card-num">03</span>
@@ -391,19 +418,25 @@ export default function AboutPage() {
 
             {/* Col 3: Skills / Metrics */}
             <motion.div className="strategic-col-skills" initial={{opacity:0, x:20}} whileInView={{opacity:1, x:0}} viewport={{once:false, amount:0.2}} transition={{delay: 0.2}}>
-              <h4 className="strategic-col-title">CORE METRICS</h4>
+              <h4 className="strategic-col-title" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                CORE METRICS 
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginLeft: "auto" }}>
+                  <span className="live-pulse"></span>
+                  <span style={{ fontSize: "0.6rem", color: "#22c55e", letterSpacing: "0.1em" }}>LIVE</span>
+                </div>
+              </h4>
               
               <div className="strategic-skill-item">
                 <div className="skill-label">
                   <span>STRENGTH GAINS</span>
-                  <span>95%</span>
+                  <AnimatedCounter to={95} duration={1.5} />
                 </div>
                 <div className="skill-bar-bg">
                   <motion.div 
                     className="skill-bar-fill" 
                     initial={{ width: 0 }} 
                     whileInView={{ width: "95%" }} 
-                    viewport={{ once: false, amount: 0.2 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
                   />
                 </div>
@@ -412,14 +445,14 @@ export default function AboutPage() {
               <div className="strategic-skill-item">
                 <div className="skill-label">
                   <span>FAT LOSS</span>
-                  <span>90%</span>
+                  <AnimatedCounter to={90} duration={1.5} />
                 </div>
                 <div className="skill-bar-bg">
                   <motion.div 
                     className="skill-bar-fill" 
                     initial={{ width: 0 }} 
                     whileInView={{ width: "90%" }} 
-                    viewport={{ once: false, amount: 0.2 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.4 }}
                   />
                 </div>
@@ -428,14 +461,14 @@ export default function AboutPage() {
               <div className="strategic-skill-item">
                 <div className="skill-label">
                   <span>MOBILITY</span>
-                  <span>88%</span>
+                  <AnimatedCounter to={88} duration={1.5} />
                 </div>
                 <div className="skill-bar-bg">
                   <motion.div 
                     className="skill-bar-fill" 
                     initial={{ width: 0 }} 
                     whileInView={{ width: "88%" }} 
-                    viewport={{ once: false, amount: 0.2 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
                   />
                 </div>
@@ -444,14 +477,14 @@ export default function AboutPage() {
               <div className="strategic-skill-item">
                 <div className="skill-label">
                   <span>ENDURANCE</span>
-                  <span>85%</span>
+                  <AnimatedCounter to={85} duration={1.5} />
                 </div>
                 <div className="skill-bar-bg">
                   <motion.div 
                     className="skill-bar-fill" 
                     initial={{ width: 0 }} 
                     whileInView={{ width: "85%" }} 
-                    viewport={{ once: false, amount: 0.2 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.6 }}
                   />
                 </div>
@@ -469,7 +502,7 @@ export default function AboutPage() {
             className="single-coach-image-wrap"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
@@ -485,7 +518,7 @@ export default function AboutPage() {
             className="single-coach-info"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
           >
             <span className="about-section-subtitle">HEAD COACH</span>
@@ -511,7 +544,7 @@ export default function AboutPage() {
           className="about-cta-banner"
           initial={{ opacity: 0, y: 30, scale: 0.96 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7 }}
         >
           <div className="about-cta-content">
@@ -525,7 +558,7 @@ export default function AboutPage() {
               className="about-cta-text"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Join World Fitness Zone today with no lock-in contract. Experience our high-performance facility and coaching risk-free with a complimentary 14-day pass.
