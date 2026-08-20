@@ -348,7 +348,7 @@ export default function AboutPage() {
             {/* Card 2 */}
             <motion.div className="strategic-card" initial={{opacity:0, y:30}} whileInView={{opacity:1, y:0}} viewport={{once:false, amount:0.2}} transition={{delay: 0.1}}>
               <div className="strategic-card-image">
-                <Image src={imageCopy11} alt="Elite Mobility" fill style={{objectFit:"cover", objectPosition: "center 80%", transform: "scale(1.1)"}} />
+                <Image src={imageCopy11} alt="Elite Mobility" fill style={{objectFit:"cover", objectPosition: "center bottom"}} />
               </div>
               <div className="strategic-card-content">
                 <span className="strategic-card-num">02</span>
@@ -369,8 +369,7 @@ export default function AboutPage() {
                   fill 
                   style={{
                     objectFit: "cover", 
-                    objectPosition: "center top",
-                    transform: "scale(1.15) translateY(-5%)"
+                    objectPosition: "center top"
                   }} 
                 />
               </div>
