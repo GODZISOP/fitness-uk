@@ -459,13 +459,10 @@ export default function AboutPage() {
             {/* Card 1 */}
             <motion.div 
               className="strategic-card" 
-              style={{ 
-                x: card1X, 
-                rotateY: card1RotateY, 
-                opacity: stratCardOpacity, 
-                transformOrigin: "right",
-                willChange: "transform, opacity"
-              }}
+              {...(isDesktop 
+                ? { style: { x: card1X, rotateY: card1RotateY, opacity: stratCardOpacity, transformOrigin: "right", willChange: "transform, opacity" } }
+                : { initial: {opacity:0, y:80}, whileInView: {opacity:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8, type:"spring"} }
+              )}
             >
               <div className="strategic-card-image">
                 <Image src={newCoachStrength} alt="Strength Mastery" fill style={{objectFit:"cover"}} />
@@ -483,12 +480,10 @@ export default function AboutPage() {
             {/* Card 2 */}
             <motion.div 
               className="strategic-card" 
-              style={{ 
-                y: card2Y, 
-                scale: card2Scale, 
-                opacity: stratCardOpacity,
-                willChange: "transform, opacity"
-              }}
+              {...(isDesktop 
+                ? { style: { y: card2Y, scale: card2Scale, opacity: stratCardOpacity, willChange: "transform, opacity" } }
+                : { initial: {opacity:0, y:80}, whileInView: {opacity:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8, type:"spring", delay: 0.1} }
+              )}
             >
               <div className="strategic-card-image">
                 <Image src={imageCopy11} alt="Elite Mobility" fill style={{objectFit:"cover", objectPosition: "center bottom"}} />
@@ -506,13 +501,10 @@ export default function AboutPage() {
             {/* Card 3 */}
             <motion.div 
               className="strategic-card" 
-              style={{ 
-                x: card3X, 
-                rotateY: card3RotateY, 
-                opacity: stratCardOpacity, 
-                transformOrigin: "left",
-                willChange: "transform, opacity"
-              }}
+              {...(isDesktop 
+                ? { style: { x: card3X, rotateY: card3RotateY, opacity: stratCardOpacity, transformOrigin: "left", willChange: "transform, opacity" } }
+                : { initial: {opacity:0, y:80}, whileInView: {opacity:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8, type:"spring", delay: 0.2} }
+              )}
             >
               <div className="strategic-card-image">
                 <Image 
@@ -544,10 +536,10 @@ export default function AboutPage() {
             {/* Col 1: Services */}
             <motion.div 
               className="strategic-col-services" 
-              style={{ 
-                x: stratCol1X, 
-                opacity: stratCol1Opacity 
-              }}
+              {...(isDesktop 
+                ? { style: { x: stratCol1X, opacity: stratCol1Opacity } }
+                : { initial: {opacity:0, y:60}, whileInView: {opacity:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8} }
+              )}
             >
               <h4 className="strategic-col-title">COACHING PILLARS</h4>
               <ul className="strategic-services-list">
@@ -565,7 +557,10 @@ export default function AboutPage() {
             {/* Col 2: Core Message */}
             <motion.div 
               className="strategic-col-center" 
-              style={{ y: stratCol2Y, opacity: stratCol2Opacity }}
+              {...(isDesktop 
+                ? { style: { y: stratCol2Y, opacity: stratCol2Opacity } }
+                : { initial: {opacity:0, scale:0.95, y:60}, whileInView: {opacity:1, scale:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8} }
+              )}
             >
               <ScrollHeading as="h2" className="strategic-main-title" once={false} duration={0.8}>
                 SCIENCE-BACKED COACHING.<br/>
@@ -579,10 +574,10 @@ export default function AboutPage() {
             {/* Col 3: Skills / Metrics */}
             <motion.div 
               className="strategic-col-skills" 
-              style={{ 
-                x: stratCol3X, 
-                opacity: stratCol3Opacity 
-              }}
+              {...(isDesktop 
+                ? { style: { x: stratCol3X, opacity: stratCol3Opacity } }
+                : { initial: {opacity:0, y:60}, whileInView: {opacity:1, y:0}, viewport: {once:false, amount:0.2}, transition: {duration:0.8} }
+              )}
             >
               <h4 className="strategic-col-title" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 CORE METRICS 
