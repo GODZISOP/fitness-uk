@@ -35,17 +35,17 @@ import imageCopy11 from "../image copy 11.png";
 import imageCopy12 from "../image copy 12.png";
 
 const AnimatedCounter = ({ from = 0, to, duration = 1.5 }) => {
-  const [count, setCount] = useState(from);
   const nodeRef = useRef(null);
   const inView = useInView(nodeRef, { once: true, amount: 0.5 });
 
   useEffect(() => {
-    if (inView) {
+    if (inView && nodeRef.current) {
       let start = null;
       const step = (timestamp) => {
         if (!start) start = timestamp;
         const progress = Math.min((timestamp - start) / (duration * 1000), 1);
-        setCount(Math.floor(progress * (to - from) + from));
+        const currentValue = Math.floor(progress * (to - from) + from);
+        nodeRef.current.textContent = currentValue + "%";
         if (progress < 1) {
           window.requestAnimationFrame(step);
         }
@@ -54,7 +54,7 @@ const AnimatedCounter = ({ from = 0, to, duration = 1.5 }) => {
     }
   }, [inView, from, to, duration]);
 
-  return <span ref={nodeRef}>{count}%</span>;
+  return <span ref={nodeRef}>{from}%</span>;
 };
 
 export default function AboutPage() {
