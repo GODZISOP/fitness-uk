@@ -150,13 +150,13 @@ export default function AboutPage() {
   // Cards Fan Out (0.0 to 0.3)
   const stratCardOpacity = useTransform(smoothStratScroll, [0, 0.2], [0, 1]);
   const card1X = useTransform(smoothStratScroll, [0, 0.3], [-150, 0]);
-  const card1RotateY = useTransform(smoothStratScroll, [0, 0.3], [-45, 0]);
+  const card1RotateY = useTransform(smoothStratScroll, [0, 0.3], isDesktop ? [-45, 0] : [0, 0]);
   
   const card2Y = useTransform(smoothStratScroll, [0, 0.3], [150, 0]);
   const card2Scale = useTransform(smoothStratScroll, [0, 0.3], [0.8, 1]);
   
   const card3X = useTransform(smoothStratScroll, [0, 0.3], [150, 0]);
-  const card3RotateY = useTransform(smoothStratScroll, [0, 0.3], [45, 0]);
+  const card3RotateY = useTransform(smoothStratScroll, [0, 0.3], isDesktop ? [45, 0] : [0, 0]);
 
   // Bottom Row Parallax (0.3 to 0.7)
   const stratCol1X = useTransform(smoothStratScroll, [0.3, 0.6], [-100, 0]);
@@ -455,7 +455,7 @@ export default function AboutPage() {
         <div className="strategic-container">
           
           {/* Top Row: 3 Highlight Cards */}
-          <div className="strategic-cards-row" style={{ perspective: '1200px' }}>
+          <div className="strategic-cards-row" style={{ perspective: isDesktop ? '1200px' : 'none' }}>
             {/* Card 1 */}
             <motion.div 
               className="strategic-card" 
@@ -463,7 +463,8 @@ export default function AboutPage() {
                 x: card1X, 
                 rotateY: card1RotateY, 
                 opacity: stratCardOpacity, 
-                transformOrigin: "right" 
+                transformOrigin: "right",
+                willChange: "transform, opacity"
               }}
             >
               <div className="strategic-card-image">
@@ -485,7 +486,8 @@ export default function AboutPage() {
               style={{ 
                 y: card2Y, 
                 scale: card2Scale, 
-                opacity: stratCardOpacity 
+                opacity: stratCardOpacity,
+                willChange: "transform, opacity"
               }}
             >
               <div className="strategic-card-image">
@@ -508,7 +510,8 @@ export default function AboutPage() {
                 x: card3X, 
                 rotateY: card3RotateY, 
                 opacity: stratCardOpacity, 
-                transformOrigin: "left" 
+                transformOrigin: "left",
+                willChange: "transform, opacity"
               }}
             >
               <div className="strategic-card-image">
