@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 export default function SwarmCursor({
   children,
@@ -16,8 +16,18 @@ export default function SwarmCursor({
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth > 1024);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return; // Completely disable canvas loop on mobile
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const container = containerRef.current;
@@ -141,20 +151,22 @@ export default function SwarmCursor({
       }
       window.removeEventListener("resize", onResize);
     };
-  }, [color, accentColor, count, size, speed, spread, wander, trail, scatterOnClick]);
+  }, [color, accentColor, count, size, speed, spread, wander, trail, scatterOnClick, isDesktop]);
 
   return (
     <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%" }}>
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          pointerEvents: "none",
-          zIndex: 50,
-        }}
-      />
+      {isDesktop && (
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            zIndex: 50,
+          }}
+        />
+      )}
       {children}
     </div>
   );
