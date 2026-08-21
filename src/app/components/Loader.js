@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
+let hasShownLoader = false;
+
 export default function Loader() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [shouldAnimate, setShouldAnimate] = useState(true);
+  // Initialize state synchronously using the module-level variable. 
+  // On client-side navigation, this prevents the split-second flash.
+  const [isLoading, setIsLoading] = useState(!hasShownLoader);
 
   useEffect(() => {
-    // Check if loader has already been shown in this session
-    if (sessionStorage.getItem('loaderShown')) {
-      setShouldAnimate(false);
-      setIsLoading(false);
+    if (hasShownLoader) {
       return;
     }
 
@@ -20,12 +20,10 @@ export default function Loader() {
     document.body.style.overflow = "hidden";
 
     // 2.5 seconds optimal loader time. 
-    // In the background, Next.js preloads all priority images, 
-    // and DumbbellAnimation fetches 168 frames in parallel.
     const timer = setTimeout(() => {
       setIsLoading(false);
+      hasShownLoader = true;
       document.body.style.overflow = "unset";
-      sessionStorage.setItem('loaderShown', 'true');
     }, 2500); 
 
     return () => {
@@ -34,8 +32,7 @@ export default function Loader() {
     };
   }, []);
 
-  // If already shown in session, don't render anything (prevents flash)
-  if (!shouldAnimate && !isLoading) return null;
+  if (!isLoading) return null;
 
   return (
     <AnimatePresence>
