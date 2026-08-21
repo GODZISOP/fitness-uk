@@ -6,8 +6,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function Loader() {
   const [isLoading, setIsLoading] = useState(true);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   useEffect(() => {
+    // Check if loader has already been shown in this session
+    if (sessionStorage.getItem('loaderShown')) {
+      setShouldAnimate(false);
+      setIsLoading(false);
+      return;
+    }
+
     // Lock scrolling on mobile and desktop
     document.body.style.overflow = "hidden";
 
@@ -17,6 +25,7 @@ export default function Loader() {
     const timer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.overflow = "unset";
+      sessionStorage.setItem('loaderShown', 'true');
     }, 2500); 
 
     return () => {
@@ -24,6 +33,9 @@ export default function Loader() {
       document.body.style.overflow = "unset";
     };
   }, []);
+
+  // If already shown in session, don't render anything (prevents flash)
+  if (!shouldAnimate && !isLoading) return null;
 
   return (
     <AnimatePresence>
