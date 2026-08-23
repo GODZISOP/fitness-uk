@@ -18,9 +18,7 @@ export default function Navbar({ isScrolled, theme = "default" }) {
     { name: "Home", href: "/", isRoute: true, hash: "#home" },
     { name: "Services", href: "/#services", isRoute: false, hash: "#services" },
     { name: "About Us", href: "/about", isRoute: true, hash: "#about" },
-    { name: "Gallery", href: "/#gallery", isRoute: false, hash: "#gallery" },
     { name: "Transformations", href: "/transformations", isRoute: true, hash: null },
-    { name: "Process", href: "/#process", isRoute: false, hash: "#process" },
     { name: "Programs", href: "/#programs", isRoute: false, hash: "#programs" },
     { name: "Contact Us", href: "/#contact", isRoute: false, hash: "#contact" },
   ];
@@ -132,10 +130,10 @@ export default function Navbar({ isScrolled, theme = "default" }) {
         {isOpen && (
           <motion.div
             className="mobile-nav-overlay"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
             <div className="mobile-nav-links">
               {navLinks.map((link, idx) => (
