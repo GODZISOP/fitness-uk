@@ -135,6 +135,16 @@ export default function Navbar({ isScrolled, theme = "default" }) {
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
+            <div className="mobile-nav-header" style={{ display: "flex", justifyContent: "flex-end", marginBottom: "2rem" }}>
+              <button 
+                className="mobile-close-btn" 
+                onClick={() => setIsOpen(false)}
+                style={{ background: "none", border: "none", fontSize: "2rem", cursor: "pointer", color: "var(--color-deep-navy)" }}
+                aria-label="Close Menu"
+              >
+                ✕
+              </button>
+            </div>
             <div className="mobile-nav-links">
               {navLinks.map((link, idx) => (
                 <Link
