@@ -448,8 +448,10 @@
 
   .agency-big-title,
   .expertise-big-title {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 10vw, 3.5rem);
     text-align: left;
+    word-break: break-word;
+    hyphens: auto;
   }
 
   .expertise-big-title {

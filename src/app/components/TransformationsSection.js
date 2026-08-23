@@ -138,7 +138,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            We build real strength<br className="arch-desktop-br" />and discipline.<br className="arch-desktop-br" />No excuses.
+            We build real strength <br className="arch-desktop-br" />and discipline. <br className="arch-desktop-br" />No excuses.
           </motion.p>
           <motion.h1
             className="agency-big-title"
@@ -147,7 +147,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Real Results<br className="arch-desktop-br" /><span>/ No Excuses</span>
+            Real Results <br className="arch-desktop-br" /><span>/ No Excuses</span>
           </motion.h1>
           <motion.p
             className="agency-subtext-right"
@@ -156,7 +156,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            London Based<br className="arch-desktop-br" />Training
+            London Based <br className="arch-desktop-br" />Training
           </motion.p>
         </div>
 
@@ -276,7 +276,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            Strength, performance,<br className="arch-desktop-br" />and dedicated<br className="arch-desktop-br" />training.
+            Strength, performance, <br className="arch-desktop-br" />and dedicated <br className="arch-desktop-br" />training.
           </motion.p>
           <motion.h1
             className="agency-big-title"
@@ -285,7 +285,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Uncompromising<br className="arch-desktop-br" /><span>/ Standards</span>
+            Uncompromising <br className="arch-desktop-br" /><span>/ Standards</span>
           </motion.h1>
           <motion.p
             className="agency-subtext-right"
@@ -294,7 +294,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            London Based<br className="arch-desktop-br" />Coaching
+            London Based <br className="arch-desktop-br" />Coaching
           </motion.p>
         </div>
 
@@ -414,7 +414,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            A physique built<br className="arch-desktop-br" />to last.
+            A physique built <br className="arch-desktop-br" />to last.
           </motion.p>
           <motion.h1
             className="agency-big-title"
@@ -423,7 +423,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Proven<br className="arch-desktop-br" /><span>/ Results</span>
+            Proven <br className="arch-desktop-br" /><span>/ Results</span>
           </motion.h1>
           <motion.p
             className="agency-subtext-right"
@@ -432,7 +432,7 @@ export default function TransformationsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Total<br className="arch-desktop-br" />Recomposition
+            Total <br className="arch-desktop-br" />Recomposition
           </motion.p>
         </div>
 
