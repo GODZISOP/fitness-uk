@@ -426,8 +426,8 @@
   .agency-header-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 2rem;
-    margin-bottom: 3rem;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .agency-masonry-container,
@@ -435,11 +435,11 @@
   .expertise-row-reverse,
   .testimonial-container {
     flex-direction: column !important;
-    gap: 2rem;
+    gap: 1.5rem;
   }
 
   .agency-col {
-    gap: 3rem;
+    gap: 1.5rem;
   }
 
   .agency-col-right {
@@ -455,7 +455,7 @@
   }
 
   .expertise-big-title {
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
   }
 
   .agency-subtext-left,
