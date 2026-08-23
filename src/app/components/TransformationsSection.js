@@ -466,7 +466,13 @@ export default function TransformationsSection() {
               viewport={{ once: true, margin: "0px 0px -50px 0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
-              <Image src={allImages[11].src} fill alt="Transformation" className="agency-img" />
+              <Image 
+                src={allImages[11].src} 
+                fill 
+                alt="Transformation" 
+                className="agency-img" 
+                style={{ objectFit: "contain", backgroundColor: "#f8f9fa" }} 
+              />
             </motion.div>
           </div>
         </div>

@@ -6,6 +6,8 @@
   --color-off-white: #F7F9FC;
   --color-charcoal: #172033;
   --color-soft-blue: #EAF2FF;
+  --font-primary: var(--font-outfit), sans-serif;
+  --font-secondary: var(--font-inter), sans-serif;
 }
 
 html,
