@@ -109,7 +109,7 @@ export default function TransformationsSection() {
             transition={{
               opacity: { duration: 0.8, ease: "easeOut" },
               y: { duration: 0.8, ease: "easeOut" },
-              x: { duration: 20, repeat: Infinity, ease: "easeInOut" }
+              x: { duration: 10, repeat: Infinity, ease: "easeInOut" }
             }}
           >
             <Image
