@@ -241,9 +241,9 @@
 }
 
 .agency-floating-text-left {
-  font-family: var(--font-primary);
-  font-size: 1.5rem;
-  line-height: 1.4;
+  font-family: var(--font-secondary);
+  font-size: 1.2rem;
+  line-height: 1.6;
   max-width: 400px;
   margin-left: 4rem;
 }
@@ -310,9 +310,9 @@
 
 .expertise-text-wrapper {
   flex: 1;
-  font-family: var(--font-primary);
-  font-size: 1.5rem;
-  line-height: 1.5;
+  font-family: var(--font-secondary);
+  font-size: 1.3rem;
+  line-height: 1.6;
 }
 
 .vertical-line {
@@ -471,12 +471,20 @@
   .agency-floating-text-left {
     margin-left: 0;
     max-width: 100%;
-    font-size: 1.2rem;
+    font-size: 1rem;
+  }
+
+  .expertise-text-wrapper {
+    font-size: 1rem;
   }
 
   .agency-floating-list-right {
     margin-left: 0;
     margin-top: 2rem;
+  }
+
+  .vertical-line {
+    display: none;
   }
 
   .expertise-img-wrapper {
