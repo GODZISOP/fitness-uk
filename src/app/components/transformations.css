@@ -506,6 +506,10 @@
     margin: -3rem auto -1rem;
   }
 
+  .curve-gallery-img {
+    width: 125vw;
+  }
+
   .curve-title {
     font-size: 2.5rem;
   }
