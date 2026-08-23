@@ -41,7 +41,7 @@ const WordReveal = ({ text, className, delay = 0, as = "div" }) => {
       variants={container}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, margin: "0px 0px -50px 0px" }}
+      viewport={{ once: true, margin: "0px" }}
       className={className}
     >
       {words.map((word, index) => (
@@ -86,7 +86,7 @@ export default function TransformationsSection() {
             className="curve-btn"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "0px 0px -50px 0px" }}
+            viewport={{ once: false, margin: "0px" }}
             transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
           >
             Claim Your FREE Training Session &rarr;
@@ -168,7 +168,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-1"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image src={allImages[0].src} fill alt="Fat Loss Transformation" className="agency-img" />
@@ -184,7 +184,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-3"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
             >
               <Image src={allImages[1].src} fill alt="Muscle Gain" className="agency-img" />
@@ -197,7 +197,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-2"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image src={allImages[2].src} fill alt="Body Recomposition" className="agency-img" />
@@ -207,7 +207,7 @@ export default function TransformationsSection() {
               className="agency-floating-list-right"
               initial={{ opacity: 0, y: 120 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7 }}
             >
               <div className="list-item"><span>Fat Loss</span> <sup>01</sup></div>
@@ -219,7 +219,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-4"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
             >
               <Image src={allImages[3].src} fill alt="Strength" className="agency-img" />
@@ -244,7 +244,7 @@ export default function TransformationsSection() {
             className="expertise-img-wrapper"
             initial={{ opacity: 0, y: 120, scale: 0.8 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <Image src={allImages[4].src} fill alt="Expertise" className="expertise-img" style={{ objectPosition: "right center" }} />
@@ -254,7 +254,7 @@ export default function TransformationsSection() {
             className="expertise-text-wrapper"
             initial={{ opacity: 0, y: 120 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             <WordReveal
@@ -266,7 +266,7 @@ export default function TransformationsSection() {
       </section>
 
       {/* SECTION 4: AGENCY GRID 2 (Images 5-8) */}
-      <section className="agency-grid-section" style={{ paddingTop: "2rem" }}>
+      <section className="agency-grid-section">
         {/* Header row */}
         <div className="agency-header-row">
           <motion.p
@@ -306,7 +306,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-1"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image src={allImages[5].src} fill alt="Transformation" className="agency-img" />
@@ -322,7 +322,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-3"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
             >
               <Image src={allImages[6].src} fill alt="Transformation" className="agency-img" />
@@ -335,7 +335,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-2"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image src={allImages[7].src} fill alt="Transformation" className="agency-img" />
@@ -345,7 +345,7 @@ export default function TransformationsSection() {
               className="agency-floating-list-right"
               initial={{ opacity: 0, y: 120 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7 }}
             >
               <div className="list-item"><span>Strength</span> <sup>04</sup></div>
@@ -357,7 +357,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-4"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
             >
               <Image src={allImages[8].src} fill alt="Transformation" className="agency-img" />
@@ -382,7 +382,7 @@ export default function TransformationsSection() {
             className="expertise-img-wrapper"
             initial={{ opacity: 0, y: 120, scale: 0.8 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <Image src={allImages[9].src} fill alt="Standards" className="expertise-img" style={{ objectPosition: "right center" }} />
@@ -392,7 +392,7 @@ export default function TransformationsSection() {
             className="expertise-text-wrapper"
             initial={{ opacity: 0, y: 120 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             <WordReveal
@@ -404,7 +404,7 @@ export default function TransformationsSection() {
       </section>
 
       {/* SECTION 6: AGENCY GRID 3 (Images 10-11) */}
-      <section className="agency-grid-section" style={{ paddingTop: "2rem", paddingBottom: "8rem" }}>
+      <section className="agency-grid-section">
         {/* Header row */}
         <div className="agency-header-row">
           <motion.p
@@ -444,7 +444,7 @@ export default function TransformationsSection() {
               className="agency-img-wrapper img-3"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image src={allImages[10].src} fill alt="Transformation" className="agency-img" />
@@ -458,12 +458,12 @@ export default function TransformationsSection() {
           </div>
 
           {/* Right Column */}
-          <div className="agency-col agency-col-right" style={{ marginTop: "2rem" }}>
+          <div className="agency-col agency-col-right">
             <motion.div
               className="agency-img-wrapper img-2"
               initial={{ opacity: 0, y: 250, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <Image 

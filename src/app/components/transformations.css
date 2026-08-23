@@ -420,7 +420,11 @@
   .agency-grid-section,
   .agency-expertise-section,
   .testimonial-section {
-    padding: 2rem 5%;
+    padding: 1.5rem 5%;
+  }
+  
+  .testimonial-section {
+    border-top: none;
   }
 
   .agency-header-row {
