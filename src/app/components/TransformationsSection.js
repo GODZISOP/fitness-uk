@@ -16,7 +16,7 @@ const allImages = [
   { id: 9, src: "/images/transformations/media_1787406891092.jpg", title: "Shredded Definition", desc: "Cutting down body fat to reveal pure muscle." },
   { id: 10, src: "/images/transformations/media_1787406902184.jpg", title: "Unreal Progress", desc: "A superhero transformation that defies limits." },
   { id: 11, src: "/images/transformations/media_1787406928664.jpg", title: "Total Recomp", desc: "Dramatic total body recomposition and strength." },
-  { id: 12, src: "/images/transformations/media_1787406935260.png", title: "Complete Lifestyle", desc: "A complete lifestyle change yielding stunning results." }
+  { id: 12, src: "/images/transformations/media_1787406820698.jpg", title: "Complete Lifestyle", desc: "A complete lifestyle change yielding stunning results." }
 ];
 
 const WordReveal = ({ text, className, delay = 0, as = "div" }) => {
@@ -471,7 +471,6 @@ export default function TransformationsSection() {
                 fill 
                 alt="Transformation" 
                 className="agency-img" 
-                style={{ objectFit: "contain", backgroundColor: "#f8f9fa" }} 
               />
             </motion.div>
           </div>
