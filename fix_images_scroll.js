@@ -1,0 +1,1 @@
+const fs = require('fs'); let data = fs.readFileSync('src/app/components/TransformationsSection.js', 'utf8'); data = data.replace(/viewport={{ once: true, margin: "0px 0px -100px 0px" }}/g, 'viewport={{ once: false, margin: "0px 0px -100px 0px" }}'); fs.writeFileSync('src/app/components/TransformationsSection.js', data);

@@ -19,6 +19,7 @@ export default function Navbar({ isScrolled, theme = "default" }) {
     { name: "Services", href: "/#services", isRoute: false, hash: "#services" },
     { name: "About Us", href: "/about", isRoute: true, hash: "#about" },
     { name: "Gallery", href: "/#gallery", isRoute: false, hash: "#gallery" },
+    { name: "Transformations", href: "/transformations", isRoute: true, hash: null },
     { name: "Process", href: "/#process", isRoute: false, hash: "#process" },
     { name: "Programs", href: "/#programs", isRoute: false, hash: "#programs" },
     { name: "Contact Us", href: "/#contact", isRoute: false, hash: "#contact" },
@@ -91,7 +92,12 @@ export default function Navbar({ isScrolled, theme = "default" }) {
 
         <div className="nav-links">
           {navLinks.map((link, idx) => {
-            const isActive = (link.href === "/about" && isAboutPage) || (link.name === "Home" && !isAboutPage);
+            let isActive = false;
+            if (link.href === "/") {
+              isActive = pathname === "/";
+            } else if (link.isRoute) {
+              isActive = pathname === link.href;
+            }
             return (
               <Link
                 key={idx}

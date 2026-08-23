@@ -1,0 +1,1 @@
+const fs = require('fs'); let data = fs.readFileSync('src/app/components/TransformationsSection.js', 'utf8'); data = data.replace(/staggerChildren: 0\.1/g, 'staggerChildren: 0.03'); data = data.replace(/duration: 0\.6/g, 'duration: 0.4'); data = data.replace(/duration: 1\.0/g, 'duration: 0.7'); fs.writeFileSync('src/app/components/TransformationsSection.js', data);

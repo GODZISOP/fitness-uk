@@ -1,0 +1,1 @@
+const fs = require('fs'); let data = fs.readFileSync('src/app/components/TransformationsSection.js', 'utf8'); data = data.replace(/once: true/g, 'once: false'); fs.writeFileSync('src/app/components/TransformationsSection.js', data);
