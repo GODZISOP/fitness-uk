@@ -87,7 +87,7 @@
 }
 
 .curve-gallery-img {
-  width: 115vw;
+  width: 105vw;
   max-width: none;
   height: auto;
   object-fit: contain;
@@ -171,7 +171,7 @@
 /* Agency Grid */
 .agency-grid-section {
   padding: 2rem 5% 8rem 5%;
-  background-color: var(--color-off-white);
+  background-color: #ffffff;
   color: var(--color-charcoal);
 }
 
@@ -273,7 +273,7 @@
 /* Expertise Section */
 .agency-expertise-section {
   padding: 8rem 5%;
-  background-color: var(--color-off-white);
+  background-color: #ffffff;
 }
 
 .expertise-big-title {
@@ -325,7 +325,7 @@
 /* Testimonial Section */
 .testimonial-section {
   padding: 8rem 5%;
-  background-color: var(--color-off-white);
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -522,6 +522,11 @@
     width: 120px;
     height: 180px;
   }
+
+  .curve-btn {
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+  }
 }
 
 @media (max-width: 540px) {
@@ -538,8 +543,8 @@
   }
 
   .curve-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
   }
 
   .curve-carousel-container {
@@ -566,8 +571,8 @@
   }
 
   .curve-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
   }
 
   .curve-carousel-container {

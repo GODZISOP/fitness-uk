@@ -104,12 +104,12 @@ export default function TransformationsSection() {
             animate={{
               opacity: 1,
               y: 0,
-              x: ["-5%", "5%", "-5%"]
+              x: ["-2%", "2%", "-2%"]
             }}
             transition={{
               opacity: { duration: 0.8, ease: "easeOut" },
               y: { duration: 0.8, ease: "easeOut" },
-              x: { duration: 15, repeat: Infinity, ease: "easeInOut" }
+              x: { duration: 20, repeat: Infinity, ease: "easeInOut" }
             }}
           >
             <Image
