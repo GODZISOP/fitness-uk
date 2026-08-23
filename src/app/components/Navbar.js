@@ -120,8 +120,9 @@ export default function Navbar({ isScrolled, theme = "default" }) {
           className="hamburger"
           aria-label="Toggle Menu"
           onClick={() => setIsOpen(!isOpen)}
+          style={{ opacity: isOpen ? 0 : 1, pointerEvents: isOpen ? "none" : "auto" }}
         >
-          {isOpen ? "✕" : "☰"}
+          ☰
         </button>
       </motion.nav>
 
