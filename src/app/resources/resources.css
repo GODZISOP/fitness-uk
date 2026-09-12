@@ -1,0 +1,2752 @@
+/* ==========================================================================
+   World Fitness Zone - Client Portal & Meal Plan Resources CSS
+   ========================================================================== */
+
+/* ==========================================================================
+   1. LOGIN SCREEN STYLING
+   ========================================================================== */
+.resources-login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 50% 20%, #eaf2ff 0%, #f4f7fb 100%);
+  padding: 2.5rem 1.25rem;
+  font-family: var(--font-inter, sans-serif);
+}
+
+.login-box {
+  background: #ffffff;
+  padding: 3.5rem 2.8rem;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(7, 26, 43, 0.09);
+  border: 1px solid rgba(21, 94, 239, 0.1);
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+}
+
+.login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-soft-blue, #eaf2ff);
+  color: var(--color-primary, #155eef);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(21, 94, 239, 0.15);
+}
+
+.login-box h2 {
+  font-family: var(--font-outfit, sans-serif);
+  color: var(--color-deep-navy, #071a2b);
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.login-desc {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.input-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding: 1.15rem;
+  font-size: 1.5rem;
+  text-align: center;
+  letter-spacing: 0.35em;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.input-wrap input:focus {
+  border-color: var(--color-primary, #155eef);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(21, 94, 239, 0.15);
+}
+
+/* UNLOCK BUTTON - BOLD, VIBRANT GOLD ACTION BUTTON */
+.btn-unlock,
+.btn-access {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-action-yellow, #ffc928);
+  color: var(--color-deep-navy, #071a2b);
+  border: none;
+  padding: 1.15rem 1.8rem;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 25px rgba(255, 201, 40, 0.45);
+}
+
+.btn-unlock:hover:not(:disabled),
+.btn-access:hover:not(:disabled) {
+  background-color: #ffd64f;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(255, 201, 40, 0.55);
+}
+
+.btn-unlock:active,
+.btn-access:active {
+  transform: translateY(0);
+}
+
+.btn-unlock:disabled,
+.btn-access:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.demo-hint-box,
+.login-note {
+  margin-top: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.65rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.demo-hint-box strong,
+.login-note strong {
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   2. CLIENT DASHBOARD & TOP BAR
+   ========================================================================== */
+.client-portal-wrapper,
+.resources-dashboard {
+  padding: 2rem 5% 6rem;
+  max-width: 1360px;
+  margin: 0 auto;
+  font-family: var(--font-inter, sans-serif);
+  min-height: 100vh;
+  color: var(--color-charcoal, #172033);
+}
+
+.portal-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.brand-dot {
+  width: 9px;
+  height: 9px;
+  background: var(--color-primary, #155eef);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(21, 94, 239, 0.6);
+}
+
+.portal-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--color-soft-blue, #eaf2ff);
+  color: var(--color-deep-navy, #071a2b);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.btn-portal-logout,
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  padding: 0.5rem 1.1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-portal-logout:hover,
+.btn-logout:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   3. DASHBOARD HERO CARD
+   ========================================================================== */
+.dashboard-hero-card {
+  background: linear-gradient(135deg, #071a2b 0%, #0c2b4c 100%);
+  border-radius: 24px;
+  padding: 2.8rem 3rem;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  box-shadow: 0 20px 45px rgba(7, 26, 43, 0.15);
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(21, 94, 239, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.client-program-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 201, 40, 0.18);
+  border: 1px solid rgba(255, 201, 40, 0.35);
+  padding: 0.4rem 0.95rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-action-yellow, #ffc928);
+  margin-bottom: 0.85rem;
+}
+
+.hero-welcome-info h1 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: clamp(2rem, 3.5vw, 2.7rem);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.hero-subtext {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.hero-subtext strong {
+  color: #ffffff;
+}
+
+.coach-status-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1rem 1.4rem;
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+}
+
+.coach-avatar-mini {
+  width: 48px;
+  height: 48px;
+  background: var(--color-action-yellow, #ffc928);
+  color: #071a2b;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 201, 40, 0.3);
+}
+
+.coach-name-label {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.coach-quote-small {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   4. MACRO TARGETS STRIP
+   ========================================================================== */
+.macro-targets-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.macro-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 1.4rem 1.25rem;
+  box-shadow: 0 4px 18px rgba(7, 26, 43, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.macro-box:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.cal-box {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+
+.macro-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #071a2b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cal-box .macro-icon-wrap {
+  background: #fef08a;
+  color: #b45309;
+}
+
+.macro-icon-wrap.protein {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.macro-icon-wrap.carbs {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.macro-icon-wrap.fats {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.macro-icon-wrap.water {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.macro-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+}
+
+.macro-val {
+  display: block;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  line-height: 1.1;
+}
+
+.macro-val small {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   5. NAVIGATION TABS
+   ========================================================================== */
+.portal-tabs-nav {
+  display: flex;
+  gap: 0.6rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+  margin-bottom: 2.5rem;
+  overflow-x: auto;
+}
+
+.portal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.5rem;
+  background: transparent;
+  border: none;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #64748b;
+  border-radius: 50px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.portal-tab:hover {
+  color: var(--color-deep-navy, #071a2b);
+  background: #f1f5f9;
+}
+
+.portal-tab.active {
+  background: var(--color-deep-navy, #071a2b);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(7, 26, 43, 0.15);
+}
+
+/* ==========================================================================
+   6. TAB PANES & HEADERS
+   ========================================================================== */
+.tab-pane-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.pane-header h2 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin-bottom: 0.35rem;
+}
+
+.pane-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.coach-quote-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-soft-blue, #eaf2ff);
+  color: var(--color-deep-navy, #071a2b);
+  border: 1px solid rgba(21, 94, 239, 0.2);
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   7. COACH JAMES CUSTOM WRITTEN PLAN DIRECTIVES
+   ========================================================================== */
+.custom-written-plan-card {
+  background: linear-gradient(135deg, #071a2b 0%, #0d2744 100%);
+  border: 2px solid rgba(255, 201, 40, 0.4);
+  border-radius: 20px;
+  padding: 2.25rem 2.5rem;
+  margin-bottom: 2.5rem;
+  color: #ffffff;
+  box-shadow: 0 15px 40px rgba(7, 26, 43, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-written-plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 201, 40, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.written-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-action-yellow, #ffc928);
+  color: #071a2b;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.written-plan-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.written-plan-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.written-plan-text {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: #e2e8f0;
+  white-space: pre-line;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1.5rem 1.75rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--color-action-yellow, #ffc928);
+}
+
+/* ==========================================================================
+   8. MEALS GRID
+   ========================================================================== */
+.meals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.meal-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 6px 25px rgba(7, 26, 43, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.meal-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-action-yellow, #ffc928);
+  box-shadow: 0 12px 30px rgba(7, 26, 43, 0.08);
+}
+
+.meal-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.meal-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-primary, #155eef);
+  background: var(--color-soft-blue, #eaf2ff);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.meal-calories {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.meal-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin-bottom: 0.6rem;
+}
+
+.meal-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 1.4rem;
+  flex-grow: 1;
+}
+
+.meal-macros-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.badge-p,
+.badge-c,
+.badge-f {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-p {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-c {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.badge-f {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* Hydration & Supplements Banner */
+.nutrition-supplements-banner {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.nutrition-supplements-banner h3 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.supplements-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.supp-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.supp-check {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+/* ==========================================================================
+   9. ROUTINE EXERCISE VIDEOS
+   ========================================================================== */
+.videos-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.video-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 25px rgba(7, 26, 43, 0.04);
+}
+
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.video-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary, #155eef);
+}
+
+.video-duration {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.video-player-wrap {
+  position: relative;
+  background: #000000;
+  aspect-ratio: 16 / 9;
+}
+
+.protected-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-info {
+  padding: 1.5rem;
+}
+
+.video-info h3 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin-bottom: 0.75rem;
+}
+
+.coach-video-note {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #4b5563;
+  background: #f8fafc;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border-left: 3px solid var(--color-action-yellow, #ffc928);
+}
+
+/* ==========================================================================
+   10. CLIENT DIRECT MESSENGER TO COACH JAMES
+   ========================================================================== */
+.client-messenger-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 2.25rem;
+  box-shadow: 0 6px 25px rgba(7, 26, 43, 0.04);
+}
+
+.messenger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.messenger-header h3 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.messenger-header p {
+  color: #64748b;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.coach-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.8rem;
+  border-radius: 50px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.messenger-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.messenger-form textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 12px;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.messenger-form textarea:focus {
+  border-color: var(--color-primary, #155eef);
+  box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.15);
+}
+
+.messenger-submit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-send-coach {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem 1.6rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-send-coach:hover {
+  background: #004ecc;
+  transform: translateY(-2px);
+}
+
+.msg-sent-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #059669;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.client-messages-history {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.history-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.85rem;
+}
+
+.client-message-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.msg-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.msg-item-text {
+  font-size: 0.93rem;
+  color: #1e293b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ==========================================================================
+   11. 13-WEEK TRANSFORMATION TIMELINE
+   ========================================================================== */
+.weeks-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.week-row-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 1.4rem 2rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.week-row-card:hover {
+  transform: translateX(4px);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 20px rgba(7, 26, 43, 0.04);
+}
+
+.week-row-card.current-week {
+  border-left: 5px solid var(--color-action-yellow, #ffc928);
+  background: #fcfdfe;
+}
+
+.week-row-card.selected-week {
+  border-color: var(--color-primary, #155eef);
+  box-shadow: 0 0 0 2px rgba(21, 94, 239, 0.15);
+}
+
+.week-number-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  min-width: 65px;
+}
+
+.week-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.week-num {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--color-deep-navy, #071a2b);
+  line-height: 1;
+}
+
+.week-main-details {
+  flex-grow: 1;
+  padding: 0 1.5rem;
+}
+
+.week-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.week-header-row h4 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.status-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.65rem;
+  border-radius: 50px;
+}
+
+.status-badge.active {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.status-badge.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.upcoming {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.week-main-details p {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.btn-select-week {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 1.1rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-deep-navy, #071a2b);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   12. GUIDELINES LIST
+   ========================================================================== */
+.guidelines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.guideline-card {
+  display: flex;
+  gap: 1.8rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(7, 26, 43, 0.03);
+}
+
+.guide-num {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--color-action-yellow, #ffc928);
+  line-height: 1;
+}
+
+.guide-body h3 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin-bottom: 0.5rem;
+}
+
+.guide-body p {
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+/* ==========================================================================
+   13. RESPONSIVE QUERIES
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .macro-targets-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .macro-targets-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .meals-grid,
+  .videos-container,
+  .supplements-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-box {
+    padding: 2.5rem 1.75rem;
+  }
+  .login-box h2 {
+    font-size: 1.85rem;
+  }
+  .input-wrap input {
+    font-size: 1.25rem;
+  }
+  .dashboard-hero-card {
+    padding: 2rem 1.5rem;
+  }
+  .macro-targets-strip {
+    grid-template-columns: 1fr;
+  }
+  .week-row-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .guideline-card {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .custom-written-plan-card {
+    padding: 1.75rem 1.25rem;
+  }
+  .written-plan-title {
+    font-size: 1.35rem;
+  }
+}
+
+/* ==========================================================================
+   Print Button & Adherence Tracker
+   ========================================================================== */
+.btn-print-plan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-print-plan:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.daily-adherence-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(7, 26, 43, 0.03);
+}
+
+.adherence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.adherence-header h4 {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin: 0;
+}
+
+.adherence-badge {
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  border: 1px solid #a7f3d0;
+}
+
+.adherence-bar-track {
+  width: 100%;
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.adherence-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary, #155eef) 0%, #10b981 100%);
+  border-radius: 50px;
+  transition: width 0.4s ease;
+}
+
+/* Meal Checklist Button */
+.btn-meal-check {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  color: #475569;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-meal-check:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.btn-meal-check.checked {
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
+  color: #059669;
+}
+
+.meal-card.meal-completed {
+  border-color: #10b981;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.12);
+}
+
+/* ==========================================================================
+   2-Way Chat Thread Bubbles
+   ========================================================================== */
+.chat-thread-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.chat-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+}
+
+.chat-bubble-row {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 80%;
+}
+
+.chat-bubble-row.from-coach {
+  align-self: flex-start;
+}
+
+.chat-bubble-row.from-client {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-coach-avatar {
+  width: 38px;
+  height: 38px;
+  background: var(--color-action-yellow, #ffc928);
+  color: #071a2b;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(255, 201, 40, 0.35);
+}
+
+.chat-bubble-content {
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.chat-bubble-row.from-coach .chat-bubble-content {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--color-action-yellow, #ffc928);
+  color: #1e293b;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.chat-bubble-row.from-client .chat-bubble-content {
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.chat-bubble-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+}
+
+.chat-bubble-row.from-coach .chat-bubble-top {
+  color: #64748b;
+}
+
+.chat-bubble-row.from-client .chat-bubble-top {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chat-bubble-content p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Print Styles */
+@media print {
+  .portal-top-bar,
+  .portal-tabs-nav,
+  .btn-print-plan,
+  .btn-portal-logout,
+  .btn-meal-check,
+  .messenger-form,
+  .weigh-in-form {
+    display: none !important;
+  }
+  .client-portal-wrapper {
+    padding: 0 !important;
+  }
+  .dashboard-hero-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+  }
+  .hero-welcome-info h1,
+  .hero-subtext strong {
+    color: #000000 !important;
+  }
+  .meal-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #dddddd !important;
+  }
+}
+
+/* ==========================================================================
+   MULTI-PLAN FILTER TOOLBAR & MANAGER (NO INFINITE SCROLLING)
+   ========================================================================== */
+.custom-plans-manager-container {
+  margin-bottom: 2.5rem;
+}
+
+.plan-filter-toolbar {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 25px rgba(7, 26, 43, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.filter-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.filter-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--color-soft-blue, #eaf2ff);
+  color: var(--color-primary, #155eef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.filter-main-heading {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin: 0 0 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.plans-count-tag {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+}
+
+.filter-sub-heading {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.filter-view-toggle {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 10px;
+  gap: 0.25rem;
+}
+
+.btn-view-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-choice:hover {
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.btn-view-choice.active {
+  background: #ffffff;
+  color: var(--color-primary, #155eef);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.filter-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.category-filter-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cat-pill {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cat-pill:hover {
+  border-color: var(--color-primary, #155eef);
+  color: var(--color-primary, #155eef);
+}
+
+.cat-pill.active {
+  background: var(--color-primary, #155eef);
+  border-color: var(--color-primary, #155eef);
+  color: #ffffff;
+}
+
+.plan-search-input-wrap {
+  position: relative;
+  min-width: 260px;
+}
+
+.plan-search-input-wrap input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  color: var(--color-deep-navy, #071a2b);
+  transition: border-color 0.2s ease;
+}
+
+.plan-search-input-wrap input:focus {
+  border-color: var(--color-primary, #155eef);
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.plan-tabs-switcher-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.switcher-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.plan-tabs-scroll {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.plan-tab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: var(--color-deep-navy, #071a2b);
+  padding: 0.55rem 1rem;
+  border-radius: 50px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plan-tab-chip:hover {
+  border-color: var(--color-primary, #155eef);
+  background: #eff6ff;
+}
+
+.plan-tab-chip.active {
+  background: var(--color-primary, #155eef);
+  border-color: var(--color-primary, #155eef);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(21, 94, 239, 0.3);
+}
+
+.chip-active-indicator {
+  background: #ffc928;
+  color: #071a2b;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.chip-icon {
+  font-size: 0.95rem;
+}
+
+.chip-title {
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-check {
+  margin-left: 0.25rem;
+}
+
+/* ==========================================================================
+   ORGANIZED MEAL SCHEDULE CARD (DAY-BY-DAY & 7-DAY MATRIX)
+   ========================================================================== */
+.organized-meal-schedule-card {
+  background: linear-gradient(135deg, #071a2b 0%, #0d2744 100%);
+  border: 2px solid rgba(255, 201, 40, 0.4);
+  border-radius: 24px;
+  padding: 2.25rem 2.5rem;
+  color: #ffffff;
+  box-shadow: 0 20px 50px rgba(7, 26, 43, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.schedule-header-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.schedule-title-meta {
+  flex: 1;
+  min-width: 280px;
+}
+
+.schedule-main-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0.5rem 0 0.4rem;
+}
+
+.schedule-view-switcher {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0.3rem;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.schedule-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.5rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.schedule-view-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.schedule-view-btn.active {
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(21, 94, 239, 0.4);
+}
+
+/* Day Selection Pill Bar */
+.schedule-days-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.select-day-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 0.3rem;
+}
+
+.day-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  color: #e2e8f0;
+  padding: 0.55rem 1rem;
+  border-radius: 50px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.day-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.day-pill-btn.active {
+  background: var(--color-primary, #155eef);
+  border-color: #60a5fa;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(21, 94, 239, 0.45);
+}
+
+.day-pill-btn.is-today {
+  border-color: #ffc928;
+}
+
+.today-badge {
+  background: #ffc928;
+  color: #071a2b;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.day-name-short {
+  display: none;
+}
+
+.day-name-full {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .day-name-short { display: inline; }
+  .day-name-full { display: none; }
+}
+
+.day-done-icon {
+  color: #10b981;
+}
+
+/* Active Day Summary Strip */
+.active-day-summary-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1rem 1.35rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.active-day-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.active-day-heading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffc928;
+  letter-spacing: 0.02em;
+}
+
+.active-day-sub {
+  font-size: 0.84rem;
+  color: #94a3b8;
+}
+
+.active-day-meter {
+  min-width: 140px;
+}
+
+.active-day-meter-track {
+  width: 140px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.active-day-meter-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 50px;
+  transition: width 0.3s ease;
+}
+
+/* Daily Meals Timeline Cards */
+.daily-meals-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.daily-meal-card {
+  background: rgba(12, 38, 66, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.daily-meal-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(12, 38, 66, 0.9);
+}
+
+.daily-meal-card.eaten {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.daily-meal-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.meal-time-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: #ffc928;
+}
+
+.meal-category-pill {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 50px;
+}
+
+.btn-toggle-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-slot:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.btn-toggle-slot.checked {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.meal-food-content-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.food-main-text p {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-ask-coach-swap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ask-coach-swap:hover {
+  border-color: #ffc928;
+  color: #ffc928;
+}
+
+/* ==========================================================================
+   7-DAY WEEKLY MATRIX TABLE VIEW
+   ========================================================================== */
+.weekly-matrix-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.matrix-instruction-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.matrix-scroll-wrapper {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.weekly-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  min-width: 820px;
+}
+
+.weekly-matrix-table th {
+  background: rgba(0, 0, 0, 0.4);
+  color: #e2e8f0;
+  padding: 0.9rem 0.8rem;
+  text-align: left;
+  font-weight: 800;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+}
+
+.th-timing {
+  width: 140px;
+}
+
+.weekly-matrix-table td {
+  padding: 0.9rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+
+.weekly-matrix-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.today-col {
+  background: rgba(21, 94, 239, 0.15) !important;
+}
+
+.matrix-today-tag {
+  display: block;
+  font-size: 0.65rem;
+  color: #ffc928;
+  font-weight: 900;
+  margin-top: 0.15rem;
+}
+
+.matrix-meal-meta-cell {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.matrix-meal-time {
+  font-weight: 800;
+  color: #ffc928;
+  font-size: 0.85rem;
+}
+
+.matrix-meal-title {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.matrix-food-cell {
+  position: relative;
+}
+
+.matrix-food-text {
+  color: #ffffff;
+  line-height: 1.45;
+}
+
+.matrix-eaten-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  color: #10b981;
+  font-weight: 800;
+  margin-top: 0.35rem;
+}
+
+/* Other plans quick bottom switcher */
+.other-plans-quick-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.other-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.other-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-other-plan-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-other-plan-chip:hover {
+  background: var(--color-primary, #155eef);
+  border-color: var(--color-primary, #155eef);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   CATALOG / ACCORDION VIEW
+   ========================================================================== */
+.catalog-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.catalog-plan-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(7, 26, 43, 0.04);
+  transition: all 0.2s ease;
+}
+
+.catalog-plan-card.open {
+  border-color: var(--color-primary, #155eef);
+}
+
+.catalog-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #f8fafc;
+}
+
+.catalog-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.catalog-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-primary, #155eef);
+  text-transform: uppercase;
+}
+
+.catalog-header-left h4 {
+  margin: 0;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.15rem;
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.catalog-date {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.catalog-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-open-focused {
+  background: var(--color-soft-blue, #eaf2ff);
+  border: 1px solid rgba(21, 94, 239, 0.2);
+  color: var(--color-primary, #155eef);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-open-focused:hover {
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+}
+
+.accordion-arrow {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.catalog-plan-body {
+  padding: 1.5rem;
+  background: #ffffff;
+}
+
+/* Baseline Meals Collapsible */
+.baseline-meals-collapsible {
+  margin-top: 2.5rem;
+  border-top: 1.5px solid #e2e8f0;
+  padding-top: 1.5rem;
+}
+
+.btn-toggle-baseline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-baseline:hover {
+  background: #eff6ff;
+  border-color: var(--color-primary, #155eef);
+  color: var(--color-primary, #155eef);
+}
+
+/* ==========================================================================
+   DIET PROTOCOL FILTER & SELECTOR (CLEAN COMMAND BAR & ON-DEMAND VIEW)
+   ========================================================================== */
+.protocol-filter-command-bar {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(7, 26, 43, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: all 0.25s ease;
+}
+
+.filter-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.filter-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.filter-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-soft-blue, #eaf2ff);
+  color: var(--color-primary, #155eef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.filter-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin: 0 0 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.plans-count-pill {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.2rem 0.65rem;
+  border-radius: 50px;
+}
+
+.filter-subtext {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Schedule Open/Close Toggle Button */
+.btn-schedule-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-family: var(--font-outfit, sans-serif);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  border: 1.5px solid transparent;
+}
+
+.btn-schedule-toggle.btn-toggle-open {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.btn-schedule-toggle.btn-toggle-open:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btn-schedule-toggle.btn-toggle-closed {
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(21, 94, 239, 0.28);
+}
+
+.btn-schedule-toggle.btn-toggle-closed:hover {
+  background: #104ec2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(21, 94, 239, 0.38);
+}
+
+/* Controls row: filter pills + plan dropdown */
+.filter-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-pills-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-control-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.filter-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f8fafc;
+  padding: 0.3rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-pill-tab {
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-pill-tab:hover {
+  color: #0f172a;
+}
+
+.filter-pill-tab.active {
+  background: #ffffff;
+  color: var(--color-deep-navy, #071a2b);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  font-weight: 800;
+}
+
+.filter-dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-grow: 1;
+  min-width: 280px;
+  max-width: 520px;
+}
+
+.select-dropdown-container {
+  position: relative;
+  flex-grow: 1;
+}
+
+.diet-plan-select-dropdown {
+  width: 100%;
+  appearance: none;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.6rem 2.2rem 0.6rem 0.9rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--color-deep-navy, #071a2b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.diet-plan-select-dropdown:hover {
+  border-color: var(--color-primary, #155eef);
+}
+
+.diet-plan-select-dropdown:focus {
+  border-color: var(--color-primary, #155eef);
+  box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.15);
+}
+
+.dropdown-arrow-icon {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+
+/* Selected Protocol Summary Bar */
+.selected-protocol-summary-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.selected-protocol-summary-bar.is-active {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1.5px solid #a7f3d0;
+}
+
+.selected-protocol-summary-bar.is-archived {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #fcd34d;
+}
+
+.summary-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.summary-status-pill {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.summary-status-pill.pill-active {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.summary-status-pill.pill-archived {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.summary-plan-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+}
+
+.summary-date-tag {
+  font-size: 0.76rem;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.summary-format-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.15rem 0.55rem;
+  border-radius: 5px;
+}
+
+.summary-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.btn-switch-to-active {
+  background: var(--color-deep-navy, #071a2b);
+  color: #ffffff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-switch-to-active:hover {
+  background: var(--color-primary, #155eef);
+}
+
+.btn-summary-toggle-action {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  padding: 0.45rem 0.85rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-summary-toggle-action:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+}
+
+/* Schedule Collapsed Placeholder Card */
+.schedule-collapsed-state-card {
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.collapsed-state-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 650px;
+}
+
+.collapsed-state-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.collapsed-state-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-deep-navy, #071a2b);
+  margin: 0 0 0.35rem;
+}
+
+.collapsed-state-sub {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.btn-open-schedule-cta {
+  background: var(--color-primary, #155eef);
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.85rem 1.65rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  box-shadow: 0 6px 18px rgba(21, 94, 239, 0.3);
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+
+.btn-open-schedule-cta:hover {
+  background: #104ec2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(21, 94, 239, 0.42);
+}
+
+/* Bottom collapse bar inside expanded schedule */
+.schedule-bottom-collapse-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem 1.35rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.btn-collapse-bottom {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.btn-collapse-bottom:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* Day-by-Day Explainer & Navigation Pill enhancements */
+.day-name-pill-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.day-number-badge {
+  background: #ffc928;
+  color: #071a2b;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.today-indicator-pill {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.active-day-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-day-nav-quick {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-day-nav-quick:hover {
+  background: #ffc928;
+  color: #071a2b;
+  border-color: #ffc928;
+}
+
+

@@ -31,11 +31,10 @@ export default function Footer() {
             </div>
             
             <div className="footer-col" data-aos="fade-up" data-aos-delay="200">
-              <h4>COMPANY</h4>
+              <h4>CONTACT</h4>
               <ul>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Coaches</a></li>
-                <li><a href="#">Careers</a></li>
+                <li><a href="mailto:worldfitnesszone@consultant.com">worldfitnesszone@consultant.com</a></li>
+                <li><a href="https://wa.me/447984498444">WhatsApp: 07984498444</a></li>
               </ul>
             </div>
             

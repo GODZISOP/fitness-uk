@@ -26,27 +26,19 @@ export default function Navbar({ isScrolled, theme = "default" }) {
   const handleLinkClick = (e, link) => {
     setIsOpen(false);
 
-    if (link.href === "/about") {
-      if (isAboutPage) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      return;
-    }
-
     if (link.name === "Home") {
-      if (!isAboutPage) {
+      if (pathname === "/") {
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
       return;
     }
 
-    // For hash links
-    if (!isAboutPage && link.hash) {
-      e.preventDefault();
+    // For hash links that belong to the home page
+    if (link.hash && pathname === "/") {
       const targetEl = document.querySelector(link.hash);
       if (targetEl) {
+        e.preventDefault();
         targetEl.scrollIntoView({ behavior: "smooth" });
       }
     }
@@ -54,7 +46,7 @@ export default function Navbar({ isScrolled, theme = "default" }) {
 
   const handleContactClick = (e) => {
     setIsOpen(false);
-    if (!isAboutPage) {
+    if (pathname === "/") {
       e.preventDefault();
       const targetEl = document.querySelector("#contact");
       if (targetEl) {

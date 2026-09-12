@@ -132,15 +132,15 @@ export default function HeroSection() {
       <main className="hero-container" style={{ paddingTop: "80px", minHeight: "100vh", position: "relative" }}>
         <div className="hero-content-wrapper">
           <div className="hero-content-left">
-            <div className="hero-pill">Sweat Today, Shine Tomorrow</div>
+            <div className="hero-pill">13-Week Transformation Program</div>
             <h1 className="hero-title">
-              <span className="title-filled" style={{ display: "block" }}>STRONGER</span>
-              <span className="title-outline" style={{ display: "block" }}>EVERYDAY</span>
-              <span className="title-filled" style={{ display: "block" }}>FITTER</span>
-              <span className="title-outline" style={{ display: "block" }}>FOREVER</span>
+              <span className="title-filled" style={{ display: "block" }}>ACHIEVE</span>
+              <span className="title-outline" style={{ display: "block" }}>YOUR GOALS</span>
+              <span className="title-filled" style={{ display: "block" }}>IN JUST</span>
+              <span className="title-outline" style={{ display: "block" }}>13 WEEKS</span>
             </h1>
             <p className="hero-description">
-              It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+              We focus on a structured, definitive transformation. Our goal isn't to keep you indefinitely—it's to get you results in maximum 13 weeks, and help you move forward.
             </p>
             <div className="hero-actions">
               <a href="#contact" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
@@ -156,11 +156,11 @@ export default function HeroSection() {
               <Image src={heroImage} alt="Fitness Trainer" className="hero-character" priority />
               <div className="stat-block card-top-right">
                 <div className="stat-number">100%</div>
-                <div className="stat-text">Top Rated Trainers every program is built around your goals.</div>
+                <div className="stat-text">Structured Focus. Every program is built around your specific transformation goals.</div>
               </div>
               <div className="stat-block card-bottom-left">
-                <div className="stat-number">500+</div>
-                <div className="stat-text">Active Users real people, real results from beginners to athletes.</div>
+                <div className="stat-number">13</div>
+                <div className="stat-text">Weeks Maximum. Achieve your results, then confidently move forward.</div>
               </div>
             </div>
           </div>
@@ -192,18 +192,18 @@ export default function HeroSection() {
           <div className="hero-content-wrapper">
             <div className="hero-content-left">
               <div ref={pillRef} className="hero-pill">
-                Sweat Today, Shine Tomorrow
+                13-Week Transformation Program
               </div>
 
               <h1 ref={titleRef} className="hero-title">
-                <span className="title-filled" style={{ display: "block" }}>STRONGER</span>
-                <span className="title-outline" style={{ display: "block" }}>EVERYDAY</span>
-                <span className="title-filled" style={{ display: "block" }}>FITTER</span>
-                <span className="title-outline" style={{ display: "block" }}>FOREVER</span>
+                <span className="title-filled" style={{ display: "block" }}>ACHIEVE</span>
+                <span className="title-outline" style={{ display: "block" }}>YOUR GOALS</span>
+                <span className="title-filled" style={{ display: "block" }}>IN JUST</span>
+                <span className="title-outline" style={{ display: "block" }}>13 WEEKS</span>
               </h1>
 
               <p ref={descRef} className="hero-description">
-                It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                We focus on a structured, definitive transformation. Our goal isn't to keep you indefinitely—it's to get you results in maximum 13 weeks, and help you move forward.
               </p>
 
               <div ref={actionsRef} className="hero-actions">
@@ -221,12 +221,12 @@ export default function HeroSection() {
 
                 <div ref={stat1Ref} className="stat-block card-top-right">
                   <div className="stat-number">100%</div>
-                  <div className="stat-text">Top Rated Trainers every program is built around your goals.</div>
+                  <div className="stat-text">Structured Focus. Every program is built around your specific transformation goals.</div>
                 </div>
 
                 <div ref={stat2Ref} className="stat-block card-bottom-left">
-                  <div className="stat-number">500+</div>
-                  <div className="stat-text">Active Users real people, real results from beginners to athletes.</div>
+                  <div className="stat-number">13</div>
+                  <div className="stat-text">Weeks Maximum. Achieve your results, then confidently move forward.</div>
                 </div>
               </div>
             </div>

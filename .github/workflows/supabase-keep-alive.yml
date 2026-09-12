@@ -1,0 +1,25 @@
+name: Supabase Always-Alive Heartbeat
+
+on:
+  schedule:
+    # Runs at 06:00 UTC every 2 days (Supabase pauses after 7 days of inactivity)
+    - cron: '0 6 */2 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database to Prevent 7-Day Auto-Pause
+        run: |
+          echo "Sending keep-alive heartbeat to Supabase project..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: sb_publishable_-WBbXW90QrO2Am4lesj76w_k8_x50f1" \
+            -H "Authorization: Bearer sb_publishable_-WBbXW90QrO2Am4lesj76w_k8_x50f1" \
+            "https://khkiyplybehsspxtmvkf.supabase.co/rest/v1/clients?select=id&limit=1")
+          echo "Supabase HTTP response: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -le 499 ]; then
+            echo "Success: Supabase project is active and alive!"
+          else
+            echo "Warning: Response code $STATUS"
+          fi

@@ -35,11 +35,11 @@ function StatCard({ label, value, suffix, index }) {
 }
 
 export default function AboutSection() {
-  const stats = [
-    { label: "FITNESS TRAINEE", value: "251", suffix: "K+" },
-    { label: "SUCCESS STORIES", value: "150", suffix: "K+" },
-    { label: "YEARS OF EXPERIENCE", value: "12", suffix: "+" },
-  ];
+    const stats = [
+      { label: "WEEKS MAXIMUM", value: "13", suffix: "" },
+      { label: "SUCCESS STORIES", value: "500", suffix: "+" },
+      { label: "YEARS OF EXPERIENCE", value: "10", suffix: "+" },
+    ];
 
   return (
     <section className="about-section" id="about">
@@ -71,10 +71,10 @@ export default function AboutSection() {
             stagger={0.22}
           >
             {[
-              "WE ARE PUSHING",
-              "THE LIMIT OF YOUR",
-              <span key="core-strength" className="text-action">
-                CORE STRENGTH
+              "WE ARE COMMITTED",
+              "TO YOUR 13-WEEK",
+              <span key="transformation" className="text-action">
+                TRANSFORMATION
               </span>
             ]}
           </ScrollHeading>
@@ -86,7 +86,7 @@ export default function AboutSection() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
           >
-            We understand that your lifestyle changes, that's why we've made fitness straightforward and stress-free. Join today on a no lock-in contract membership and start achieving your fitness goals, fun value flexibility all 24/7.
+            Our philosophy is simple: we don't want to keep you as a client forever. We provide a structured, intensive 13-week program designed to get you results, equipping you with the tools to confidently move forward.
           </motion.p>
 
           <motion.div

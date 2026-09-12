@@ -4,51 +4,21 @@ import React from 'react';
 export default function ProgramsSection() {
   const plans = [
     {
-      title: "BASE PLAN",
-      price: "$49",
-      period: "/month",
-      subtitle: "Start Your Journey",
+      title: "13-WEEK TRANSFORMATION",
+      price: "Enquire",
+      period: " Now",
+      subtitle: "The Ultimate Results-Driven Program",
       features: [
-        "3 Days/Week Fitness Access",
-        "Basic Nutrition Guide",
-        "Video Workout Tutorials",
-        "Monthly Progress Check-in"
-      ],
-      cardClass: "program-card-blue",
-      btnClass: "btn-yellow",
-      delay: 0,
-    },
-    {
-      title: "PRO PLAN",
-      price: "$99",
-      period: "/month",
-      subtitle: "Elevate Your Results",
-      features: [
-        "5 Days/Week Full Access",
-        "Customized Macro & Meal Plan",
-        "1-on-1 Certified Trainer Calls",
-        "Weekly Form & Progress Review",
-        "24/7 Priority VIP Support"
+        "13 Weeks of Intensive, Structured Training",
+        "Customized Nutrition & Meal Plans",
+        "Direct 1-on-1 Support & Accountability",
+        "Weekly Form & Progress Reviews",
+        "Learn Sustainable Habits to Move Forward"
       ],
       cardClass: "program-card-yellow",
       btnClass: "btn-navy",
       isPopular: true,
-      delay: 200,
-    },
-    {
-      title: "ENTERPRISE PLAN",
-      price: "$149",
-      period: "/month",
-      subtitle: "Complete Transformation",
-      features: [
-        "Unlimited 24/7 VIP Gym Access",
-        "Private Nutritionist Integration",
-        "Daily Accountability & Tracking",
-        "Comprehensive Supplement Protocol"
-      ],
-      cardClass: "program-card-blue",
-      btnClass: "btn-yellow",
-      delay: 400,
+      delay: 0,
     }
   ];
 
@@ -56,16 +26,17 @@ export default function ProgramsSection() {
     <section className="programs-section" id="programs">
       <div className="programs-container">
         <div className="programs-header" data-aos="fade-up">
-          <h2 className="programs-title">Choose Your Plan</h2>
-          <p className="programs-subtitle">Explore our packages and see why top fitness enthusiasts choose World Fitness Zone for guaranteed quality.</p>
+          <h2 className="programs-title">Your 13-Week Journey</h2>
+          <p className="programs-subtitle">Discover our comprehensive program designed for those serious about achieving real, lasting results without being tied down forever.</p>
         </div>
 
-        <div className="programs-grid">
+        <div className="programs-grid" style={{ display: 'flex', justifyContent: 'center', margin: '0 auto', maxWidth: '600px' }}>
           {plans.map((plan, index) => (
             <div 
               key={index}
               className={`program-card ${plan.cardClass}`}
               data-aos="fade-up"
+              style={{ width: '100%' }}
             >
               {plan.isPopular && <div className="popular-badge">MOST POPULAR</div>}
               

@@ -14,7 +14,8 @@ export default function ContactSection() {
           </div>
           <div className="contact-info-right">
             <span className="contact-label">CONTACT US</span>
-            <p className="contact-subtext">admin@worldfitnesszone.co.uk</p>
+            <p className="contact-subtext">worldfitnesszone@consultant.com</p>
+            <p className="contact-subtext">WhatsApp: 07984498444</p>
           </div>
         </div>
 
