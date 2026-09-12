@@ -7,7 +7,11 @@ export const revalidate = 0;
 // This endpoint actively queries the database to keep Supabase alive and prevent pausing after 7 days
 export async function GET() {
   try {
-    const { data, error } = await supabase.from('clients').select('id').limit(1);
+    let data = null;
+    if (supabase && typeof supabase.from === 'function') {
+      const res = await supabase.from('clients').select('id').limit(1);
+      data = res.data;
+    }
     
     return NextResponse.json({
       status: 'ok',
@@ -22,7 +26,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json({ 
       status: 'pinged_with_note', 
-      message: error.message,
+      message: error?.message || 'Heartbeat queried',
       timestamp: new Date().toISOString()
     }, { status: 200 });
   }
