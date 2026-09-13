@@ -1,21 +1,21 @@
 "use client";
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { 
-  Lock, 
-  Key, 
+import {
+  Lock,
+  Key,
   Shield,
-  ShieldCheck, 
-  UserPlus, 
-  PlusCircle, 
-  FileText, 
-  Video, 
-  Image as ImageIcon, 
-  Trash2, 
-  ExternalLink, 
-  LogOut, 
-  Utensils, 
-  CheckCircle2, 
+  ShieldCheck,
+  UserPlus,
+  PlusCircle,
+  FileText,
+  Video,
+  Image as ImageIcon,
+  Trash2,
+  ExternalLink,
+  LogOut,
+  Utensils,
+  CheckCircle2,
   Eye,
   MessageSquare,
   Send,
@@ -38,7 +38,8 @@ import {
   X,
   ChevronRight,
   Printer,
-  LayoutGrid
+  LayoutGrid,
+  Bell
 } from 'lucide-react';
 import './admin.css';
 
@@ -47,6 +48,7 @@ const LOCAL_CLIENTS_KEY = 'wfz_local_clients';
 const LOCAL_RESOURCES_KEY = 'wfz_local_resources';
 const LOCAL_MESSAGES_KEY = 'wfz_client_messages';
 const LOCAL_WEIGHINS_KEY = 'wfz_client_weighins';
+const LOCAL_ADMIN_NOTIFS_KEY = 'wfz_admin_notifs';
 
 // =========================================================================
 // SMART MEAL PLAN PARSER FOR ADMIN AUDIT
@@ -81,7 +83,7 @@ function parseCoachMealPlan(text) {
   if (isDayBased) {
     // 1. Split text into Day blocks and Guidelines
     const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
-    
+
     let matches = [];
     let match;
     while ((match = dayRegex.exec(text)) !== null) {
@@ -387,22 +389,22 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
         </div>
 
         <div className="schedule-view-switcher">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'daily' ? 'active' : ''}`}
             onClick={() => setViewMode('daily')}
           >
             <Clock size={15} /> 1. Day-by-Day View
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'matrix' ? 'active' : ''}`}
             onClick={() => setViewMode('matrix')}
           >
             <LayoutGrid size={15} /> 2. Full 7-Day Matrix
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'text' ? 'active' : ''}`}
             onClick={() => setViewMode('text')}
           >
@@ -550,9 +552,94 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
           </div>
         </div>
       )}
+
+      {liveNotice && (
+        <div className="live-toast-alert" style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          background: '#111827',
+          color: '#fff',
+          padding: '1rem 1.2rem',
+          borderRadius: '10px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '0.8rem',
+          maxWidth: '350px',
+          animation: 'slideUpNotif 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
+        }}>
+          <div style={{ background: '#3b82f6', borderRadius: '50%', padding: '0.4rem', flexShrink: 0, display: 'flex' }}>
+            <Bell size={16} color="#fff" />
+          </div>
+          <div>
+            <h4 style={{ margin: '0 0 0.2rem 0', fontSize: '0.9rem', fontWeight: '600' }}>{liveNotice.title}</h4>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#d1d5db', lineHeight: '1.4' }}>{liveNotice.subtitle}</p>
+            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={() => {
+                  setAdminTab(liveNotice.targetTab);
+                  if (liveNotice.targetTab === 'chat' && liveNotice.targetClientId) {
+                    setChatActiveClientId(liveNotice.targetClientId);
+                  }
+                  setLiveNotice(null);
+                }}
+                style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+              >
+                View Details
+              </button>
+              <button 
+                onClick={() => setLiveNotice(null)}
+                style={{ background: 'transparent', color: '#9ca3af', border: '1px solid #4b5563', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
+const playNotificationSound = () => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    const now = ctx.currentTime;
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc1.type = 'sine';
+    osc2.type = 'sine';
+    
+    osc1.frequency.setValueAtTime(587.33, now);
+    osc2.frequency.setValueAtTime(783.99, now + 0.15);
+    
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.5, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc1.start(now);
+    osc1.stop(now + 0.5);
+    
+    osc2.start(now + 0.15);
+    osc2.stop(now + 0.65);
+  } catch (err) {
+    console.warn("Audio error:", err);
+  }
+};
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -599,7 +686,7 @@ export default function AdminPage() {
   // Dedicated Chat Active Client Selection
   const [chatActiveClientId, setChatActiveClientId] = useState('demo-client-1');
   const [chatReplyText, setChatReplyText] = useState('');
-  
+
   // Resource Filter
   const [filterResClientId, setFilterResClientId] = useState('');
 
@@ -612,9 +699,20 @@ export default function AdminPage() {
     client: null
   });
 
+  // Admin Notification System State
+  const [adminNotifications, setAdminNotifications] = useState([]);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [liveNotice, setLiveNotice] = useState(null);
+  const seenAdminItemIdsRef = useRef(new Set());
+
   useEffect(() => {
     // Check existing session
     const savedAuth = sessionStorage.getItem(ADMIN_STORAGE_KEY);
+    
+    // Load local notifications for admin
+    const storedNotifs = JSON.parse(localStorage.getItem(LOCAL_ADMIN_NOTIFS_KEY) || '[]');
+    setAdminNotifications(storedNotifs);
+
     if (savedAuth === 'true') {
       setIsAuthenticated(true);
       fetchData();
@@ -629,7 +727,19 @@ export default function AdminPage() {
       }
     };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    // Auto-polling for live cross-device sync (Vercel)
+    let pollInterval;
+    if (savedAuth === 'true') {
+      pollInterval = setInterval(() => {
+        fetchData();
+      }, 5000);
+    }
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      if (pollInterval) clearInterval(pollInterval);
+    };
   }, []);
 
   const handleAdminLogin = (e) => {
@@ -637,12 +747,12 @@ export default function AdminPage() {
     const cleanPass = passwordInput.trim();
     // Master admin password: wrldfitzone!
     if (
-      cleanPass === 'wrldfitzone!' || 
-      cleanPass.toLowerCase() === 'wrldfitzone!' || 
+      cleanPass === 'wrldfitzone!' ||
+      cleanPass.toLowerCase() === 'wrldfitzone!' ||
       cleanPass.toLowerCase() === 'wrldfitzone' ||
       cleanPass.toLowerCase() === 'worldfitzone!' ||
       cleanPass.toLowerCase() === 'worldfitzone' ||
-      cleanPass.toLowerCase() === 'james2026' || 
+      cleanPass.toLowerCase() === 'james2026' ||
       cleanPass.toLowerCase() === 'admin123'
     ) {
       setIsAuthenticated(true);
@@ -868,9 +978,55 @@ Hydration: 3.0 Litres water daily`
     };
 
     const combinedClients = mergeByTimestamp(localClients, fetchedClients);
-    const combinedResources = mergeByTimestamp(localResources, fetchedResources).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-    const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-    const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const combinedResources = mergeByTimestamp(localResources, fetchedResources).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // --- Admin Notification Logic ---
+    if (seenAdminItemIdsRef.current.size > 0) {
+      let newlyAddedItems = [];
+
+      combinedMessages.forEach(m => {
+        if (m.sender === 'client' && !seenAdminItemIdsRef.current.has("msg_" + m.id)) {
+          newlyAddedItems.push({
+            id: 'notif_' + Date.now() + Math.random(),
+            title: "New Message from " + m.client_name,
+            subtitle: `"${m.text.substring(0, 40)}..."`,
+            targetTab: 'chat',
+            targetClientId: m.client_id,
+            timestamp: new Date().toISOString()
+          });
+        }
+      });
+
+      combinedWeighIns.forEach(w => {
+        if (!seenAdminItemIdsRef.current.has("weigh_" + w.id)) {
+          newlyAddedItems.push({
+            id: 'notif_' + Date.now() + Math.random(),
+            title: "New Fasted Weigh-In",
+            subtitle: `${w.client_name} logged ${w.weight} kg`,
+            targetTab: 'weighins',
+            targetClientId: w.client_id,
+            timestamp: new Date().toISOString()
+          });
+        }
+      });
+
+      if (newlyAddedItems.length > 0) {
+        playNotificationSound();
+        setLiveNotice(newlyAddedItems[0]);
+        
+        setAdminNotifications(prev => {
+          const updated = [...newlyAddedItems, ...prev];
+          localStorage.setItem(LOCAL_ADMIN_NOTIFS_KEY, JSON.stringify(updated));
+          return updated;
+        });
+      }
+    }
+
+    // Update seen references
+    combinedMessages.forEach(m => seenAdminItemIdsRef.current.add("msg_" + m.id));
+    combinedWeighIns.forEach(w => seenAdminItemIdsRef.current.add("weigh_" + w.id));
 
     setClients(combinedClients);
     setResources(combinedResources);
@@ -1082,7 +1238,7 @@ Milk or plain yogurt if you're hungry.`);
 
       try {
         await supabase.from('clients')
-          .update({ 
+          .update({
             name: clientName.trim(),
             pin_code: clientPin.trim(),
             program: clientProgram,
@@ -1094,7 +1250,7 @@ Milk or plain yogurt if you're hungry.`);
             water: targetWater
           })
           .or(`id.eq.${selectedClientToEdit},pin_code.eq.${clientPin.trim()}`);
-      } catch (err) {}
+      } catch (err) { }
 
       window.dispatchEvent(new Event('storage'));
       fetchData();
@@ -1131,11 +1287,6 @@ Milk or plain yogurt if you're hungry.`);
 
     window.dispatchEvent(new Event('storage'));
     alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal, Week ${newClient.current_week}). Saved directly to database!`);
-    
-    // Automatically select the new client for meal plan assignment and chat
-    setResClientId(newClient.id);
-    setChatActiveClientId(newClient.id);
-
     setClientName('');
     setClientPin('');
     setClientCurrentWeek(1);
@@ -1182,7 +1333,7 @@ Milk or plain yogurt if you're hungry.`);
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true);
-    
+
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -1234,10 +1385,10 @@ Milk or plain yogurt if you're hungry.`);
     } : null;
 
     const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-    
+
     // Check existing meal plans for this client
     const clientMealPlans = localResources.filter(r => {
-      const matches = r.client_id === resClientId || 
+      const matches = r.client_id === resClientId ||
         (r.client_pin && selectedClientObj?.pin_code && r.client_pin === selectedClientObj.pin_code) ||
         (isZainSelected && (r.client_id === 'client-zain-1' || r.client_name?.toLowerCase().trim() === 'zain' || r.id?.includes('zain') || r.title?.toLowerCase().includes('zain')));
       return matches && (r.category === 'meal_plan' || r.type === 'meal_plan');
@@ -1247,10 +1398,10 @@ Milk or plain yogurt if you're hungry.`);
     let updatedLocalResources = localResources;
     if (!editingResourceId && resCategory === 'meal_plan') {
       updatedLocalResources = localResources.map(r => {
-        const matches = r.client_id === resClientId || 
+        const matches = r.client_id === resClientId ||
           (r.client_pin && selectedClientObj?.pin_code && r.client_pin === selectedClientObj.pin_code) ||
           (isZainSelected && (r.client_id === 'client-zain-1' || r.client_name?.toLowerCase().trim() === 'zain' || r.id?.includes('zain') || r.title?.toLowerCase().includes('zain')));
-        
+
         if (matches && (r.category === 'meal_plan' || r.type === 'meal_plan') && r.status === 'active') {
           return { ...r, status: 'archived', archived_at: new Date().toISOString() };
         }
@@ -1327,7 +1478,7 @@ Milk or plain yogurt if you're hungry.`);
         }]);
         if (error) console.warn("Supabase resource insert note:", error.message);
       }
-    } catch (err) {}
+    } catch (err) { }
 
     // Save to localStorage
     if (editingResourceId) {
@@ -1338,11 +1489,11 @@ Milk or plain yogurt if you're hungry.`);
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updatedLocalResources));
 
     alert(
-      editingResourceId 
+      editingResourceId
         ? `🟢 "${newResource.title}" updated successfully!`
         : (resCategory === 'meal_plan'
-            ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nPrevious plan safely archived in history.`
-            : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`)
+          ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nPrevious plan safely archived in history.`
+          : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`)
     );
 
     cancelEditResource();
@@ -1379,7 +1530,7 @@ Milk or plain yogurt if you're hungry.`);
 
     const allRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
     const updated = allRes.map(r => {
-      const matchesClient = r.client_id === clientId || 
+      const matchesClient = r.client_id === clientId ||
         (r.client_pin && clientObj?.pin_code && r.client_pin === clientObj.pin_code) ||
         (isZain && (r.client_id === 'client-zain-1' || r.client_name?.toLowerCase().trim() === 'zain' || r.id?.includes('zain') || r.title?.toLowerCase().includes('zain')));
 
@@ -1429,13 +1580,13 @@ Milk or plain yogurt if you're hungry.`);
     }
 
     const filterLocal = (key) => {
-       const items = JSON.parse(localStorage.getItem(key) || '[]');
-       localStorage.setItem(key, JSON.stringify(items.filter(item => item.client_id !== clientId && item.client_pin !== clientPin)));
+      const items = JSON.parse(localStorage.getItem(key) || '[]');
+      localStorage.setItem(key, JSON.stringify(items.filter(item => item.client_id !== clientId && item.client_pin !== clientPin)));
     };
-    
+
     const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
     localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients.filter(c => c.id !== clientId)));
-    
+
     filterLocal(LOCAL_RESOURCES_KEY);
     filterLocal(LOCAL_MESSAGES_KEY);
     filterLocal(LOCAL_WEIGHINS_KEY);
@@ -1450,7 +1601,7 @@ Milk or plain yogurt if you're hungry.`);
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
         await supabase.from('resources').delete().eq('id', id);
-      } catch (e) {}
+      } catch (e) { }
 
       const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const filtered = localResources.filter(r => r.id !== id);
@@ -1491,7 +1642,7 @@ Milk or plain yogurt if you're hungry.`);
         timestamp: newCoachMsg.timestamp,
         status: newCoachMsg.status
       }]).then();
-    } catch (e) {}
+    } catch (e) { }
 
     const allMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
     allMsgs.push(newCoachMsg);
@@ -1522,12 +1673,12 @@ Milk or plain yogurt if you're hungry.`);
           <form onSubmit={handleAdminLogin} className="admin-login-form">
             <div className="admin-input-wrap">
               <Key size={18} className="input-key-icon" />
-              <input 
-                type="password" 
-                placeholder="Enter Admin Password" 
-                value={passwordInput} 
-                onChange={e => setPasswordInput(e.target.value)} 
-                required 
+              <input
+                type="password"
+                placeholder="Enter Admin Password"
+                value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
+                required
                 autoFocus
               />
             </div>
@@ -1554,7 +1705,7 @@ Milk or plain yogurt if you're hungry.`);
 
   return (
     <div className="admin-dashboard-wrapper">
-      
+
       {/* CLEAN TOP BRAND & HEADER */}
       <div className="admin-nav-bar">
         <div className="admin-brand-info">
@@ -1566,11 +1717,112 @@ Milk or plain yogurt if you're hungry.`);
           <p>Assign customized meal plans, written diet routines, training videos, and respond to client check-ins.</p>
         </div>
 
-        <div className="admin-header-actions">
-          <a 
-            href="/resources" 
-            target="_blank" 
-            rel="noreferrer" 
+        <div className="admin-header-actions" style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+          <div className="nav-notif-wrapper" style={{ position: 'relative' }}>
+            <button 
+              className="btn-notif-bell" 
+              onClick={() => setShowNotifs(!showNotifs)}
+              style={{
+                background: '#fff',
+                border: '1px solid #e5e7eb',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+              }}
+            >
+              <Bell size={18} color="#4b5563" />
+              {adminNotifications.length > 0 && (
+                <span className="notif-badge" style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '-5px',
+                  background: '#ef4444',
+                  color: 'white',
+                  fontSize: '0.65rem',
+                  fontWeight: 'bold',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid #fff'
+                }}>
+                  {adminNotifications.length}
+                </span>
+              )}
+            </button>
+
+            {showNotifs && (
+              <div className="notif-dropdown-panel" style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                right: '0',
+                width: '320px',
+                background: '#fff',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                border: '1px solid #e5e7eb',
+                zIndex: 100,
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <div style={{ padding: '1rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9fafb' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#111827' }}>Recent Activity</h4>
+                  {adminNotifications.length > 0 && (
+                    <button 
+                      onClick={() => { setAdminNotifications([]); localStorage.removeItem(LOCAL_ADMIN_NOTIFS_KEY); }}
+                      style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '0.75rem', cursor: 'pointer' }}
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+                <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                  {adminNotifications.length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.85rem' }}>
+                      No new client activity
+                    </div>
+                  ) : (
+                    adminNotifications.map(notif => (
+                      <div 
+                        key={notif.id} 
+                        style={{ padding: '1rem', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background 0.2s' }}
+                        onClick={() => {
+                          setAdminTab(notif.targetTab);
+                          if (notif.targetTab === 'chat' && notif.targetClientId) {
+                            setChatActiveClientId(notif.targetClientId);
+                          }
+                          setShowNotifs(false);
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#f9fafb'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                          <strong style={{ fontSize: '0.85rem', color: '#111827' }}>{notif.title}</strong>
+                          <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>
+                            {new Date(notif.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#4b5563', lineHeight: '1.4' }}>{notif.subtitle}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <a
+            href="/resources"
+            target="_blank"
+            rel="noreferrer"
             className="btn-preview-portal"
           >
             <Eye size={16} /> Open Client Portal (PIN: 12345)
@@ -1618,42 +1870,42 @@ Milk or plain yogurt if you're hungry.`);
 
       {/* MAIN ADMIN NAVIGATION TABS */}
       <div className="admin-section-tabs">
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'overview' ? 'active' : ''}`}
           onClick={() => setAdminTab('overview')}
         >
           <Layers size={17} /> 1. Create &amp; Assign Workspaces
         </button>
 
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'chat' ? 'active' : ''}`}
           onClick={() => setAdminTab('chat')}
         >
           <MessageSquare size={17} /> 2. Live 2-Way Chat Inbox ({messages.length})
         </button>
 
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'clients' ? 'active' : ''}`}
           onClick={() => setAdminTab('clients')}
         >
           <Users size={17} /> 3. Client Profiles &amp; Macros ({clients.length})
         </button>
 
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'weighins' ? 'active' : ''}`}
           onClick={() => setAdminTab('weighins')}
         >
           <Scale size={17} /> 4. Fasted Weigh-In History ({weighIns.length})
         </button>
 
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'resources' ? 'active' : ''}`}
           onClick={() => setAdminTab('resources')}
         >
           <FolderOpen size={17} /> 5. Published Plans Library ({resources.length})
         </button>
 
-        <button 
+        <button
           className={`admin-sec-tab ${adminTab === 'history' ? 'active' : ''}`}
           onClick={() => setAdminTab('history')}
         >
@@ -1666,7 +1918,7 @@ Milk or plain yogurt if you're hungry.`);
          ========================================================================= */}
       {adminTab === 'overview' && (
         <div className="admin-grid-layout">
-          
+
           {/* CARD 1: CREATE NEW CLIENT WITH QUICK MACROS OR ASSIGN TO EXISTING */}
           <div className="admin-panel-card">
             <div className="panel-title-row">
@@ -1742,7 +1994,7 @@ Milk or plain yogurt if you're hungry.`);
               {clientFormMode === 'update_macros' ? (
                 <div className="form-group" style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', marginBottom: '1rem' }}>
                   <label style={{ color: '#071a2b', fontWeight: '800' }}>Select Target Client to Assign / Update Macros:</label>
-                  <select 
+                  <select
                     value={selectedClientToEdit}
                     onChange={(e) => {
                       const cId = e.target.value;
@@ -1772,12 +2024,12 @@ Milk or plain yogurt if you're hungry.`);
               ) : (
                 <div className="form-group">
                   <label>Client Full Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Marcus Thomas" 
-                    value={clientName} 
-                    onChange={e => setClientName(e.target.value)} 
-                    required 
+                  <input
+                    type="text"
+                    placeholder="e.g. Marcus Thomas"
+                    value={clientName}
+                    onChange={e => setClientName(e.target.value)}
+                    required
                   />
                 </div>
               )}
@@ -1785,13 +2037,13 @@ Milk or plain yogurt if you're hungry.`);
               <div className="form-row-2">
                 <div className="form-group">
                   <label>Private PIN Code</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. 54321" 
-                    value={clientPin} 
-                    onChange={e => setClientPin(e.target.value)} 
+                  <input
+                    type="text"
+                    placeholder="e.g. 54321"
+                    value={clientPin}
+                    onChange={e => setClientPin(e.target.value)}
                     maxLength={8}
-                    required 
+                    required
                   />
                 </div>
 
@@ -1814,8 +2066,8 @@ Milk or plain yogurt if you're hungry.`);
                     Week {clientCurrentWeek} of 13
                   </span>
                 </label>
-                <select 
-                  value={clientCurrentWeek} 
+                <select
+                  value={clientCurrentWeek}
                   onChange={e => setClientCurrentWeek(Number(e.target.value))}
                   style={{ width: '100%', padding: '0.65rem 0.8rem', borderRadius: '8px', border: '1.5px solid #7dd3fc', fontWeight: '700', fontSize: '0.9rem', color: '#071a2b', background: '#ffffff' }}
                 >
@@ -1845,11 +2097,11 @@ Milk or plain yogurt if you're hungry.`);
                     <span>Total Daily Target Calories:</span>
                   </div>
                   <div className="calories-input-wrap">
-                    <input 
-                      type="number" 
-                      value={clientCalories} 
-                      onChange={e => setClientCalories(e.target.value)} 
-                      placeholder="2000" 
+                    <input
+                      type="number"
+                      value={clientCalories}
+                      onChange={e => setClientCalories(e.target.value)}
+                      placeholder="2000"
                     />
                     <span className="cal-unit-tag">kcal / day</span>
                   </div>
@@ -1899,7 +2151,7 @@ Milk or plain yogurt if you're hungry.`);
             <p className="panel-sub">Coach James ki marzi: aap written diet text likh sakte hain, video add kar sakte hain, ya image/sheet upload kar sakte hain.</p>
 
             <form onSubmit={handleCreateResource} className="panel-form">
-              
+
               <div className="form-row-2">
                 <div className="form-group">
                   <label>Select Target Client</label>
@@ -1924,12 +2176,12 @@ Milk or plain yogurt if you're hungry.`);
 
               <div className="form-group">
                 <label>Title / Directive Heading</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. Week 4 Fat Loss Diet Protocol OR Deadlift Cues" 
-                  value={resTitle} 
-                  onChange={e => setResTitle(e.target.value)} 
-                  required 
+                <input
+                  type="text"
+                  placeholder="e.g. Week 4 Fat Loss Diet Protocol OR Deadlift Cues"
+                  value={resTitle}
+                  onChange={e => setResTitle(e.target.value)}
+                  required
                 />
               </div>
 
@@ -1937,22 +2189,22 @@ Milk or plain yogurt if you're hungry.`);
               <div className="format-toggle-box">
                 <label>Content Format (Coach&apos;s Choice):</label>
                 <div className="toggle-options">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={`format-btn ${resFormat === 'text' ? 'active' : ''}`}
                     onClick={() => setResFormat('text')}
                   >
                     <FileText size={16} /> 📝 Written Text / Diet
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={`format-btn ${resFormat === 'video' ? 'active' : ''}`}
                     onClick={() => setResFormat('video')}
                   >
                     <Video size={16} /> 🎥 Video Tutorial
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={`format-btn ${resFormat === 'image' ? 'active' : ''}`}
                     onClick={() => setResFormat('image')}
                   >
@@ -1974,7 +2226,7 @@ Milk or plain yogurt if you're hungry.`);
                         <button type="button" onClick={() => applyDietTemplate('refeed')} className="btn-tmpl-pill">⚡ Refeed</button>
                       </div>
                     </div>
-                    <textarea 
+                    <textarea
                       rows={6}
                       placeholder="Write or paste the client's custom routine or click a template above..."
                       value={resTextContent}
@@ -1987,8 +2239,8 @@ Milk or plain yogurt if you're hungry.`);
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#071a2b', fontWeight: 700 }}>
                         <History size={14} color="#155eef" /> Protocol Progression / Change Notes (for Audit Trail)
                       </label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="e.g. Week 2 progression: reduced carbs by 20g, introduced evening fruit"
                         value={resChangeNotes}
                         onChange={e => setResChangeNotes(e.target.value)}
@@ -2007,13 +2259,13 @@ Milk or plain yogurt if you're hungry.`);
                   <label>Upload File ({resFormat === 'video' ? 'Video MP4' : 'Image PNG/JPG'})</label>
                   <input type="file" onChange={handleFileUpload} disabled={uploading} />
                   {uploading && <span className="uploading-badge">Uploading file to server...</span>}
-                  
+
                   <div className="or-divider">OR Media URL</div>
-                  <input 
-                    type="text" 
-                    placeholder={resFormat === 'video' ? "/canuzunnn__pindown.io_1787244520.mp4" : "https://... or /images/..."} 
-                    value={resUrl} 
-                    onChange={e => setResUrl(e.target.value)} 
+                  <input
+                    type="text"
+                    placeholder={resFormat === 'video' ? "/canuzunnn__pindown.io_1787244520.mp4" : "https://... or /images/..."}
+                    value={resUrl}
+                    onChange={e => setResUrl(e.target.value)}
                   />
                 </div>
               )}
@@ -2053,8 +2305,8 @@ Milk or plain yogurt if you're hungry.`);
                 const isSelected = c.id === chatActiveClientId;
 
                 return (
-                  <div 
-                    key={c.id} 
+                  <div
+                    key={c.id}
                     className={`sidebar-client-item ${isSelected ? 'selected' : ''}`}
                     onClick={() => setChatActiveClientId(c.id)}
                   >
@@ -2087,11 +2339,11 @@ Milk or plain yogurt if you're hungry.`);
                 </div>
               </div>
 
-              <a 
-                href="/resources" 
-                target="_blank" 
-                rel="noreferrer" 
-                className="btn-preview-portal" 
+              <a
+                href="/resources"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-preview-portal"
                 style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}
               >
                 <Eye size={14} /> Open Portal as Client
@@ -2125,8 +2377,8 @@ Milk or plain yogurt if you're hungry.`);
 
             {/* REPLY BOX */}
             <form onSubmit={handleSendDedicatedChatReply} className="chat-reply-input-bar">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder={`Type direct response to ${currentChatClient.name}...`}
                 value={chatReplyText}
                 onChange={e => setChatReplyText(e.target.value)}
@@ -2201,8 +2453,8 @@ Milk or plain yogurt if you're hungry.`);
                         </span>
                       </td>
                       <td style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-table-edit-macros"
                           onClick={() => handleEditClientMacros(c)}
                           style={{
@@ -2241,8 +2493,8 @@ Milk or plain yogurt if you're hungry.`);
                         </button>
                       </td>
                       <td>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-table-history"
                           onClick={() => {
                             setSelectedAuditClientId(c.id);
@@ -2254,10 +2506,10 @@ Milk or plain yogurt if you're hungry.`);
                         </button>
                       </td>
                       <td>
-                        <a 
-                          href={`/resources`} 
-                          target="_blank" 
-                          rel="noreferrer" 
+                        <a
+                          href={`/resources`}
+                          target="_blank"
+                          rel="noreferrer"
                           className="table-link"
                         >
                           Launch Portal (PIN: {c.pin_code}) <ExternalLink size={13} />
@@ -2332,8 +2584,8 @@ Milk or plain yogurt if you're hungry.`);
               <span className="total-badge">{resources.length} Published Items</span>
             </div>
             <div>
-              <select 
-                value={filterResClientId} 
+              <select
+                value={filterResClientId}
                 onChange={e => setFilterResClientId(e.target.value)}
                 style={{
                   padding: '0.5rem',
@@ -2377,73 +2629,73 @@ Milk or plain yogurt if you're hungry.`);
                     .filter(r => filterResClientId ? r.client_id === filterResClientId : true)
                     .map(r => {
                       const clientObj = clients.find(c => c.id === r.client_id);
-                    const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
-                    const isActive = r.status === 'active';
+                      const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
+                      const isActive = r.status === 'active';
 
-                    return (
-                      <tr key={r.id}>
-                        <td><strong>{clientObj ? clientObj.name : 'Marcus T.'}</strong></td>
-                        <td>{r.title}</td>
-                        <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
-                        <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>
-                        <td>
-                          {isMeal ? (
-                            <span 
-                              className={`status-pill ${isActive ? 'active-pill' : 'archived-pill'}`}
-                              style={{ 
-                                display: 'inline-flex', 
-                                alignItems: 'center', 
-                                gap: '0.3rem', 
-                                padding: '0.2rem 0.6rem', 
-                                borderRadius: '50px', 
-                                fontSize: '0.75rem', 
-                                fontWeight: 800,
-                                background: isActive ? '#ecfdf5' : '#f1f5f9',
-                                color: isActive ? '#059669' : '#64748b'
-                              }}
-                            >
-                              {isActive ? '🟢 Active' : '⚪ Archived'}
-                            </span>
-                          ) : (
-                            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Published</span>
-                          )}
-                        </td>
-                        <td className="content-cell">
-                          {r.content_text ? (
-                            <span title={r.content_text}>
-                              {r.content_text.substring(0, 75)}...
-                            </span>
-                          ) : (
-                            <span className="url-preview">{r.content_url || 'Media File'}</span>
-                          )}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                            {isMeal && clientObj && (
-                              <button 
-                                type="button"
-                                className="btn-table-history"
-                                onClick={() => {
-                                  setSelectedAuditClientId(clientObj.id);
-                                  setAdminTab('history');
+                      return (
+                        <tr key={r.id}>
+                          <td><strong>{clientObj ? clientObj.name : 'Marcus T.'}</strong></td>
+                          <td>{r.title}</td>
+                          <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
+                          <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>
+                          <td>
+                            {isMeal ? (
+                              <span
+                                className={`status-pill ${isActive ? 'active-pill' : 'archived-pill'}`}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  padding: '0.2rem 0.6rem',
+                                  borderRadius: '50px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 800,
+                                  background: isActive ? '#ecfdf5' : '#f1f5f9',
+                                  color: isActive ? '#059669' : '#64748b'
                                 }}
-                                title="Open this client's Diet Audit Timeline"
-                                style={{ padding: '0.4rem 0.65rem', fontSize: '0.76rem' }}
                               >
-                                <History size={12} /> Audit
-                              </button>
+                                {isActive ? '🟢 Active' : '⚪ Archived'}
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Published</span>
                             )}
-                            <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
-                              Edit
-                            </button>
-                            <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete">
-                              <Trash2 size={15} /> Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
+                          </td>
+                          <td className="content-cell">
+                            {r.content_text ? (
+                              <span title={r.content_text}>
+                                {r.content_text.substring(0, 75)}...
+                              </span>
+                            ) : (
+                              <span className="url-preview">{r.content_url || 'Media File'}</span>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                              {isMeal && clientObj && (
+                                <button
+                                  type="button"
+                                  className="btn-table-history"
+                                  onClick={() => {
+                                    setSelectedAuditClientId(clientObj.id);
+                                    setAdminTab('history');
+                                  }}
+                                  title="Open this client's Diet Audit Timeline"
+                                  style={{ padding: '0.4rem 0.65rem', fontSize: '0.76rem' }}
+                                >
+                                  <History size={12} /> Audit
+                                </button>
+                              )}
+                              <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
+                                Edit
+                              </button>
+                              <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete">
+                                <Trash2 size={15} /> Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                 )}
               </tbody>
             </table>
@@ -2523,7 +2775,7 @@ Sun: Light dinner — eggs/chicken + salad
 Milk or plain yogurt if you're hungry.`
           });
         }
-        
+
         // Find current active protocol
         const activeProtocol = clientMealPlans.find(r => r.status === 'active') || clientMealPlans[0];
         // All archived protocols sorted newest first
@@ -2531,7 +2783,7 @@ Milk or plain yogurt if you're hungry.`
 
         return (
           <div className="admin-audit-section">
-            
+
             {/* TOP HEADER WITH CLIENT SELECTOR */}
             <div className="audit-header-banner">
               <div className="audit-header-info">
@@ -2547,8 +2799,8 @@ Milk or plain yogurt if you're hungry.`
               {/* CLIENT SELECTOR */}
               <div className="audit-client-selector-box">
                 <label><Users size={15} /> Viewing Timeline For:</label>
-                <select 
-                  value={activeAuditClient.id} 
+                <select
+                  value={activeAuditClient.id}
                   onChange={e => setSelectedAuditClientId(e.target.value)}
                   className="audit-client-select"
                 >
@@ -2595,10 +2847,10 @@ Milk or plain yogurt if you're hungry.`
                   <span className="dot-pulse"></span> 🟢 AB KYA DIYA HAI &bull; CURRENT ACTIVE PROTOCOL
                 </div>
                 <div className="audit-header-actions">
-                  <a 
-                    href="/resources" 
-                    target="_blank" 
-                    rel="noreferrer" 
+                  <a
+                    href="/resources"
+                    target="_blank"
+                    rel="noreferrer"
                     className="btn-audit-preview"
                   >
                     <Eye size={14} /> Open in Client Portal
@@ -2642,10 +2894,10 @@ Milk or plain yogurt if you're hungry.`
 
                   {/* ORGANIZED 7-DAY MEAL SCHEDULE & DAY-BY-DAY VIEW */}
                   <div style={{ marginTop: '0.75rem' }}>
-                    <OrganizedMealSchedule 
-                      plan={activeProtocol} 
-                      client={activeAuditClient} 
-                      defaultMatrix={true} 
+                    <OrganizedMealSchedule
+                      plan={activeProtocol}
+                      client={activeAuditClient}
+                      defaultMatrix={true}
                     />
                   </div>
                 </div>
@@ -2722,8 +2974,8 @@ Milk or plain yogurt if you're hungry.`
 
                       {/* ACTIONS: COMPARE OR REACTIVATE */}
                       <div className="timeline-card-actions">
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-action-compare"
                           onClick={() => handleOpenDiff(prev, activeProtocol, activeAuditClient)}
                           title="Compare this previous plan with current active plan"
@@ -2731,8 +2983,8 @@ Milk or plain yogurt if you're hungry.`
                           <GitCompare size={15} /> Compare Pehle vs Ab
                         </button>
 
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-action-reactivate"
                           onClick={() => handleReactivatePlan(prev.id, activeAuditClient.id)}
                           title="Reactivate this plan as the active protocol"
@@ -2740,8 +2992,8 @@ Milk or plain yogurt if you're hungry.`
                           <RotateCcw size={14} /> Reactivate as Active
                         </button>
 
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-action-del-history"
                           onClick={() => handleDeleteResource(prev.id)}
                           title="Delete from history"
@@ -2765,7 +3017,7 @@ Milk or plain yogurt if you're hungry.`
       {diffModal.isOpen && diffModal.prevPlan && diffModal.currPlan && (
         <div className="diet-diff-modal-backdrop" onClick={handleCloseDiff}>
           <div className="diet-diff-modal-window" onClick={e => e.stopPropagation()}>
-            
+
             {/* MODAL HEADER */}
             <div className="diff-modal-header">
               <div className="diff-modal-title-group">
@@ -2832,7 +3084,7 @@ Milk or plain yogurt if you're hungry.`
 
             {/* SIDE-BY-SIDE COLUMNS */}
             <div className="diff-columns-grid">
-              
+
               {/* LEFT COLUMN: PEHLE KYA DIYA THA */}
               <div className="diff-column col-prev">
                 <div className="diff-col-header">
@@ -2879,16 +3131,16 @@ Milk or plain yogurt if you're hungry.`
 
             {/* MODAL FOOTER */}
             <div className="diff-modal-footer">
-              <button 
-                type="button" 
-                className="btn-diff-print" 
+              <button
+                type="button"
+                className="btn-diff-print"
                 onClick={() => window.print()}
               >
                 <Printer size={15} /> Print / Save Audit PDF
               </button>
-              <button 
-                type="button" 
-                className="btn-diff-close" 
+              <button
+                type="button"
+                className="btn-diff-close"
                 onClick={handleCloseDiff}
               >
                 Close Comparison

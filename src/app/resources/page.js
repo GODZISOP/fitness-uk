@@ -1,22 +1,22 @@
 "use client";
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { 
-  Utensils, 
-  Video, 
-  Calendar, 
-  Clock, 
-  Flame, 
-  Dumbbell, 
-  Shield, 
-  LogOut, 
-  ChevronRight, 
-  CheckCircle2, 
-  Lock, 
-  FileText, 
-  Sparkles, 
-  User, 
-  Droplet, 
+import {
+  Utensils,
+  Video,
+  Calendar,
+  Clock,
+  Flame,
+  Dumbbell,
+  Shield,
+  LogOut,
+  ChevronRight,
+  CheckCircle2,
+  Lock,
+  FileText,
+  Sparkles,
+  User,
+  Droplet,
   Check,
   MessageSquare,
   Send,
@@ -154,7 +154,7 @@ function parseCoachMealPlan(text) {
   if (isDayBased) {
     // 1. Split text into Day blocks and Guidelines
     const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
-    
+
     let matches = [];
     let match;
     while ((match = dayRegex.exec(text)) !== null) {
@@ -491,22 +491,22 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
 
         {/* VIEW MODE TOGGLE BUTTONS */}
         <div className="schedule-view-switcher">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'matrix' ? 'active' : ''}`}
             onClick={() => setViewMode('matrix')}
           >
             <LayoutGrid size={15} /> 1. Full 7-Day Matrix Table
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'daily' ? 'active' : ''}`}
             onClick={() => setViewMode('daily')}
           >
             <Clock size={15} /> 2. Day-by-Day View
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`schedule-view-btn ${viewMode === 'text' ? 'active' : ''}`}
             onClick={() => setViewMode('text')}
           >
@@ -562,8 +562,8 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
 
             <div className="active-day-right-actions">
               {selectedDay !== todayKey && (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-day-nav-quick"
                   onClick={() => setSelectedDay(todayKey)}
                   title="Jump to today"
@@ -572,8 +572,8 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
                 </button>
               )}
               {selectedDay !== 'mon' && (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-day-nav-quick"
                   onClick={() => setSelectedDay('mon')}
                   title="Go to Day 1"
@@ -604,8 +604,8 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
                       <span className="meal-category-pill">{sec.title}</span>
                     </div>
 
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => toggleSlotEaten(selectedDay, sec.id)}
                       className={`btn-toggle-slot ${isEaten ? 'checked' : ''}`}
                     >
@@ -626,8 +626,8 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
                       <p>{foodText}</p>
                     </div>
 
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-ask-coach-swap"
                       onClick={() => onAskCoach(sec.title, parsed.dayNames[selectedDay], foodText)}
                       title="Ask Coach James about meal substitution or timing"
@@ -1000,7 +1000,7 @@ export default function ResourcesPage() {
           .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
           .order('created_at', { ascending: false });
         if (data && data.length > 0) dbRes = data;
-      } catch (e) {}
+      } catch (e) { }
 
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const combinedRes = extractClientResources([...dbRes, ...localRes], client);
@@ -1017,8 +1017,8 @@ export default function ResourcesPage() {
           const isMealPlan = newlyAdded.category === 'meal_plan' || newlyAdded.format === 'text' || newlyAdded.type === 'meal_plan';
           const isVideo = newlyAdded.format === 'video' || newlyAdded.type === 'routine_video';
           const targetTab = isMealPlan ? 'meal_plan' : (isVideo ? 'videos' : 'meal_plan');
-          const title = isMealPlan 
-            ? "Coach James updated your Meal Plan!" 
+          const title = isMealPlan
+            ? "Coach James updated your Meal Plan!"
             : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
           const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
 
@@ -1031,20 +1031,20 @@ export default function ResourcesPage() {
           };
 
           setLiveNotice(noticeObj);
-          
+
           setNotifications(prev => {
             const exists = prev.some(n => n.id === noticeObj.id);
             if (exists) return prev;
-            const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+            const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
             localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
             return updated;
           });
         }
       }
-      combinedRes.forEach(r => { 
+      combinedRes.forEach(r => {
         if (r?.id) {
           const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
-          seenResourceIdsRef.current.add(trackingKey); 
+          seenResourceIdsRef.current.add(trackingKey);
         }
       });
       setResources(combinedRes);
@@ -1058,7 +1058,7 @@ export default function ResourcesPage() {
           .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
           .order('timestamp', { ascending: true });
         if (data && data.length > 0) dbMsgs = data;
-      } catch (e) {}
+      } catch (e) { }
 
       const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
       const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === client.pin_code || m.client_id === client.id);
@@ -1067,7 +1067,7 @@ export default function ResourcesPage() {
       [...filteredLocalMsgs, ...dbMsgs].forEach(m => {
         if (m && m.id) msgMap.set(m.id, m);
       });
-      const combinedMsgs = Array.from(msgMap.values()).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+      const combinedMsgs = Array.from(msgMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
       // Check if Coach James just sent a direct reply!
       if (seenMessageIdsRef.current.size > 0) {
@@ -1082,13 +1082,13 @@ export default function ResourcesPage() {
               targetTab: 'messenger',
               icon: "💬"
             };
-            
+
             setLiveNotice(noticeObj);
-            
+
             setNotifications(prev => {
               const exists = prev.some(n => n.id === noticeObj.id);
               if (exists) return prev;
-              const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+              const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
               localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
               return updated;
             });
@@ -1107,7 +1107,7 @@ export default function ResourcesPage() {
           .eq('pin_code', client.pin_code)
           .single();
         if (data) dbClient = data;
-      } catch (e) {}
+      } catch (e) { }
 
       const allClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
       const localUpdatedClient = allClients.find(c => c.pin_code === client.pin_code || c.id === client.id);
@@ -1116,21 +1116,19 @@ export default function ResourcesPage() {
       if (activeData) {
         let profileChanged = false;
         let changeDetails = "Your profile has been updated by Coach James.";
-        
+
         if (
-            client.calories && (
-              client.calories !== activeData.calories ||
-              client.protein !== activeData.protein ||
-              client.carbs !== activeData.carbs ||
-              client.fats !== activeData.fats ||
-              client.water !== activeData.water
-            )
+          client.calories !== activeData.calories ||
+          client.protein !== activeData.protein ||
+          client.carbs !== activeData.carbs ||
+          client.fats !== activeData.fats ||
+          client.water !== activeData.water
         ) {
-            profileChanged = true;
-            changeDetails = "Coach James updated your daily macronutrient targets.";
-        } else if (client.current_week && client.current_week !== activeData.current_week) {
-            profileChanged = true;
-            changeDetails = `You have progressed to Week ${activeData.current_week}!`;
+          profileChanged = true;
+          changeDetails = "Coach James updated your daily macronutrient targets.";
+        } else if (client.current_week !== activeData.current_week) {
+          profileChanged = true;
+          changeDetails = `You have progressed to Week ${activeData.current_week}!`;
         }
 
         if (profileChanged) {
@@ -1144,7 +1142,7 @@ export default function ResourcesPage() {
           };
           setLiveNotice(noticeObj);
           setNotifications(prev => {
-            const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+            const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
             localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
             return updated;
           });
@@ -1243,7 +1241,7 @@ export default function ResourcesPage() {
         const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
         const clientLocalRes = extractClientResources([...(resData || []), ...localRes], activeClientObj);
         setResources(clientLocalRes);
-        
+
         // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
         const seenIds = clientLocalRes
           .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
@@ -1263,7 +1261,7 @@ export default function ResourcesPage() {
         [...filteredLocalMsgs, ...(mData || [])].forEach(m => {
           if (m && m.id) msgMap.set(m.id, m);
         });
-        const combinedMsgs = Array.from(msgMap.values()).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+        const combinedMsgs = Array.from(msgMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         setChatMessages(combinedMsgs);
         seenMessageIdsRef.current = new Set(combinedMsgs.map(m => m.id));
 
@@ -1294,7 +1292,7 @@ export default function ResourcesPage() {
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
       setResources(clientLocalRes);
-      
+
       // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
       const seenIds = clientLocalRes
         .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
@@ -1363,7 +1361,7 @@ export default function ResourcesPage() {
         timestamp: newMsg.timestamp,
         status: newMsg.status
       }]).then();
-    } catch (e) {}
+    } catch (e) { }
 
     const allMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
     allMsgs.push(newMsg);
@@ -1397,13 +1395,13 @@ export default function ResourcesPage() {
 
           <form onSubmit={handleLogin}>
             <div className="input-wrap">
-              <input 
-                type="password" 
-                placeholder="Enter your 4-6 digit private PIN" 
-                value={pin} 
-                onChange={e => setPin(e.target.value)} 
+              <input
+                type="password"
+                placeholder="Enter your 4-6 digit private PIN"
+                value={pin}
+                onChange={e => setPin(e.target.value)}
                 maxLength={8}
-                required 
+                required
               />
             </div>
             {errorMsg && <p className="error-text">{errorMsg}</p>}
@@ -1421,8 +1419,8 @@ export default function ResourcesPage() {
           </div>
 
           <div style={{ marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px solid #e2e8f0' }}>
-            <a 
-              href="/admin" 
+            <a
+              href="/admin"
               style={{ fontSize: '0.82rem', color: '#64748b', textDecoration: 'none', fontWeight: '600' }}
             >
               Coach James? Switch to <strong>Trainer Admin Portal &rarr;</strong>
@@ -1435,10 +1433,10 @@ export default function ResourcesPage() {
 
   return (
     <div className="client-portal-wrapper" onContextMenu={disableRightClick}>
-      
+
       {/* REAL-TIME AUDIO & VISUAL NOTIFICATION TOAST */}
       {liveNotice && (
-        <div 
+        <div
           className="live-notification-toast"
           onClick={() => {
             setActiveTab(liveNotice.targetTab);
@@ -1461,7 +1459,7 @@ export default function ResourcesPage() {
               <span>Click to view {liveNotice.targetTab === 'meal_plan' ? 'Meal Plan' : liveNotice.targetTab === 'videos' ? 'Exercise Videos' : 'Messages'} immediately &rarr;</span>
             </div>
           </div>
-          <button 
+          <button
             type="button"
             className="live-toast-dismiss"
             onClick={(e) => {
@@ -1486,8 +1484,8 @@ export default function ResourcesPage() {
           <button onClick={handlePrintPlan} className="btn-print-plan" title="Print Meal Plan">
             <Printer size={15} /> Print / PDF
           </button>
-          
-          <button 
+
+          <button
             className="btn-print-plan"
             onClick={() => {
               setActiveTab('notifications');
@@ -1582,7 +1580,7 @@ export default function ResourcesPage() {
 
       {/* NAVIGATION TABS */}
       <div className="portal-tabs-nav">
-        <button 
+        <button
           className={`portal-tab ${activeTab === 'meal_plan' ? 'active' : ''}`}
           onClick={() => setActiveTab('meal_plan')}
         >
@@ -1590,7 +1588,7 @@ export default function ResourcesPage() {
           <span>Meal Plan of the Day</span>
         </button>
 
-        <button 
+        <button
           className={`portal-tab ${activeTab === 'videos' ? 'active' : ''}`}
           onClick={() => setActiveTab('videos')}
         >
@@ -1598,7 +1596,7 @@ export default function ResourcesPage() {
           <span>Routine Exercise Videos</span>
         </button>
 
-        <button 
+        <button
           className={`portal-tab ${activeTab === 'messenger' ? 'active' : ''}`}
           onClick={() => setActiveTab('messenger')}
         >
@@ -1606,7 +1604,7 @@ export default function ResourcesPage() {
           <span>Text Coach James {chatMessages.length > 0 && `(${chatMessages.length})`}</span>
         </button>
 
-        <button 
+        <button
           className={`portal-tab ${activeTab === 'weeks' ? 'active' : ''}`}
           onClick={() => setActiveTab('weeks')}
         >
@@ -1614,7 +1612,7 @@ export default function ResourcesPage() {
           <span>13-Week Transformation Timeline</span>
         </button>
 
-        <button 
+        <button
           className={`portal-tab ${activeTab === 'guidelines' ? 'active' : ''}`}
           onClick={() => setActiveTab('guidelines')}
         >
@@ -1640,7 +1638,7 @@ export default function ResourcesPage() {
               </button>
             )}
           </div>
-          
+
           <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {notifications.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#94a3b8', background: '#f8fafc', borderRadius: '16px' }}>
@@ -1864,15 +1862,15 @@ export default function ResourcesPage() {
           {/* MEAL SCHEDULE RENDER: EXPANDED ONLY WHEN USER CHOOSES */}
           {activePlan && isScheduleOpen && (
             <div className="focused-plan-view-area">
-              <OrganizedMealSchedule 
+              <OrganizedMealSchedule
                 plan={activePlan}
                 client={client}
                 onAskCoach={handleAskCoachAboutMeal}
               />
               <div className="schedule-bottom-collapse-bar">
                 <span>Finished reviewing &ldquo;{activePlan.title}&rdquo;?</span>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-collapse-bottom"
                   onClick={() => setIsScheduleOpen(false)}
                 >
@@ -1918,10 +1916,10 @@ export default function ResourcesPage() {
                   </div>
                   <h3 className="meal-title">{sheet.title}</h3>
                   <div style={{ marginTop: '1rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                    <img 
-                      src={sheet.content_url} 
-                      alt={sheet.title} 
-                      style={{ width: '100%', maxHeight: '450px', objectFit: 'contain', background: '#0a1626' }} 
+                    <img
+                      src={sheet.content_url}
+                      alt={sheet.title}
+                      style={{ width: '100%', maxHeight: '450px', objectFit: 'contain', background: '#0a1626' }}
                     />
                   </div>
                 </div>
@@ -1950,7 +1948,7 @@ export default function ResourcesPage() {
                         <span className="badge-c">C: {meal.carbs}</span>
                         <span className="badge-f">F: {meal.fats}</span>
                       </div>
-                      <button 
+                      <button
                         onClick={() => toggleMealEaten(meal.id)}
                         className={`btn-meal-check ${isEaten ? 'checked' : ''}`}
                       >
@@ -2010,10 +2008,10 @@ export default function ResourcesPage() {
                 </div>
 
                 <div className="video-player-wrap">
-                  <video 
-                    src={video.content_url || "/canuzunnn__pindown.io_1787244520.mp4"} 
-                    controls 
-                    controlsList="nodownload" 
+                  <video
+                    src={video.content_url || "/canuzunnn__pindown.io_1787244520.mp4"}
+                    controls
+                    controlsList="nodownload"
                     className="protected-video"
                     preload="metadata"
                   />
@@ -2039,10 +2037,10 @@ export default function ResourcesPage() {
                 </div>
 
                 <div className="video-player-wrap">
-                  <video 
-                    src={video.url} 
-                    controls 
-                    controlsList="nodownload" 
+                  <video
+                    src={video.url}
+                    controls
+                    controlsList="nodownload"
                     className="protected-video"
                     preload="metadata"
                   />
@@ -2108,7 +2106,7 @@ export default function ResourcesPage() {
             </div>
 
             <form onSubmit={handleSendClientMessage} className="messenger-form" style={{ marginTop: '1.5rem' }}>
-              <textarea 
+              <textarea
                 rows={3}
                 placeholder="Type your message or Sunday check-in to Coach James..."
                 value={clientMsgText}
@@ -2158,8 +2156,8 @@ export default function ResourcesPage() {
               if (isCurrent) weekStatus = 'Active (Current)';
 
               return (
-                <div 
-                  key={w.week} 
+                <div
+                  key={w.week}
                   className={`week-row-card ${isCurrent ? 'current-week' : ''} ${isCompleted ? 'completed-week' : ''} ${isSelected ? 'selected-week' : ''}`}
                   onClick={() => setSelectedWeek(w.week)}
                 >
