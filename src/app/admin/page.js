@@ -737,6 +737,7 @@ export default function AdminPage() {
   const [liveNotice, setLiveNotice] = useState(null);
   const seenAdminItemIdsRef = useRef(new Set());
   const chatScrollRef = useRef(null);
+  const deletedResourceIdsRef = useRef(new Set()); // Tracks locally deleted IDs so polling doesn't restore them
 
   useEffect(() => {
     // Check existing session
@@ -1041,7 +1042,10 @@ Hydration: 3.0 Litres water daily`
     };
 
     const combinedClients = mergeByTimestamp(localClients, fetchedClients);
-    const combinedResources = mergeByTimestamp(localResources, fetchedResources).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    // Filter out any resources the user has already deleted (prevents polling from restoring them)
+    const combinedResources = mergeByTimestamp(localResources, fetchedResources)
+      .filter(r => !deletedResourceIdsRef.current.has(r.id))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
@@ -1740,6 +1744,9 @@ water 3 liters a day. workout is 5pm.`);
 
   const handleDeleteResource = (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
+      // Track the deleted ID so polling never restores it
+      deletedResourceIdsRef.current.add(id);
+
       // INSTANT: update UI and localStorage immediately
       const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const filtered = localResources.filter(r => r.id !== id);
