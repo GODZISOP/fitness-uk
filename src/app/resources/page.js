@@ -902,6 +902,11 @@ export default function ResourcesPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [activeTab, setActiveTab] = useState('meal_plan'); // meal_plan, videos, messenger, weeks, guidelines
+  const activeTabRef = useRef('meal_plan');
+
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
   const [selectedWeek, setSelectedWeek] = useState(1);
 
   // Live Toast & Audio Notification State
@@ -1039,14 +1044,16 @@ export default function ResourcesPage() {
       if (seenMessageIdsRef.current.size > 0) {
         const newCoachMsg = combinedMsgs.find(m => m && m.id && m.sender === 'coach' && !seenMessageIdsRef.current.has(m.id));
         if (newCoachMsg) {
-          playNotificationSound();
-          setLiveNotice({
-            id: newCoachMsg.id,
-            title: "New Message from Coach James!",
-            subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
-            targetTab: 'messenger',
-            icon: "💬"
-          });
+          if (activeTabRef.current !== 'messenger') {
+            playNotificationSound();
+            setLiveNotice({
+              id: newCoachMsg.id,
+              title: "New Message from Coach James!",
+              subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
+              targetTab: 'messenger',
+              icon: "💬"
+            });
+          }
         }
       }
       combinedMsgs.forEach(m => { if (m?.id) seenMessageIdsRef.current.add(m.id); });
@@ -1118,12 +1125,9 @@ export default function ResourcesPage() {
     };
   }, [client]);
 
+  // Live notice will now persist until the user explicitly clicks it or dismisses it
   useEffect(() => {
-    if (liveNotice) {
-      // Increased timeout to 25 seconds so they don't miss it if switching tabs
-      const timer = setTimeout(() => setLiveNotice(null), 25000);
-      return () => clearTimeout(timer);
-    }
+    // Intentionally removed auto-dismiss timeout based on user feedback
   }, [liveNotice]);
 
   const handleLogin = async (e) => {
