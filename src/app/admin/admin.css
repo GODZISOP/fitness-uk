@@ -844,7 +844,8 @@
   background: #f1f5f9;
 }
 
-.sidebar-client-item.active {
+.sidebar-client-item.active,
+.sidebar-client-item.selected {
   background: #f0f7ff;
   border-left: 4px solid var(--color-primary, #155eef);
 }
@@ -863,7 +864,8 @@
   flex-shrink: 0;
 }
 
-.sidebar-info {
+.sidebar-info,
+.sidebar-meta {
   flex-grow: 1;
   overflow: hidden;
 }
