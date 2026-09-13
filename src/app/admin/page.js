@@ -604,13 +604,34 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
   );
 }
 
+let persistentAdminAudioCtx = null;
+
+function getAdminAudioContext() {
+  if (typeof window === 'undefined') return null;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!persistentAdminAudioCtx || persistentAdminAudioCtx.state === 'closed') {
+    persistentAdminAudioCtx = new AudioCtx();
+  }
+  if (persistentAdminAudioCtx.state === 'suspended') {
+    persistentAdminAudioCtx.resume().catch(() => {});
+  }
+  return persistentAdminAudioCtx;
+}
+
+function unlockAdminAudio() {
+  const ctx = getAdminAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+}
+
 const playNotificationSound = () => {
   try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
+    const ctx = getAdminAudioContext();
+    if (!ctx) return;
     if (ctx.state === 'suspended') {
-      ctx.resume();
+      ctx.resume().catch(() => {});
     }
     const now = ctx.currentTime;
     const osc1 = ctx.createOscillator();
@@ -720,6 +741,11 @@ export default function AdminPage() {
       setLoading(false);
     }
 
+    // Mobile Audio Unlock Listener
+    const unlockHandler = () => unlockAdminAudio();
+    window.addEventListener('touchstart', unlockHandler, { passive: true });
+    window.addEventListener('click', unlockHandler, { passive: true });
+
     // Live Cross-Tab Synchronization
     const handleStorageChange = (e) => {
       if (e.key?.startsWith('wfz_')) {
@@ -737,6 +763,8 @@ export default function AdminPage() {
     }
 
     return () => {
+      window.removeEventListener('touchstart', unlockHandler);
+      window.removeEventListener('click', unlockHandler);
       window.removeEventListener('storage', handleStorageChange);
       if (pollInterval) clearInterval(pollInterval);
     };
@@ -744,6 +772,7 @@ export default function AdminPage() {
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
+    unlockAdminAudio();
     const cleanPass = passwordInput.trim();
     // Master admin password: wrldfitzone!
     if (
@@ -981,6 +1010,41 @@ Hydration: 3.0 Litres water daily`
     const combinedResources = mergeByTimestamp(localResources, fetchedResources).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Auto-sync any unsynced local resources to Supabase so other phones get them immediately
+    if (localResources.length > 0) {
+      const unsynced = localResources.filter(lr => 
+        lr && lr.id && 
+        !lr.id.startsWith('res-zain-') && 
+        !fetchedResources.some(fr => fr.id === lr.id)
+      );
+      if (unsynced.length > 0) {
+        (async () => {
+          for (const item of unsynced) {
+            try {
+              await supabase.from('resources').insert([{
+                id: item.id,
+                client_id: item.client_id,
+                client_name: item.client_name,
+                client_pin: item.client_pin,
+                title: item.title,
+                category: item.category,
+                type: item.type,
+                format: item.format,
+                status: item.status || 'active',
+                version: item.version || 1,
+                change_notes: item.change_notes || '',
+                content_text: item.content_text || '',
+                content_url: item.content_url || '',
+                layout_type: item.layout_type || 'layout_a',
+                assigned_at: item.assigned_at || new Date().toISOString(),
+                created_at: item.created_at || new Date().toISOString()
+              }]);
+            } catch (e) { }
+          }
+        })();
+      }
+    }
 
     // --- Admin Notification Logic ---
     if (seenAdminItemIdsRef.current.size > 0) {
@@ -1452,11 +1516,24 @@ Milk or plain yogurt if you're hungry.`);
           change_notes: newResource.change_notes,
           content_text: newResource.content_text,
           content_url: newResource.content_url,
-          layout_type: newResource.layout_type,
-          updated_at: newResource.updated_at
+          layout_type: newResource.layout_type
         }).eq('id', editingResourceId);
         if (error) console.warn("Supabase resource update note:", error.message);
       } else {
+        // Archive previously active meal plans for this client in Supabase
+        if (resCategory === 'meal_plan') {
+          try {
+            await supabase
+              .from('resources')
+              .update({ status: 'archived', archived_at: new Date().toISOString() })
+              .or(`client_id.eq.${newResource.client_id},client_pin.eq.${newResource.client_pin}`)
+              .eq('category', 'meal_plan')
+              .eq('status', 'active');
+          } catch (e) {
+            console.warn("Supabase archive previous error:", e);
+          }
+        }
+
         const { error } = await supabase.from('resources').insert([{
           id: newResource.id,
           client_id: newResource.client_id,
@@ -1473,12 +1550,15 @@ Milk or plain yogurt if you're hungry.`);
           content_url: newResource.content_url,
           layout_type: newResource.layout_type,
           assigned_at: newResource.assigned_at,
-          created_at: newResource.created_at,
-          updated_at: newResource.updated_at
+          created_at: newResource.created_at
         }]);
-        if (error) console.warn("Supabase resource insert note:", error.message);
+        if (error) {
+          console.error("Supabase resource insert error:", error.message);
+        }
       }
-    } catch (err) { }
+    } catch (err) {
+      console.error("Supabase resource operation failed:", err);
+    }
 
     // Save to localStorage
     if (editingResourceId) {
@@ -1490,9 +1570,9 @@ Milk or plain yogurt if you're hungry.`);
 
     alert(
       editingResourceId
-        ? `🟢 "${newResource.title}" updated successfully!`
+        ? `🟢 "${newResource.title}" updated successfully across all devices!`
         : (resCategory === 'meal_plan'
-          ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nPrevious plan safely archived in history.`
+          ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nSaved to cloud database for instant multi-device access.`
           : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`)
     );
 
@@ -1521,12 +1601,29 @@ Milk or plain yogurt if you're hungry.`);
     setResUrl('');
   };
 
-  const handleReactivatePlan = (targetPlanId, clientId) => {
+  const handleReactivatePlan = async (targetPlanId, clientId) => {
     const clientObj = clients.find(c => c.id === clientId);
     const clientName = clientObj ? clientObj.name : 'Client';
     const isZain = clientName?.toLowerCase().trim() === 'zain' || clientObj?.pin_code === '78601' || clientObj?.pin_code === '8989' || clientId === 'client-zain-1';
 
     if (!confirm(`Reactivate this previous plan as ${clientName}'s CURRENT ACTIVE PROTOCOL? The current plan will be moved to archived history.`)) return;
+
+    // Sync with Supabase so all phones update
+    try {
+      const pinStr = clientObj?.pin_code || '';
+      await supabase
+        .from('resources')
+        .update({ status: 'archived', archived_at: new Date().toISOString() })
+        .or(`client_id.eq.${clientId},client_pin.eq.${pinStr}`)
+        .eq('category', 'meal_plan');
+
+      await supabase
+        .from('resources')
+        .update({ status: 'active', assigned_at: new Date().toISOString() })
+        .eq('id', targetPlanId);
+    } catch (e) {
+      console.warn("Supabase reactivate sync error:", e);
+    }
 
     const allRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
     const updated = allRes.map(r => {
@@ -1538,7 +1635,7 @@ Milk or plain yogurt if you're hungry.`);
         if (r.id === targetPlanId) {
           return { ...r, status: 'active', assigned_at: new Date().toISOString() };
         } else {
-          return { ...r, status: 'archived' };
+          return { ...r, status: 'archived', archived_at: new Date().toISOString() };
         }
       }
       return r;
@@ -1546,7 +1643,8 @@ Milk or plain yogurt if you're hungry.`);
 
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updated));
     setResources(updated);
-    alert(`Protocol reactivated as CURRENT ACTIVE for ${clientName}! Client portal will update instantly.`);
+    alert(`Protocol reactivated as CURRENT ACTIVE for ${clientName}! Client portal will update instantly across all phones.`);
+    fetchData();
   };
 
   const handleOpenDiff = (prevPlan, currPlan, clientObj) => {

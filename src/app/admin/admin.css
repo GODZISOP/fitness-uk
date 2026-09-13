@@ -2626,6 +2626,7 @@
 @media (max-width: 1100px) {
   .admin-grid-layout {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   .admin-stats-summary-strip {
     grid-template-columns: repeat(2, 1fr);
@@ -2639,27 +2640,685 @@
   }
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE RULES (< 768px)
+   All nutrition, meal cards, macros, and controls display large and clear ("sab bara dikhana chahiye")
+   ========================================================================== */
 @media (max-width: 768px) {
+  /* 1. Page Shell & Nav */
+  .admin-dashboard-wrapper {
+    padding: 1.25rem 0.85rem 4.5rem;
+  }
+
   .admin-nav-bar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 1.15rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
   }
+
+  .admin-brand-info h1 {
+    font-size: 1.7rem;
+    line-height: 1.2;
+    margin-bottom: 0.35rem;
+  }
+
+  .admin-brand-info p {
+    font-size: 0.92rem;
+  }
+
+  .admin-header-actions {
+    width: 100%;
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .btn-preview-portal,
+  .btn-admin-logout {
+    flex: 1;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  /* 2. Top Stats - 2-Column Grid with Large Numbers */
+  .admin-stats-summary-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-stat-card {
+    padding: 1.15rem 1rem;
+    border-radius: 16px;
+    gap: 0.85rem;
+  }
+
+  .admin-stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .admin-stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+
+  .admin-stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  /* 3. Section Tabs (Smooth Horizontal Scroll & Large Touch Targets) */
+  .admin-section-tabs {
+    gap: 0.45rem;
+    padding-bottom: 0.65rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .admin-section-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-sec-tab {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    min-height: 44px;
+    flex-shrink: 0;
+  }
+
+  /* 4. Workspace Grid & Cards */
+  .admin-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .admin-panel-card {
+    padding: 1.35rem 1.1rem;
+    border-radius: 18px;
+  }
+
+  .panel-title-row h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .admin-panel-card input,
+  .admin-panel-card select,
+  .admin-panel-card textarea {
+    font-size: 1rem !important;
+    padding: 0.85rem 0.95rem !important;
+    border-radius: 10px;
+  }
+
+  /* 5. 4-Macro Grid: 2 Columns on Mobile with Big Readable Values */
+  .macros-four-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem;
+  }
+
+  .macro-cell label {
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .macro-cell input {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    padding: 0.75rem 0.5rem !important;
+    height: 48px !important;
+    border-radius: 10px !important;
+  }
+
+  .macros-input-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem;
+  }
+
+  .macros-input-grid label {
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .macros-input-grid input {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    padding: 0.75rem 0.5rem !important;
+    height: 48px !important;
+    border-radius: 10px !important;
+  }
+
+  .format-toggle-box {
+    padding: 1rem 1.1rem;
+  }
+
+  .toggle-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .format-btn {
+    flex: 1;
+    min-width: 125px;
+    justify-content: center;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  .template-quick-buttons {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .btn-tmpl-pill {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+
+  .btn-primary-action {
+    padding: 1.1rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    min-height: 52px;
+    border-radius: 50px;
+  }
+
+  /* 6. Messenger Layout on Mobile */
   .admin-chat-messenger-layout {
     grid-template-columns: 1fr;
     height: auto;
+    border-radius: 18px;
   }
+
   .chat-clients-sidebar {
-    height: 200px;
+    height: 220px;
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1.5px solid #e2e8f0;
   }
-  .macros-input-grid {
-    grid-template-columns: repeat(2, 1fr);
+
+  .sidebar-client-item {
+    padding: 0.95rem 1.15rem;
+    min-height: 52px;
   }
-  .form-row-2 {
+
+  .sidebar-name-row strong {
+    font-size: 0.95rem;
+  }
+
+  .sidebar-last-msg {
+    font-size: 0.86rem;
+  }
+
+  .chat-active-header {
+    padding: 1rem 1.15rem;
+  }
+
+  .chat-messages-scroll-area {
+    min-height: 350px;
+    max-height: 460px;
+    padding: 1.15rem 1rem;
+    gap: 0.95rem;
+  }
+
+  .admin-chat-bubble-row {
+    max-width: 92%;
+  }
+
+  .admin-bubble-content {
+    font-size: 1rem;
+    padding: 0.9rem 1.15rem;
+    line-height: 1.55;
+    border-radius: 16px;
+  }
+
+  .chat-reply-input-bar {
+    padding: 0.85rem 1rem;
+    gap: 0.55rem;
+  }
+
+  .chat-reply-input-bar input {
+    font-size: 0.98rem;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .btn-chat-send {
+    padding: 0.85rem 1.35rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    min-height: 46px;
+  }
+
+  /* 7. Tables on Mobile */
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .table-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .table-responsive {
+    border-radius: 0 0 16px 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-custom-table th,
+  .admin-custom-table td {
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .btn-row-del,
+  .btn-table-history {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.84rem;
+    font-weight: 800;
+    min-height: 40px;
+  }
+
+  /* 8. Audit Trail & History (Tab 6) */
+  .audit-header-banner {
+    padding: 1.35rem 1.15rem;
+    border-radius: 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.2rem;
+  }
+
+  .audit-header-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .audit-client-selector-box {
+    min-width: 0;
+    width: 100%;
+    padding: 1rem 1.15rem;
+    box-sizing: border-box;
+  }
+
+  .audit-client-select {
+    font-size: 1rem;
+    padding: 0.75rem;
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .audit-stats-grid {
     grid-template-columns: 1fr;
+    gap: 0.85rem;
   }
+
+  .audit-stat-card {
+    padding: 1.2rem 1.25rem;
+  }
+
+  .audit-stat-card h3 {
+    font-size: 1.45rem;
+    font-weight: 800;
+  }
+
+  .audit-active-protocol-box {
+    border-radius: 18px;
+  }
+
+  .active-protocol-inner {
+    padding: 1.25rem 1.15rem;
+  }
+
+  .protocol-title {
+    font-size: 1.35rem;
+  }
+
+  .protocol-macros-snapshot {
+    gap: 0.5rem;
+  }
+
+  .snap-pill {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .timeline-archived-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.25rem 1.15rem;
+    border-radius: 16px;
+  }
+
+  .timeline-card-left {
+    min-width: 0;
+    width: 100%;
+    gap: 0.85rem;
+  }
+
+  .timeline-plan-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .timeline-card-actions {
+    min-width: 0;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .btn-action-compare,
+  .btn-action-reactivate {
+    flex: 1;
+    min-width: 135px;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  .btn-action-del-history {
+    width: 100%;
+    text-align: center;
+    padding: 0.55rem;
+  }
+
+  /* 9. Side-by-Side Diff Modal on Mobile */
+  .diet-diff-modal-backdrop {
+    padding: 0.5rem;
+  }
+
+  .diet-diff-modal-window {
+    max-height: 94vh;
+    border-radius: 18px;
+  }
+
+  .diff-modal-header {
+    padding: 1.15rem 1.25rem;
+  }
+
+  .diff-modal-title-group h3 {
+    font-size: 1.25rem;
+  }
+
+  .diff-macro-delta-strip {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .diff-column {
+    padding: 1.25rem 1.15rem;
+  }
+
+  .diff-body-text pre {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .diff-modal-footer {
+    padding: 0.85rem 1.15rem;
+    gap: 0.75rem;
+  }
+
+  .btn-diff-print,
+  .btn-diff-close {
+    flex: 1;
+    justify-content: center;
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+
+  /* 10. Organized Meal Schedule & 7-Day Matrix (Big Nutrition View on Mobile) */
+  .organized-meal-schedule-card {
+    padding: 1.35rem 1rem;
+    border-radius: 20px;
+  }
+
+  .schedule-header-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.15rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.15rem;
+  }
+
+  .schedule-main-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .schedule-view-switcher {
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+  }
+
+  .schedule-view-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.7rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  .schedule-days-bar {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: nowrap;
+  }
+
+  .schedule-days-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .day-pill-btn {
+    flex-shrink: 0;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  .day-name-short {
+    display: inline;
+  }
+
+  .day-name-full {
+    display: none;
+  }
+
+  .active-day-summary-strip {
+    padding: 1rem 1.15rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    border-radius: 14px;
+  }
+
+  .active-day-heading {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ffc928;
+  }
+
+  .active-day-sub {
+    font-size: 0.92rem;
+  }
+
+  .active-day-meter {
+    width: 100%;
+  }
+
+  .active-day-meter-track {
+    width: 100%;
+    height: 10px;
+  }
+
+  /* DAILY MEAL CARD - FOODS & TIMINGS SHOWN BIG */
+  .daily-meal-card {
+    padding: 1.35rem 1.15rem;
+    border-radius: 18px;
+  }
+
+  .meal-time-tag {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ffc928;
+  }
+
+  .meal-category-pill {
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.25rem 0.7rem;
+  }
+
+  .btn-toggle-slot {
+    padding: 0.65rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 42px;
+  }
+
+  .meal-food-content-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  /* FOOD TEXT: SAB BARA DIKHANA CHAHIYE */
+  .food-main-text p {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.55;
+    color: #ffffff;
+  }
+
+  .btn-ask-coach-swap {
+    width: 100%;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 40px;
+  }
+
+  .matrix-instruction-strip {
+    font-size: 0.9rem;
+    padding: 0.9rem 1.1rem;
+  }
+
+  .matrix-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .weekly-matrix-table {
+    font-size: 0.9rem;
+  }
+
+  .weekly-matrix-table th {
+    padding: 1rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .weekly-matrix-table td {
+    padding: 1rem 0.9rem;
+  }
+
+  .matrix-food-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.55;
+  }
+
+  .guidelines-banner-header h4 {
+    font-size: 0.95rem;
+  }
+
+  .guideline-pill-item {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding: 0.8rem 1.05rem;
+  }
+
+  .written-plan-text {
+    font-size: 1.08rem;
+    line-height: 1.7;
+    padding: 1.35rem 1.15rem;
+  }
+}
+
+/* ==========================================================================
+   EXTRA SMALL PHONES (< 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .admin-lock-card {
+    padding: 2rem 1.15rem;
+    border-radius: 20px;
+  }
+
+  .admin-lock-card h2 {
+    font-size: 1.65rem;
+  }
+
   .admin-stats-summary-strip {
     grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .macros-four-grid,
+  .macros-input-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .diff-macro-delta-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-card-actions {
+    flex-direction: column;
+  }
+
+  .btn-action-compare,
+  .btn-action-reactivate {
+    width: 100%;
+  }
+
+  .food-main-text p {
+    font-size: 1.15rem;
   }
 }

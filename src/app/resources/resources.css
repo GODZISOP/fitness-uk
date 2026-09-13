@@ -2951,4 +2951,747 @@
   }
 }
 
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS & LARGE NUTRITION/MEAL CARDS (< 768px)
+   "mobie k liey nirctain sab bara dikhan chiaye"
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. Portal Outer Shell */
+  .client-portal-wrapper,
+  .resources-dashboard {
+    padding: 1.25rem 0.85rem 4.5rem;
+  }
+
+  /* 2. Top Navigation Bar */
+  .portal-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .portal-brand {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .portal-brand h3 {
+    font-size: 1.35rem;
+  }
+
+  .portal-user-meta {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-logout-portal,
+  .btn-switch-pin {
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 42px;
+  }
+
+  /* 3. Dashboard Hero Card */
+  .dashboard-hero-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: 20px;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-welcome-info h1 {
+    font-size: clamp(1.65rem, 5.5vw, 2.1rem);
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-subtext {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .coach-status-box {
+    width: 100%;
+    padding: 0.95rem 1.15rem;
+    border-radius: 16px;
+    margin-top: 1rem;
+    box-sizing: border-box;
+  }
+
+  .coach-name-label {
+    font-size: 1.05rem;
+  }
+
+  .coach-quote-small {
+    font-size: 0.86rem;
+  }
+
+  /* 4. MACRO TARGETS STRIP - BOLD & LARGE NUMBERS */
+  .macro-targets-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .macro-targets-strip .macro-box:last-child {
+    grid-column: span 2;
+  }
+
+  .macro-box {
+    padding: 1.2rem 1.1rem;
+    border-radius: 18px;
+    gap: 0.85rem;
+  }
+
+  .macro-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .macro-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .macro-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .macro-val small {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  /* 5. Navigation Tabs (Horizontal Scroll & Large Touch Target) */
+  .portal-tabs-nav {
+    gap: 0.45rem;
+    padding-bottom: 0.65rem;
+    margin-bottom: 1.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .portal-tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .portal-tab {
+    padding: 0.85rem 1.35rem;
+    font-size: 0.98rem;
+    font-weight: 800;
+    min-height: 46px;
+    flex-shrink: 0;
+  }
+
+  /* 6. Section Panes & Headers */
+  .pane-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pane-header h2 {
+    font-size: 1.6rem;
+    line-height: 1.25;
+  }
+
+  .pane-header p {
+    font-size: 0.95rem;
+  }
+
+  .coach-quote-pill {
+    font-size: 0.88rem;
+    padding: 0.65rem 1.1rem;
+  }
+
+  /* 7. Adherence Tracker */
+  .daily-adherence-card {
+    padding: 1.25rem 1.15rem;
+    border-radius: 18px;
+    margin-bottom: 1.5rem;
+  }
+
+  .adherence-header h4 {
+    font-size: 1.15rem;
+  }
+
+  .adherence-badge {
+    font-size: 0.88rem;
+    padding: 0.35rem 0.85rem;
+  }
+
+  .adherence-bar-track {
+    height: 12px;
+  }
+
+  /* 8. Protocol Filter & Selector Command Bar */
+  .protocol-filter-command-bar {
+    padding: 1.35rem 1.1rem;
+    border-radius: 18px;
+    margin-bottom: 1.5rem;
+    gap: 1.15rem;
+  }
+
+  .filter-bar-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .filter-header-left h3 {
+    font-size: 1.25rem;
+  }
+
+  .filter-view-toggle {
+    width: 100%;
+    display: flex;
+  }
+
+  .btn-view-choice {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 42px;
+  }
+
+  .filter-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-top: 0.85rem;
+  }
+
+  .category-filter-pills {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .category-filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cat-pill {
+    flex-shrink: 0;
+    padding: 0.55rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 40px;
+  }
+
+  .plan-search-input-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .plan-search-input-wrap input {
+    font-size: 0.98rem;
+    padding: 0.75rem 2.2rem 0.75rem 1rem;
+    border-radius: 10px;
+  }
+
+  .plan-tabs-switcher-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding-top: 0.85rem;
+  }
+
+  .plan-tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .plan-tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .plan-tab-chip {
+    flex-shrink: 0;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  /* 9. COACH JAMES CUSTOM WRITTEN PLAN DIRECTIVES */
+  .custom-written-plan-card {
+    padding: 1.35rem 1.1rem;
+    border-radius: 20px;
+    margin-bottom: 1.75rem;
+  }
+
+  .written-plan-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .written-plan-meta {
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.15rem;
+    padding-bottom: 1rem;
+  }
+
+  .written-plan-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    padding: 1.35rem 1.15rem;
+    font-weight: 500;
+    border-radius: 14px;
+  }
+
+  /* 10. MEALS GRID - FULL WIDTH WITH LARGE CLEAR FOOD TEXT */
+  .meals-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.35rem;
+    margin-bottom: 2rem;
+  }
+
+  .meal-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
+  }
+
+  .meal-time {
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 0.35rem 0.85rem;
+  }
+
+  .meal-calories {
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  .meal-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+  }
+
+  .meal-desc {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: #374151;
+    font-weight: 500;
+    margin-bottom: 1.35rem;
+  }
+
+  .meal-macros-row {
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .badge-p,
+  .badge-c,
+  .badge-f {
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  /* 11. ORGANIZED MEAL SCHEDULE CARD (DAY-BY-DAY & MATRIX VIEW) */
+  .organized-meal-schedule-card {
+    padding: 1.35rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.75rem;
+  }
+
+  .schedule-header-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.15rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.15rem;
+  }
+
+  .schedule-main-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .schedule-view-switcher {
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+  }
+
+  .schedule-view-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  /* Day selection pill bar */
+  .schedule-days-bar {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: nowrap;
+  }
+
+  .schedule-days-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .day-pill-btn {
+    flex-shrink: 0;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.92rem;
+    font-weight: 800;
+    min-height: 44px;
+  }
+
+  .day-name-short {
+    display: inline;
+  }
+
+  .day-name-full {
+    display: none;
+  }
+
+  .active-day-summary-strip {
+    padding: 1rem 1.15rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    border-radius: 14px;
+  }
+
+  .active-day-heading {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffc928;
+  }
+
+  .active-day-sub {
+    font-size: 0.92rem;
+  }
+
+  .active-day-meter {
+    width: 100%;
+  }
+
+  .active-day-meter-track {
+    width: 100%;
+    height: 10px;
+  }
+
+  /* DAILY MEAL CARD (NUTRITION FOODS BARA DIKHANA CHAHIYE) */
+  .daily-meals-timeline {
+    gap: 1.15rem;
+  }
+
+  .daily-meal-card {
+    padding: 1.35rem 1.15rem;
+    border-radius: 18px;
+  }
+
+  .daily-meal-top-row {
+    gap: 0.65rem;
+  }
+
+  .meal-time-tag {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #ffc928;
+  }
+
+  .meal-category-pill {
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.25rem 0.7rem;
+  }
+
+  .btn-toggle-slot {
+    padding: 0.65rem 1.15rem;
+    font-size: 0.92rem;
+    font-weight: 800;
+    min-height: 42px;
+  }
+
+  .meal-food-content-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  /* FOOD TEXT: SAB BARA DIKHANA CHAHIYE */
+  .food-main-text p {
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.55;
+    color: #ffffff;
+  }
+
+  .btn-ask-coach-swap {
+    width: 100%;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-height: 40px;
+  }
+
+  /* 12. 7-Day Matrix Table View */
+  .matrix-instruction-strip {
+    font-size: 0.9rem;
+    padding: 0.9rem 1.1rem;
+  }
+
+  .matrix-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .weekly-matrix-table {
+    font-size: 0.9rem;
+  }
+
+  .weekly-matrix-table th {
+    padding: 1rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .weekly-matrix-table td {
+    padding: 1rem 0.9rem;
+  }
+
+  .matrix-meal-time {
+    font-size: 0.92rem;
+  }
+
+  .matrix-food-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.55;
+  }
+
+  /* 13. Nutrition Supplements & Guidelines */
+  .nutrition-supplements-banner {
+    padding: 1.35rem 1.15rem;
+    border-radius: 18px;
+  }
+
+  .nutrition-supplements-banner h3 {
+    font-size: 1.25rem;
+  }
+
+  .supplements-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .supplement-item {
+    padding: 1rem 1.15rem;
+    font-size: 0.95rem;
+  }
+
+  .guidelines-banner-header h4 {
+    font-size: 0.95rem;
+  }
+
+  .guideline-pill-item {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding: 0.8rem 1.05rem;
+  }
+
+  /* 14. Routine Exercise Videos */
+  .videos-container {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .video-card {
+    border-radius: 18px;
+  }
+
+  .video-card-body {
+    padding: 1.25rem 1.15rem;
+  }
+
+  .video-title {
+    font-size: 1.35rem;
+  }
+
+  .video-desc {
+    font-size: 0.98rem;
+  }
+
+  /* 15. Client Direct Messenger */
+  .client-messenger-panel {
+    padding: 1.35rem 1.1rem;
+    border-radius: 20px;
+  }
+
+  .messenger-top-info h3 {
+    font-size: 1.35rem;
+  }
+
+  .chat-thread-box {
+    height: 420px;
+    padding: 1.15rem 1rem;
+    gap: 0.95rem;
+  }
+
+  .chat-bubble-row {
+    max-width: 90%;
+  }
+
+  .chat-bubble-content {
+    font-size: 1.02rem;
+    line-height: 1.55;
+    padding: 0.95rem 1.2rem;
+    border-radius: 16px;
+  }
+
+  .client-chat-input-bar {
+    padding: 0.85rem 1rem;
+    gap: 0.55rem;
+  }
+
+  .client-chat-input-bar input {
+    font-size: 1rem;
+    padding: 0.85rem 1.15rem;
+    border-radius: 50px;
+  }
+
+  .btn-send-message {
+    padding: 0.85rem 1.35rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    min-height: 46px;
+  }
+
+  /* 16. 13-Week Transformation Timeline */
+  .week-row-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.35rem 1.15rem;
+    border-radius: 18px;
+  }
+
+  .week-title {
+    font-size: 1.3rem;
+  }
+
+  .week-target-badge {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.85rem;
+    align-self: flex-start;
+  }
+
+  .week-instructions {
+    font-size: 1.02rem;
+    line-height: 1.6;
+  }
+
+  /* 17. Catalog Accordion View */
+  .catalog-plan-header {
+    padding: 1.15rem 1.15rem;
+  }
+
+  .catalog-header-left h4 {
+    font-size: 1.2rem;
+  }
+
+  .catalog-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-open-focused {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+}
+
+/* ==========================================================================
+   EXTRA SMALL PHONES (< 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 2rem 1.15rem;
+    border-radius: 20px;
+  }
+
+  .login-box h2 {
+    font-size: 1.65rem;
+  }
+
+  .input-wrap input {
+    font-size: 1.15rem;
+  }
+
+  .btn-login {
+    font-size: 1.05rem;
+    min-height: 50px;
+  }
+
+  .macro-targets-strip {
+    grid-template-columns: 1fr !important;
+  }
+
+  .macro-targets-strip .macro-box:last-child {
+    grid-column: span 1;
+  }
+
+  .macro-val {
+    font-size: 1.7rem;
+  }
+
+  .food-main-text p {
+    font-size: 1.15rem;
+  }
+
+  .schedule-main-title {
+    font-size: 1.45rem;
+  }
+
+  .written-plan-title {
+    font-size: 1.4rem;
+  }
+}
+
 
