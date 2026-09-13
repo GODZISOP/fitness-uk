@@ -1540,7 +1540,7 @@ water 3 liters a day. workout is 5pm.`);
       version: clientMealPlans.length + 1,
       change_notes: resChangeNotes.trim() || (resCategory === 'meal_plan' ? 'Updated nutrition directives by Head Coach James' : ''),
       macros_snapshot: clientMacrosSnapshot,
-      content_text: resTextContent.trim(),
+      content_text: finalTextContent,
       content_url: resUrl.trim() || '',
       layout_type: resLayout,
       assigned_at: new Date().toISOString(),
@@ -2458,8 +2458,8 @@ water 3 liters a day. workout is 5pm.`);
               )}
 
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                <button type="submit" className="btn-primary-action" disabled={uploading}>
-                  <CheckCircle2 size={17} /> {editingResourceId ? "Update Resource & Notify" : "Publish Content to Client Portal"}
+                <button type="submit" className="btn-primary-action" disabled={uploading || isFormatting}>
+                  <CheckCircle2 size={17} /> {isFormatting ? '✨ AI Formatting & Publishing...' : editingResourceId ? "Update Resource & Notify" : "Publish Content to Client Portal"}
                 </button>
                 {editingResourceId && (
                   <button type="button" onClick={cancelEditResource} className="btn-cancel-edit" style={{ padding: '0.85rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', color: '#475569', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
