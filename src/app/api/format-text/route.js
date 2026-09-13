@@ -28,7 +28,7 @@ Your task is to take the user's messy text (which could be a meal plan, workout 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192',
+        model: 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Please organize and format this messy text: \n\n${text}` }
