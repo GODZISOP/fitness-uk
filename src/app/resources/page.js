@@ -834,11 +834,20 @@ const defaultWeeks = [
 function extractClientResources(allResources, clientObj) {
   if (!clientObj || !clientObj.id) return [];
 
-  // Strictly match resources assigned to this specific client
+  const clientPinStr = String(clientObj.pin_code || '').trim();
+  const clientIdStr = String(clientObj.id || '').trim();
+  const clientNameStr = String(clientObj.name || '').trim().toLowerCase();
+
+  // Strictly match resources assigned to this specific client by ID, PIN, or Name
   const list = (allResources || []).filter(r => {
     if (!r) return false;
-    if (r.client_id && String(r.client_id) === String(clientObj.id)) return true;
-    if (r.client_pin && clientObj.pin_code && String(r.client_pin).trim() === String(clientObj.pin_code).trim()) return true;
+    const rClientId = String(r.client_id || '').trim();
+    const rClientPin = String(r.client_pin || '').trim();
+    const rClientName = String(r.client_name || '').trim().toLowerCase();
+
+    if (rClientId && rClientId === clientIdStr) return true;
+    if (rClientPin && clientPinStr && rClientPin === clientPinStr) return true;
+    if (rClientName && clientNameStr && rClientName === clientNameStr) return true;
     return false;
   });
 
@@ -850,8 +859,8 @@ function extractClientResources(allResources, clientObj) {
       if (!existing) {
         map.set(item.id, item);
       } else {
-        const existingTime = new Date(existing.updated_at || existing.created_at || 0).getTime();
-        const newTime = new Date(item.updated_at || item.created_at || 0).getTime();
+        const existingTime = new Date(existing.assigned_at || existing.created_at || 0).getTime();
+        const newTime = new Date(item.assigned_at || item.created_at || 0).getTime();
         if (newTime > existingTime) {
           map.set(item.id, item);
         }
@@ -863,15 +872,36 @@ function extractClientResources(allResources, clientObj) {
 }
 
 // =========================================================================
-// CRISP AUDIO CHIME FOR REAL-TIME COACH DIRECTIVES & UPLOADS
+// CRISP AUDIO CHIME FOR REAL-TIME COACH DIRECTIVES & UPLOADS (MOBILE OPTIMIZED)
 // =========================================================================
+let persistentClientAudioCtx = null;
+
+function getClientAudioContext() {
+  if (typeof window === 'undefined') return null;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!persistentClientAudioCtx || persistentClientAudioCtx.state === 'closed') {
+    persistentClientAudioCtx = new AudioCtx();
+  }
+  if (persistentClientAudioCtx.state === 'suspended') {
+    persistentClientAudioCtx.resume().catch(() => {});
+  }
+  return persistentClientAudioCtx;
+}
+
+function unlockClientAudio() {
+  const ctx = getClientAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+}
+
 function playNotificationSound() {
   try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
+    const ctx = getClientAudioContext();
+    if (!ctx) return;
     if (ctx.state === 'suspended') {
-      ctx.resume();
+      ctx.resume().catch(() => {});
     }
 
     const now = ctx.currentTime;
@@ -881,24 +911,24 @@ function playNotificationSound() {
     const gain1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(587.33, now);
-    gain1.gain.setValueAtTime(0.2, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+    gain1.gain.setValueAtTime(0.35, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
     osc1.connect(gain1);
     gain1.connect(ctx.destination);
     osc1.start(now);
-    osc1.stop(now + 0.32);
+    osc1.stop(now + 0.35);
 
     // Second note: 880 Hz (A5)
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(880, now + 0.12);
-    gain2.gain.setValueAtTime(0.25, now + 0.12);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+    osc2.frequency.setValueAtTime(880, now + 0.14);
+    gain2.gain.setValueAtTime(0.4, now + 0.14);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
     osc2.connect(gain2);
     gain2.connect(ctx.destination);
-    osc2.start(now + 0.12);
-    osc2.stop(now + 0.65);
+    osc2.start(now + 0.14);
+    osc2.stop(now + 0.75);
   } catch (e) {
     // Non-blocking fallback
   }
@@ -916,6 +946,18 @@ export default function ResourcesPage() {
   useEffect(() => {
     activeTabRef.current = activeTab;
   }, [activeTab]);
+
+  // Mobile Audio Unlock on first touch/click
+  useEffect(() => {
+    const unlockHandler = () => unlockClientAudio();
+    window.addEventListener('touchstart', unlockHandler, { passive: true });
+    window.addEventListener('click', unlockHandler, { passive: true });
+    return () => {
+      window.removeEventListener('touchstart', unlockHandler);
+      window.removeEventListener('click', unlockHandler);
+    };
+  }, []);
+
   const [selectedWeek, setSelectedWeek] = useState(1);
 
   // Live Toast & Audio Notification State
