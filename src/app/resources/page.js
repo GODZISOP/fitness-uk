@@ -2049,37 +2049,14 @@ export default function ResourcesPage() {
             </div>
           )}
 
-          {/* BASELINE SAMPLE MEALS (ONLY IF NO CUSTOM PLANS ASSIGNED BY COACH) */}
+          {/* BASELINE SAMPLE MEALS / EMPTY STATE (WHEN NO PLAN ASSIGNED) */}
           {sortedCustomPlans.length === 0 && (
-            <div className="baseline-meals-section-wrap">
-              <div className="meals-grid">
-                {defaultMealPlan.map(meal => {
-                  const isEaten = !!eatenMeals[meal.id];
-                  return (
-                    <div key={meal.id} className={`meal-card ${isEaten ? 'meal-completed' : ''}`}>
-                      <div className="meal-card-top">
-                        <span className="meal-time">
-                          <Clock size={14} /> {meal.time}
-                        </span>
-                        <span className="meal-calories">{meal.calories}</span>
-                      </div>
-                      <h3 className="meal-title">{meal.name}</h3>
-                      <p className="meal-desc">{meal.desc}</p>
-                      <div className="meal-macros-row" style={{ marginBottom: '1.25rem' }}>
-                        <span className="badge-p">P: {meal.protein}</span>
-                        <span className="badge-c">C: {meal.carbs}</span>
-                        <span className="badge-f">F: {meal.fats}</span>
-                      </div>
-                      <button
-                        onClick={() => toggleMealEaten(meal.id)}
-                        className={`btn-meal-check ${isEaten ? 'checked' : ''}`}
-                      >
-                        {isEaten ? <><CheckSquare size={16} /> Completed</> : <><Square size={16} /> Mark Eaten</>}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="empty-state-card" style={{ textAlign: 'center', padding: '4rem 2rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+              <Utensils size={48} color="#94a3b8" style={{ margin: '0 auto 1rem' }} />
+              <h3 style={{ color: '#334155', fontSize: '1.25rem', marginBottom: '0.5rem' }}>Your Custom Meal Plan is Being Prepared</h3>
+              <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto' }}>
+                Coach James is currently designing your personalized nutrition protocol. It will appear here instantly once assigned.
+              </p>
             </div>
           )}
 
