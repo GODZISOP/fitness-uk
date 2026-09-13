@@ -622,7 +622,17 @@ function getAdminAudioContext() {
 function unlockAdminAudio() {
   const ctx = getAdminAudioContext();
   if (ctx && ctx.state === 'suspended') {
-    ctx.resume().catch(() => {});
+    ctx.resume().then(() => {
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        gain.gain.value = 0;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(0);
+        osc.stop(ctx.currentTime + 0.01);
+      } catch(e) {}
+    }).catch(() => {});
   }
 }
 
