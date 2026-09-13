@@ -1005,48 +1005,63 @@ export default function ResourcesPage() {
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const combinedRes = extractClientResources([...dbRes, ...localRes], client);
 
+      // Load seen resources from local storage if empty to support offline missed notifications
+      if (seenResourceIdsRef.current.size === 0) {
+        const savedSeenRes = JSON.parse(localStorage.getItem('wfz_seen_res_' + client.id) || '[]');
+        savedSeenRes.forEach(id => seenResourceIdsRef.current.add(id));
+      }
+
       // Check if Coach James just uploaded a new Meal Plan or Exercise Video or Edited one!
       if (seenResourceIdsRef.current.size > 0) {
-        const newlyAdded = combinedRes.find(r => {
+        // Collect ALL newly added items since last login
+        const newlyAddedItems = combinedRes.filter(r => {
           if (!r || !r.id) return false;
           const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
           return !seenResourceIdsRef.current.has(trackingKey);
         });
-        if (newlyAdded) {
+
+        if (newlyAddedItems.length > 0) {
           playNotificationSound();
-          const isMealPlan = newlyAdded.category === 'meal_plan' || newlyAdded.format === 'text' || newlyAdded.type === 'meal_plan';
-          const isVideo = newlyAdded.format === 'video' || newlyAdded.type === 'routine_video';
-          const targetTab = isMealPlan ? 'meal_plan' : (isVideo ? 'videos' : 'meal_plan');
-          const title = isMealPlan
-            ? "Coach James updated your Meal Plan!"
-            : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
-          const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
+          
+          // Add them all to notification history
+          newlyAddedItems.forEach((newlyAdded, index) => {
+            const isMealPlan = newlyAdded.category === 'meal_plan' || newlyAdded.format === 'text' || newlyAdded.type === 'meal_plan';
+            const isVideo = newlyAdded.format === 'video' || newlyAdded.type === 'routine_video';
+            const targetTab = isMealPlan ? 'meal_plan' : (isVideo ? 'videos' : 'meal_plan');
+            const title = isMealPlan
+              ? "Coach James updated your Meal Plan!"
+              : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
+            const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
 
-          const noticeObj = {
-            id: newlyAdded.id,
-            title,
-            subtitle: newlyAdded.title || "Tap here to review your newly assigned protocol immediately.",
-            targetTab,
-            icon
-          };
+            const noticeObj = {
+              id: newlyAdded.id + "_" + Date.now(),
+              title,
+              subtitle: newlyAdded.title || "Tap here to review your newly assigned protocol immediately.",
+              targetTab,
+              icon
+            };
 
-          setLiveNotice(noticeObj);
+            // Only show the live popup for the first/most recent one
+            if (index === 0) setLiveNotice(noticeObj);
 
-          setNotifications(prev => {
-            const exists = prev.some(n => n.id === noticeObj.id);
-            if (exists) return prev;
-            const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
-            localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
-            return updated;
+            setNotifications(prev => {
+              const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
+              localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+              return updated;
+            });
           });
         }
       }
+
+      // Update seen resources and save to localStorage
       combinedRes.forEach(r => {
         if (r?.id) {
           const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
           seenResourceIdsRef.current.add(trackingKey);
         }
       });
+      localStorage.setItem('wfz_seen_res_' + client.id, JSON.stringify(Array.from(seenResourceIdsRef.current)));
+
       setResources(combinedRes);
 
       // 2. Live Fetch Messages from Supabase & LocalStorage (Never delete any message history!)
@@ -1069,33 +1084,49 @@ export default function ResourcesPage() {
       });
       const combinedMsgs = Array.from(msgMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
+      // Load seen messages from local storage if empty to support offline missed notifications
+      if (seenMessageIdsRef.current.size === 0) {
+        const savedSeenMsgs = JSON.parse(localStorage.getItem('wfz_seen_msg_' + client.id) || '[]');
+        savedSeenMsgs.forEach(id => seenMessageIdsRef.current.add(id));
+      }
+
       // Check if Coach James just sent a direct reply!
       if (seenMessageIdsRef.current.size > 0) {
-        const newCoachMsg = combinedMsgs.find(m => m && m.id && m.sender === 'coach' && !seenMessageIdsRef.current.has(m.id));
-        if (newCoachMsg) {
+        // Collect ALL newly added coach messages since last login
+        const newCoachMsgs = combinedMsgs.filter(m => m && m.id && m.sender === 'coach' && !seenMessageIdsRef.current.has(m.id));
+        
+        if (newCoachMsgs.length > 0) {
           if (activeTabRef.current !== 'messenger') {
             playNotificationSound();
-            const noticeObj = {
-              id: newCoachMsg.id,
-              title: "New Message from Coach James!",
-              subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
-              targetTab: 'messenger',
-              icon: "💬"
-            };
+            
+            newCoachMsgs.forEach((newCoachMsg, index) => {
+              const noticeObj = {
+                id: newCoachMsg.id,
+                title: "New Message from Coach James!",
+                subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
+                targetTab: 'messenger',
+                icon: "💬"
+              };
 
-            setLiveNotice(noticeObj);
+              if (index === 0) setLiveNotice(noticeObj);
 
-            setNotifications(prev => {
-              const exists = prev.some(n => n.id === noticeObj.id);
-              if (exists) return prev;
-              const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
-              localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
-              return updated;
+              setNotifications(prev => {
+                const exists = prev.some(n => n.id === noticeObj.id);
+                if (exists) return prev;
+                const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
+                localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+                return updated;
+              });
             });
           }
         }
       }
-      combinedMsgs.forEach(m => { if (m?.id) seenMessageIdsRef.current.add(m.id); });
+
+      combinedMsgs.forEach(m => {
+        if (m && m.id) seenMessageIdsRef.current.add(m.id);
+      });
+      localStorage.setItem('wfz_seen_msg_' + client.id, JSON.stringify(Array.from(seenMessageIdsRef.current)));
+
       setChatMessages(combinedMsgs);
 
       // 3. Live Sync Client Macros & Real-time Transformation Week
