@@ -995,9 +995,13 @@ export default function ResourcesPage() {
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const combinedRes = extractClientResources([...dbRes, ...localRes], client);
 
-      // Check if Coach James just uploaded a new Meal Plan or Exercise Video!
+      // Check if Coach James just uploaded a new Meal Plan or Exercise Video or Edited one!
       if (seenResourceIdsRef.current.size > 0) {
-        const newlyAdded = combinedRes.find(r => r && r.id && !seenResourceIdsRef.current.has(r.id));
+        const newlyAdded = combinedRes.find(r => {
+          if (!r || !r.id) return false;
+          const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
+          return !seenResourceIdsRef.current.has(trackingKey);
+        });
         if (newlyAdded) {
           playNotificationSound();
           const isMealPlan = newlyAdded.category === 'meal_plan' || newlyAdded.format === 'text' || newlyAdded.type === 'meal_plan';
@@ -1017,7 +1021,12 @@ export default function ResourcesPage() {
           });
         }
       }
-      combinedRes.forEach(r => { if (r?.id) seenResourceIdsRef.current.add(r.id); });
+      combinedRes.forEach(r => { 
+        if (r?.id) {
+          const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
+          seenResourceIdsRef.current.add(trackingKey); 
+        }
+      });
       setResources(combinedRes);
 
       // 2. Live Fetch Messages from Supabase & LocalStorage (Never delete any message history!)
@@ -1169,10 +1178,10 @@ export default function ResourcesPage() {
         const clientLocalRes = extractClientResources([...(resData || []), ...localRes], activeClientObj);
         setResources(clientLocalRes);
         
-        // Don't mark items created in the last 60 seconds as 'seen', so they trigger a notification upon login!
+        // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
         const seenIds = clientLocalRes
-          .filter(r => (Date.now() - new Date(r.created_at).getTime()) > 60000)
-          .map(r => r.id);
+          .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
+          .map(r => r.id + "_" + (r.updated_at || r.created_at || ""));
         seenResourceIdsRef.current = new Set(seenIds);
 
         // Fetch Messages without deleting any history
@@ -1216,10 +1225,10 @@ export default function ResourcesPage() {
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
       setResources(clientLocalRes);
       
-      // Don't mark items created in the last 60 seconds as 'seen', so they trigger a notification upon login!
+      // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
       const seenIds = clientLocalRes
-        .filter(r => (Date.now() - new Date(r.created_at).getTime()) > 60000)
-        .map(r => r.id);
+        .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
+        .map(r => r.id + "_" + (r.updated_at || r.created_at || ""));
       seenResourceIdsRef.current = new Set(seenIds);
 
       const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
