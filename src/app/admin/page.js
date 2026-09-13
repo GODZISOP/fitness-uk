@@ -1467,29 +1467,9 @@ water 3 liters a day. workout is 5pm.`);
       return;
     }
 
-    // AUTO-FORMAT with Groq AI before saving (so matrix is always clean)
-    let finalTextContent = resTextContent.trim();
-    if (resFormat === 'text' && finalTextContent) {
-      setIsFormatting(true);
-      try {
-        const fmtRes = await fetch('/api/format-text', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: finalTextContent })
-        });
-        if (fmtRes.ok) {
-          const fmtData = await fmtRes.json();
-          if (fmtData.formattedText) {
-            finalTextContent = fmtData.formattedText;
-            setResTextContent(finalTextContent); // update textarea too
-          }
-        }
-      } catch (e) {
-        // silently continue with original if AI fails
-      } finally {
-        setIsFormatting(false);
-      }
-    }
+    // Save immediately with original text for instant UI response
+    // AI formatting will update it silently in the background
+    const finalTextContent = resTextContent.trim();
 
     const selectedClientObj = clients.find(c => c.id === resClientId);
     const isZainSelected = selectedClientObj?.name?.toLowerCase().trim() === 'zain' || selectedClientObj?.pin_code === '78601' || selectedClientObj?.pin_code === '8989';
@@ -1556,66 +1536,7 @@ water 3 liters a day. workout is 5pm.`);
       }
     }
 
-    try {
-      if (editingResourceId) {
-        const { error } = await supabase.from('resources').update({
-          client_id: newResource.client_id,
-          client_name: newResource.client_name,
-          client_pin: newResource.client_pin,
-          title: newResource.title,
-          category: newResource.category,
-          type: newResource.type,
-          format: newResource.format,
-          status: newResource.status,
-          change_notes: newResource.change_notes,
-          content_text: newResource.content_text,
-          content_url: newResource.content_url,
-          layout_type: newResource.layout_type,
-          assigned_at: newResource.assigned_at
-        }).eq('id', editingResourceId);
-        if (error) console.warn("Supabase resource update note:", error.message);
-      } else {
-        // Archive previously active meal plans for this client in Supabase
-        if (resCategory === 'meal_plan') {
-          try {
-            await supabase
-              .from('resources')
-              .update({ status: 'archived', archived_at: new Date().toISOString() })
-              .or(`client_id.eq.${newResource.client_id},client_pin.eq.${newResource.client_pin}`)
-              .eq('category', 'meal_plan')
-              .eq('status', 'active');
-          } catch (e) {
-            console.warn("Supabase archive previous error:", e);
-          }
-        }
-
-        const { error } = await supabase.from('resources').insert([{
-          id: newResource.id,
-          client_id: newResource.client_id,
-          client_name: newResource.client_name,
-          client_pin: newResource.client_pin,
-          title: newResource.title,
-          category: newResource.category,
-          type: newResource.type,
-          format: newResource.format,
-          status: newResource.status,
-          version: newResource.version,
-          change_notes: newResource.change_notes,
-          content_text: newResource.content_text,
-          content_url: newResource.content_url,
-          layout_type: newResource.layout_type,
-          assigned_at: newResource.assigned_at,
-          created_at: newResource.created_at
-        }]);
-        if (error) {
-          console.error("Supabase resource insert error:", error.message);
-        }
-      }
-    } catch (err) {
-      console.error("Supabase resource operation failed:", err);
-    }
-
-    // Save to localStorage
+    // INSTANT: Save to localStorage and update UI immediately
     if (editingResourceId) {
       updatedLocalResources = updatedLocalResources.map(r => r.id === editingResourceId ? newResource : r);
     } else {
@@ -1623,17 +1544,83 @@ water 3 liters a day. workout is 5pm.`);
     }
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updatedLocalResources));
     window.dispatchEvent(new Event('storage'));
-
-    alert(
-      editingResourceId
-        ? `🟢 "${newResource.title}" updated successfully across all devices!`
-        : (resCategory === 'meal_plan'
-          ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nSaved to cloud database for instant multi-device access.`
-          : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`)
-    );
-
+    setResources(updatedLocalResources);
     cancelEditResource();
-    fetchData();
+
+    // BACKGROUND: AI format + Supabase (non-blocking, fire and forget)
+    ;(async () => {
+      let savedText = finalTextContent;
+
+      // 1. AI Format in background
+      if (resFormat === 'text' && savedText) {
+        try {
+          const fmtRes = await fetch('/api/format-text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: savedText })
+          });
+          if (fmtRes.ok) {
+            const fmtData = await fmtRes.json();
+            if (fmtData.formattedText) {
+              savedText = fmtData.formattedText;
+              // Silently update localStorage with formatted version
+              const updated = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
+              const idx = updated.findIndex(r => r.id === newResource.id);
+              if (idx !== -1) {
+                updated[idx].content_text = savedText;
+                localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updated));
+                setResources([...updated]);
+              }
+            }
+          }
+        } catch (e) { /* silently skip */ }
+      }
+
+      // 2. Supabase sync in background
+      try {
+        if (editingResourceId) {
+          supabase.from('resources').update({
+            title: newResource.title,
+            category: newResource.category,
+            type: newResource.type,
+            format: newResource.format,
+            status: newResource.status,
+            change_notes: newResource.change_notes,
+            content_text: savedText,
+            content_url: newResource.content_url,
+            layout_type: newResource.layout_type,
+            assigned_at: newResource.assigned_at
+          }).eq('id', editingResourceId).then();
+        } else {
+          if (resCategory === 'meal_plan') {
+            supabase.from('resources')
+              .update({ status: 'archived', archived_at: new Date().toISOString() })
+              .or(`client_id.eq."${newResource.client_id}",client_pin.eq."${newResource.client_pin}"`)
+              .eq('category', 'meal_plan')
+              .eq('status', 'active')
+              .then();
+          }
+          supabase.from('resources').insert([{
+            id: newResource.id,
+            client_id: newResource.client_id,
+            client_name: newResource.client_name,
+            client_pin: newResource.client_pin,
+            title: newResource.title,
+            category: newResource.category,
+            type: newResource.type,
+            format: newResource.format,
+            status: newResource.status,
+            version: newResource.version,
+            change_notes: newResource.change_notes,
+            content_text: savedText,
+            content_url: newResource.content_url,
+            layout_type: newResource.layout_type,
+            assigned_at: newResource.assigned_at,
+            created_at: newResource.created_at
+          }]).then();
+        }
+      } catch (e) { /* silently skip */ }
+    })();
   };
 
   const handleEditResourceSetup = (resource) => {
