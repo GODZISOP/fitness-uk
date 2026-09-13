@@ -1036,10 +1036,14 @@ export default function ResourcesPage() {
       // 1. Live Fetch Resources from Supabase & LocalStorage
       let dbRes = [];
       try {
+        let orQuery = `client_id.eq.${client.id}`;
+        if (client.pin_code) orQuery += `,client_pin.eq.${client.pin_code}`;
+        if (client.name) orQuery += `,client_name.eq.${client.name}`;
+
         const { data } = await supabase
           .from('resources')
           .select('*')
-          .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
+          .or(orQuery)
           .order('created_at', { ascending: false });
         if (data && data.length > 0) dbRes = data;
       } catch (e) { }
@@ -1278,6 +1282,7 @@ export default function ResourcesPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    unlockClientAudio();
     setLoading(true);
     setErrorMsg('');
 
@@ -1305,10 +1310,14 @@ export default function ResourcesPage() {
         setClient(activeClientObj);
 
         // Fetch Resources
+        let orQuery = `client_id.eq.${clientData.id}`;
+        if (clientData.pin_code) orQuery += `,client_pin.eq.${clientData.pin_code}`;
+        if (clientData.name) orQuery += `,client_name.eq.${clientData.name}`;
+
         const { data: resData } = await supabase
           .from('resources')
           .select('*')
-          .or(`client_id.eq.${clientData.id},client_pin.eq.${clientData.pin_code}`)
+          .or(orQuery)
           .order('created_at', { ascending: false });
 
         const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
@@ -1317,15 +1326,18 @@ export default function ResourcesPage() {
 
         // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
         const seenIds = clientLocalRes
-          .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
-          .map(r => r.id + "_" + (r.updated_at || r.created_at || ""));
+          .filter(r => (Date.now() - new Date(r.assigned_at || r.created_at).getTime()) > 60000)
+          .map(r => r.id + "_" + (r.assigned_at || r.created_at || ""));
         seenResourceIdsRef.current = new Set(seenIds);
 
         // Fetch Messages without deleting any history
+        let msgOrQuery = `client_id.eq.${clientData.id}`;
+        if (clientData.pin_code) msgOrQuery += `,client_pin.eq.${clientData.pin_code}`;
+
         const { data: mData } = await supabase
           .from('client_messages')
           .select('*')
-          .or(`client_id.eq.${clientData.id},client_pin.eq.${clientData.pin_code}`)
+          .or(msgOrQuery)
           .order('timestamp', { ascending: true });
 
         const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
@@ -1340,6 +1352,8 @@ export default function ResourcesPage() {
 
         setSelectedWeek(Number(activeClientObj.current_week) || 1);
         setLoading(false);
+        // Play login confirmation sound to ensure audio context is active
+        setTimeout(() => playNotificationSound(), 100);
         return;
       }
     } catch (err) {
