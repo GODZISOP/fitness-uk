@@ -49,6 +49,7 @@ const LOCAL_RESOURCES_KEY = 'wfz_local_resources';
 const LOCAL_MESSAGES_KEY = 'wfz_client_messages';
 const LOCAL_WEIGHINS_KEY = 'wfz_client_weighins';
 const LOCAL_ADMIN_NOTIFS_KEY = 'wfz_admin_notifs';
+const LOCAL_DELETED_RES_KEY = 'wfz_deleted_resource_ids'; // Persists deleted IDs across refreshes
 
 // =========================================================================
 // SMART MEAL PLAN PARSER FOR ADMIN AUDIT
@@ -762,7 +763,7 @@ export default function AdminPage() {
     // Live Cross-Tab Synchronization
     const handleStorageChange = (e) => {
       if (e.key?.startsWith('wfz_')) {
-        fetchData();
+        fetchData(true);
       }
     };
     window.addEventListener('storage', handleStorageChange);
@@ -775,17 +776,17 @@ export default function AdminPage() {
       try {
         realtimeChannel = supabase
           .channel(`admin_realtime_sync_${Date.now()}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => fetchData())
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_weighins' }, () => fetchData())
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData())
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => fetchData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => fetchData(true))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'weigh_ins' }, () => fetchData(true))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData(true))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => fetchData(true))
           .subscribe();
       } catch (err) {
         console.warn("Admin realtime sub note:", err);
       }
 
       pollInterval = setInterval(() => {
-        fetchData();
+        fetchData(true);
       }, 2500);
     }
 
@@ -834,39 +835,23 @@ export default function AdminPage() {
     setPasswordInput('');
   };
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isBackground = false) => {
+    // 1. Load persisted deleted IDs FIRST to prevent deleted items from re-seeding
+    const persistedDeletedIds = new Set(JSON.parse(localStorage.getItem(LOCAL_DELETED_RES_KEY) || '[]'));
+    persistedDeletedIds.forEach(id => deletedResourceIdsRef.current.add(id));
 
-    let fetchedClients = [];
-    let fetchedResources = [];
-    let fetchedMessages = [];
-    let fetchedWeighIns = [];
+    // 2. Load LocalStorage fallback records for 0ms instant render
+    let localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
+    let localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
+    let localMessages = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
+    let localWeighIns = JSON.parse(localStorage.getItem(LOCAL_WEIGHINS_KEY) || '[]');
 
-    // 1. Try Supabase
-    try {
-      const { data: cData } = await supabase.from('clients').select('*');
-      if (cData && cData.length > 0) fetchedClients = cData;
+    // Purge fake demo client Marcus T. so real clients (Hasan, Zain) are never confused
+    localClients = localClients.filter(c => c.id !== 'demo-client-1' && c.pin_code !== '12345');
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients));
 
-      const { data: rData } = await supabase.from('resources').select('*');
-      if (rData && rData.length > 0) fetchedResources = rData;
-
-      const { data: mData } = await supabase.from('client_messages').select('*').order('timestamp', { ascending: true });
-      if (mData && mData.length > 0) fetchedMessages = mData;
-
-      const { data: wData } = await supabase.from('weigh_ins').select('*').order('timestamp', { ascending: false });
-      if (wData && wData.length > 0) fetchedWeighIns = wData;
-    } catch (err) {
-      console.warn("Supabase fetch note:", err);
-    }
-
-    // 2. Load LocalStorage fallback records
-    const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
-    const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-    const localMessages = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
-    const localWeighIns = JSON.parse(localStorage.getItem(LOCAL_WEIGHINS_KEY) || '[]');
-
-    // Default demo clients (Marcus T. & Zain)
-    if (!localClients.some(c => c.name?.toLowerCase() === 'zain' || c.pin_code === '78601')) {
+    // Default demo client (Zain) - only if no clients exist
+    if (localClients.length === 0 && !localClients.some(c => c.name?.toLowerCase() === 'zain' || c.pin_code === '78601')) {
       localClients.unshift({
         id: "client-zain-1",
         name: "Zain",
@@ -881,23 +866,8 @@ export default function AdminPage() {
       localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients));
     }
 
-    if (!localClients.some(c => c.pin_code === '12345')) {
-      localClients.push({
-        id: "demo-client-1",
-        name: "Marcus T.",
-        pin_code: "12345",
-        program: "13-Week Transformation & 30-Day Meal Plan",
-        calories: 2450,
-        protein: "190g",
-        carbs: "220g",
-        fats: "55g",
-        water: "3.5L"
-      });
-      localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients));
-    }
-
-    // Seed Zain's 7-Day Meal Plan (Active Protocol)
-    if (!localResources.some(r => r.client_id === 'client-zain-1' && r.title?.includes('Week 1 Plan'))) {
+    // Seed Zain's 7-Day Meal Plan (Active Protocol) - ONLY if not deleted by user
+    if (!deletedResourceIdsRef.current.has("res-zain-week1") && !localResources.some(r => r.id === "res-zain-week1" || (r.client_id === 'client-zain-1' && r.title?.includes('Week 1 Plan')))) {
       localResources.unshift({
         id: "res-zain-week1",
         client_id: "client-zain-1",
@@ -961,8 +931,8 @@ Milk or plain yogurt if you're hungry.`
       localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(localResources));
     }
 
-    // Seed Zain's Prior Baseline Plan ("Pehle Kya Diya Tha" - Archived Protocol)
-    if (!localResources.some(r => r.client_id === 'client-zain-1' && r.title?.includes('Baseline'))) {
+    // Seed Zain's Prior Baseline Plan ("Pehle Kya Diya Tha" - Archived Protocol) - ONLY if not deleted by user
+    if (!deletedResourceIdsRef.current.has("res-zain-baseline") && !localResources.some(r => r.id === "res-zain-baseline" || (r.client_id === 'client-zain-1' && r.title?.includes('Baseline')))) {
       localResources.push({
         id: "res-zain-baseline",
         client_id: "client-zain-1",
@@ -992,33 +962,51 @@ Hydration: 3.0 Litres water daily`
       localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(localResources));
     }
 
-    // Seed a demo message if empty
-    if (localMessages.length === 0) {
-      localMessages.push({
-        id: "msg-demo-1",
-        client_id: "demo-client-1",
-        client_name: "Marcus T.",
-        client_pin: "12345",
-        sender: "client",
-        sender_name: "Marcus T.",
-        text: "Coach James, Sunday weigh-in was 79.4kg (down 1.2kg). Leg session was intense. Should I keep carbs at 220g or lower on rest days?",
-        timestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
-        status: "Delivered"
-      });
-      localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(localMessages));
+    // Purge fake demo Marcus messages and weigh-ins
+    localMessages = localMessages.filter(m => m.client_id !== 'demo-client-1' && m.client_pin !== '12345');
+    localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(localMessages));
+
+    localWeighIns = localWeighIns.filter(w => w.client_id !== 'demo-client-1' && w.client_pin !== '12345');
+    localStorage.setItem(LOCAL_WEIGHINS_KEY, JSON.stringify(localWeighIns));
+
+    // On initial cold load, display local storage data with 0ms delay
+    // IMPORTANT: Never reset existing in-memory state back to raw localStorage during background polling!
+    if (!isBackground) {
+      const filteredLocalResources = localResources
+        .filter(r => !deletedResourceIdsRef.current.has(r.id))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setClients(prev => prev.length > 0 ? prev : localClients);
+      setResources(prev => prev.length > 0 ? prev : filteredLocalResources);
+      setMessages(prev => prev.length > 0 ? prev : localMessages);
+      setWeighIns(prev => prev.length > 0 ? prev : localWeighIns);
+
+      if (localClients.length > 0) {
+        setResClientId(prev => prev || localClients[0].id);
+        setChatActiveClientId(prev => prev || localClients[0].id);
+      }
+      setLoading(false);
     }
 
-    // Seed a demo weigh-in if empty
-    if (localWeighIns.length === 0) {
-      localWeighIns.push({
-        id: "w-1",
-        client_id: "demo-client-1",
-        client_name: "Marcus T.",
-        weight: "79.4",
-        notes: "Morning fasted weigh-in. Down from 80.6kg baseline.",
-        timestamp: new Date(Date.now() - 3600000 * 12).toISOString()
-      });
-      localStorage.setItem(LOCAL_WEIGHINS_KEY, JSON.stringify(localWeighIns));
+    // 3. Supabase background sync (stale-while-revalidate, non-blocking)
+    let fetchedClients = [];
+    let fetchedResources = [];
+    let fetchedMessages = [];
+    let fetchedWeighIns = [];
+
+    try {
+      const [cResult, rResult, mResult, wResult] = await Promise.all([
+        supabase.from('clients').select('*'),
+        supabase.from('resources').select('*'),
+        supabase.from('client_messages').select('*').order('timestamp', { ascending: true }),
+        supabase.from('weigh_ins').select('*').order('timestamp', { ascending: false })
+      ]);
+      if (cResult.data?.length > 0) fetchedClients = cResult.data;
+      if (rResult.data?.length > 0) fetchedResources = rResult.data;
+      if (mResult.data?.length > 0) fetchedMessages = mResult.data;
+      if (wResult.data?.length > 0) fetchedWeighIns = wResult.data;
+    } catch (err) {
+      console.warn("Supabase fetch note:", err);
     }
 
     const mergeByTimestamp = (arr1, arr2) => {
@@ -1029,7 +1017,6 @@ Hydration: 3.0 Litres water daily`
           if (!existing) {
             map.set(item.id, item);
           } else {
-            // Prefer the item with the newest updated_at or timestamp or created_at
             const existingTime = new Date(existing.updated_at || existing.timestamp || existing.created_at || 0).getTime();
             const newTime = new Date(item.updated_at || item.timestamp || item.created_at || 0).getTime();
             if (newTime > existingTime) {
@@ -1042,18 +1029,24 @@ Hydration: 3.0 Litres water daily`
     };
 
     const combinedClients = mergeByTimestamp(localClients, fetchedClients);
-    // Filter out any resources the user has already deleted (prevents polling from restoring them)
     const combinedResources = mergeByTimestamp(localResources, fetchedResources)
       .filter(r => !deletedResourceIdsRef.current.has(r.id))
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const persistedDeletedMsgIds = new Set(JSON.parse(localStorage.getItem('wfz_deleted_message_ids') || '[]'));
+    const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages)
+      .filter(m => m && m.id && !persistedDeletedMsgIds.has(m.id) && m.client_id !== 'demo-client-1' && m.client_pin !== '12345' && m.client_pin !== '1236')
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns)
+      .filter(w => w && w.id && w.client_id !== 'demo-client-1' && w.client_pin !== '12345')
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    // Auto-sync any unsynced local resources to Supabase so other phones get them immediately
+    // Auto-sync any unsynced local resources to Supabase so other phones get them immediately (exclude deleted items!)
     if (localResources.length > 0) {
       const unsynced = localResources.filter(lr => 
         lr && lr.id && 
         !lr.id.startsWith('res-zain-') && 
+        !deletedResourceIdsRef.current.has(lr.id) &&
+        !persistedDeletedIds.has(lr.id) &&
         !fetchedResources.some(fr => fr.id === lr.id)
       );
       if (unsynced.length > 0) {
@@ -1135,10 +1128,16 @@ Hydration: 3.0 Litres water daily`
     setMessages(combinedMessages);
     setWeighIns(combinedWeighIns);
 
+    // Save combined real clients & resources to localStorage for instant 0ms future reloads
     if (combinedClients.length > 0) {
+      localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(combinedClients));
       setResClientId(prev => prev || combinedClients[0].id);
       setChatActiveClientId(prev => prev || combinedClients[0].id);
     }
+    if (combinedResources.length > 0) {
+      localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(combinedResources));
+    }
+    localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(combinedMessages));
 
     setLoading(false);
   };
@@ -1597,12 +1596,15 @@ water 3 liters a day. workout is 5pm.`);
           }).eq('id', editingResourceId).then();
         } else {
           if (resCategory === 'meal_plan') {
-            supabase.from('resources')
-              .update({ status: 'archived', archived_at: new Date().toISOString() })
-              .or(`client_id.eq."${newResource.client_id}",client_pin.eq."${newResource.client_pin}"`)
-              .eq('category', 'meal_plan')
-              .eq('status', 'active')
-              .then();
+            try {
+              await supabase.from('resources')
+                .update({ status: 'archived', archived_at: new Date().toISOString() })
+                .eq('client_id', newResource.client_id)
+                .eq('category', 'meal_plan')
+                .eq('status', 'active');
+            } catch (archErr) {
+              console.warn("Archive previous plan note:", archErr);
+            }
           }
           supabase.from('resources').insert([{
             id: newResource.id,
@@ -1744,17 +1746,30 @@ water 3 liters a day. workout is 5pm.`);
 
   const handleDeleteResource = (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
-      // Track the deleted ID so polling never restores it
+      // 1. Track in memory ref
       deletedResourceIdsRef.current.add(id);
 
-      // INSTANT: update UI and localStorage immediately
+      // 2. Persist deleted ID to localStorage permanently so it survives page refresh & prevents re-seeding
+      const deletedIds = JSON.parse(localStorage.getItem(LOCAL_DELETED_RES_KEY) || '[]');
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        localStorage.setItem(LOCAL_DELETED_RES_KEY, JSON.stringify(deletedIds));
+      }
+
+      // 3. Remove from resources localStorage
       const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      const filtered = localResources.filter(r => r.id !== id);
-      localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(filtered));
+      localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(localResources.filter(r => r.id !== id)));
+
+      // 4. Update UI instantly (0ms delay)
       setResources(prev => prev.filter(r => r.id !== id));
 
-      // BACKGROUND: delete from Supabase (fire and forget)
-      supabase.from('resources').delete().eq('id', id).then();
+      // 5. Broadcast to all other tabs (including client portal) immediately
+      window.dispatchEvent(new Event('storage'));
+
+      // 6. Delete from Supabase in background (non-blocking)
+      supabase.from('resources').delete().eq('id', id).then().catch(e => {
+        console.warn("Supabase delete resource note:", e);
+      });
     }
   };
 
@@ -1763,7 +1778,7 @@ water 3 liters a day. workout is 5pm.`);
     e.preventDefault();
     if (!chatReplyText.trim()) return;
 
-    const activeClient = clients.find(c => c.id === chatActiveClientId) || { id: "demo-client-1", name: "Marcus T.", pin_code: "12345" };
+    const activeClient = clients.find(c => c.id === chatActiveClientId) || clients[0] || { id: "none", name: "Client", pin_code: "" };
 
     const newCoachMsg = {
       id: "msg_coach_" + Date.now(),
@@ -1800,10 +1815,28 @@ water 3 liters a day. workout is 5pm.`);
   };
 
   const handleDeleteMessage = (msgId) => {
+    // 1. Track in persistent deleted message IDs set so polling never brings it back
+    const deletedMsgs = JSON.parse(localStorage.getItem('wfz_deleted_message_ids') || '[]');
+    if (!deletedMsgs.includes(msgId)) {
+      deletedMsgs.push(msgId);
+      localStorage.setItem('wfz_deleted_message_ids', JSON.stringify(deletedMsgs));
+    }
+
+    // 2. Remove from local storage
     const localMessages = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
     const filtered = localMessages.filter(m => m.id !== msgId);
     localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(filtered));
+
+    // 3. Update state instantly (0ms delay)
     setMessages(filtered);
+
+    // 4. Notify open tabs immediately
+    window.dispatchEvent(new Event('storage'));
+
+    // 5. Delete from Supabase in background
+    supabase.from('client_messages').delete().eq('id', msgId).then().catch(e => {
+      console.warn("Supabase delete message note:", e);
+    });
   };
 
   // PASSWORD LOCK SCREEN
@@ -1847,7 +1880,7 @@ water 3 liters a day. workout is 5pm.`);
   }
 
   // Active chat client object & conversation
-  const currentChatClient = clients.find(c => c.id === chatActiveClientId) || clients[0] || { id: "demo-client-1", name: "Marcus T.", pin_code: "12345" };
+  const currentChatClient = clients.find(c => c.id === chatActiveClientId) || clients[0] || { id: "none", name: "Client", pin_code: "" };
   const currentChatMessages = messages.filter(m => m.client_id === currentChatClient.id || m.client_pin === currentChatClient.pin_code);
 
   return (
@@ -1972,7 +2005,7 @@ water 3 liters a day. workout is 5pm.`);
             rel="noreferrer"
             className="btn-preview-portal"
           >
-            <Eye size={16} /> Open Client Portal (PIN: 12345)
+            <Eye size={16} /> Open Client Portal {clients.length > 0 ? `(PIN: ${clients[0].pin_code})` : ''}
           </a>
           <button onClick={handleAdminLogout} className="btn-admin-logout">
             <LogOut size={16} /> Lock / Logout
@@ -2820,7 +2853,7 @@ water 3 liters a day. workout is 5pm.`);
 
                       return (
                         <tr key={r.id}>
-                          <td><strong>{clientObj ? clientObj.name : 'Marcus T.'}</strong></td>
+                          <td><strong>{clientObj?.name || r.client_name || 'Client'}</strong></td>
                           <td>{r.title}</td>
                           <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
                           <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>

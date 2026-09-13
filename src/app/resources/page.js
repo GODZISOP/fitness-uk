@@ -863,9 +863,12 @@ function extractClientResources(allResources, clientObj) {
   const clientIdStr = String(clientObj.id || '').trim();
   const clientNameStr = String(clientObj.name || '').trim().toLowerCase();
 
-  // Strictly match resources assigned to this specific client by ID, PIN, or Name
+  // Load persisted deleted IDs to ensure deleted plans never show in client portal
+  const deletedIds = new Set(JSON.parse(localStorage.getItem('wfz_deleted_resource_ids') || '[]'));
+
+  // Strictly match resources assigned to this specific client by ID, PIN, or Name and exclude deleted items
   const list = (allResources || []).filter(r => {
-    if (!r) return false;
+    if (!r || !r.id || deletedIds.has(r.id)) return false;
     const rClientId = String(r.client_id || '').trim();
     const rClientPin = String(r.client_pin || '').trim();
     const rClientName = String(r.client_name || '').trim().toLowerCase();
@@ -1082,9 +1085,8 @@ export default function ResourcesPage() {
       // 1. Live Fetch Resources from Supabase & LocalStorage
       let dbRes = [];
       try {
-        let orQuery = `client_id.eq."${client.id}"`;
-        if (client.pin_code) orQuery += `,client_pin.eq."${client.pin_code}"`;
-        if (client.name) orQuery += `,client_name.eq."${client.name}"`;
+        let orQuery = `client_id.eq.${client.id}`;
+        if (client.pin_code) orQuery += `,client_pin.eq.${client.pin_code}`;
 
         const { data } = await supabase
           .from('resources')
@@ -1097,7 +1099,7 @@ export default function ResourcesPage() {
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const combinedRes = extractClientResources([...localRes, ...dbRes], client);
       try {
-        localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(combinedRes));
+        localStorage.setItem('wfz_client_res_' + client.id, JSON.stringify(combinedRes));
       } catch (e) {}
 
       // Load seen resources from local storage if empty to support offline missed notifications
@@ -1380,9 +1382,8 @@ export default function ResourcesPage() {
         setClient(activeClientObj);
 
         // Fetch Resources
-        let orQuery = `client_id.eq."${clientData.id}"`;
-        if (clientData.pin_code) orQuery += `,client_pin.eq."${clientData.pin_code}"`;
-        if (clientData.name) orQuery += `,client_name.eq."${clientData.name}"`;
+        let orQuery = `client_id.eq.${clientData.id}`;
+        if (clientData.pin_code) orQuery += `,client_pin.eq.${clientData.pin_code}`;
 
         const { data: resData } = await supabase
           .from('resources')
@@ -1401,8 +1402,8 @@ export default function ResourcesPage() {
         seenResourceIdsRef.current = new Set(seenIds);
 
         // Fetch Messages without deleting any history
-        let msgOrQuery = `client_id.eq."${clientData.id}"`;
-        if (clientData.pin_code) msgOrQuery += `,client_pin.eq."${clientData.pin_code}"`;
+        let msgOrQuery = `client_id.eq.${clientData.id}`;
+        if (clientData.pin_code) msgOrQuery += `,client_pin.eq.${clientData.pin_code}`;
 
         const { data: mData } = await supabase
           .from('client_messages')
