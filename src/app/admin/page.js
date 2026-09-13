@@ -1120,11 +1120,9 @@ Hydration: 3.0 Litres water daily`
     setMessages(combinedMessages);
     setWeighIns(combinedWeighIns);
 
-    if (combinedClients.length > 0 && !resClientId) {
-      setResClientId(combinedClients[0].id);
-    }
-    if (combinedClients.length > 0 && !chatActiveClientId) {
-      setChatActiveClientId(combinedClients[0].id);
+    if (combinedClients.length > 0) {
+      setResClientId(prev => prev || combinedClients[0].id);
+      setChatActiveClientId(prev => prev || combinedClients[0].id);
     }
 
     setLoading(false);
