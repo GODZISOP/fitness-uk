@@ -725,6 +725,7 @@ export default function AdminPage() {
   const [showNotifs, setShowNotifs] = useState(false);
   const [liveNotice, setLiveNotice] = useState(null);
   const seenAdminItemIdsRef = useRef(new Set());
+  const chatScrollRef = useRef(null);
 
   useEffect(() => {
     // Check existing session
@@ -754,12 +755,26 @@ export default function AdminPage() {
     };
     window.addEventListener('storage', handleStorageChange);
 
-    // Auto-polling for live cross-device sync (Vercel)
+    // Instant Supabase Realtime channel & Fast Fallback Polling (2.5s)
     let pollInterval;
+    let realtimeChannel;
+
     if (savedAuth === 'true') {
+      try {
+        realtimeChannel = supabase
+          .channel(`admin_realtime_sync_${Date.now()}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => fetchData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_weighins' }, () => fetchData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => fetchData())
+          .subscribe();
+      } catch (err) {
+        console.warn("Admin realtime sub note:", err);
+      }
+
       pollInterval = setInterval(() => {
         fetchData();
-      }, 5000);
+      }, 2500);
     }
 
     return () => {
@@ -767,8 +782,16 @@ export default function AdminPage() {
       window.removeEventListener('click', unlockHandler);
       window.removeEventListener('storage', handleStorageChange);
       if (pollInterval) clearInterval(pollInterval);
+      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     };
   }, []);
+
+  // Auto-scroll chat to bottom on new messages or client switch
+  useEffect(() => {
+    if (adminTab === 'chat') {
+      chatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [adminTab, chatActiveClientId, messages]);
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -1516,7 +1539,8 @@ Milk or plain yogurt if you're hungry.`);
           change_notes: newResource.change_notes,
           content_text: newResource.content_text,
           content_url: newResource.content_url,
-          layout_type: newResource.layout_type
+          layout_type: newResource.layout_type,
+          assigned_at: newResource.assigned_at
         }).eq('id', editingResourceId);
         if (error) console.warn("Supabase resource update note:", error.message);
       } else {
@@ -1567,6 +1591,7 @@ Milk or plain yogurt if you're hungry.`);
       updatedLocalResources.unshift(newResource);
     }
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updatedLocalResources));
+    window.dispatchEvent(new Event('storage'));
 
     alert(
       editingResourceId
@@ -2461,16 +2486,22 @@ Milk or plain yogurt if you're hungry.`);
                   return (
                     <div key={m.id} className={`admin-chat-bubble-row ${isCoach ? 'from-coach' : 'from-client'}`}>
                       <div className="admin-bubble-content">
-                        <div className="admin-bubble-meta">
-                          <strong>{isCoach ? '👑 You (Head Coach James)' : currentChatClient.name}</strong>
-                          <span>{new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} &bull; {new Date(m.timestamp).toLocaleDateString('en-GB')}</span>
+                        {!isCoach && (
+                          <div className="admin-bubble-sender">
+                            {currentChatClient.name}
+                          </div>
+                        )}
+                        <p className="admin-bubble-text">{m.text}</p>
+                        <div className="admin-bubble-meta-bottom">
+                          <span>{new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          {isCoach && <span className="admin-bubble-ticks">✓✓</span>}
                         </div>
-                        <p>{m.text}</p>
                       </div>
                     </div>
                   );
                 })
               )}
+              <div ref={chatScrollRef} />
             </div>
 
             {/* REPLY BOX */}
