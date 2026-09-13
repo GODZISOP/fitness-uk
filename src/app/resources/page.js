@@ -1047,9 +1047,9 @@ export default function ResourcesPage() {
       // 1. Live Fetch Resources from Supabase & LocalStorage
       let dbRes = [];
       try {
-        let orQuery = `client_id.eq.${client.id}`;
-        if (client.pin_code) orQuery += `,client_pin.eq.${client.pin_code}`;
-        if (client.name) orQuery += `,client_name.eq.${client.name}`;
+        let orQuery = `client_id.eq."${client.id}"`;
+        if (client.pin_code) orQuery += `,client_pin.eq."${client.pin_code}"`;
+        if (client.name) orQuery += `,client_name.eq."${client.name}"`;
 
         const { data } = await supabase
           .from('resources')
@@ -1130,7 +1130,7 @@ export default function ResourcesPage() {
         const { data } = await supabase
           .from('client_messages')
           .select('*')
-          .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
+          .or(`client_id.eq."${client.id}",client_pin.eq."${client.pin_code}"`)
           .order('timestamp', { ascending: true });
         if (data && data.length > 0) dbMsgs = data;
       } catch (e) { }
@@ -1345,9 +1345,9 @@ export default function ResourcesPage() {
         setClient(activeClientObj);
 
         // Fetch Resources
-        let orQuery = `client_id.eq.${clientData.id}`;
-        if (clientData.pin_code) orQuery += `,client_pin.eq.${clientData.pin_code}`;
-        if (clientData.name) orQuery += `,client_name.eq.${clientData.name}`;
+        let orQuery = `client_id.eq."${clientData.id}"`;
+        if (clientData.pin_code) orQuery += `,client_pin.eq."${clientData.pin_code}"`;
+        if (clientData.name) orQuery += `,client_name.eq."${clientData.name}"`;
 
         const { data: resData } = await supabase
           .from('resources')
@@ -1366,8 +1366,8 @@ export default function ResourcesPage() {
         seenResourceIdsRef.current = new Set(seenIds);
 
         // Fetch Messages without deleting any history
-        let msgOrQuery = `client_id.eq.${clientData.id}`;
-        if (clientData.pin_code) msgOrQuery += `,client_pin.eq.${clientData.pin_code}`;
+        let msgOrQuery = `client_id.eq."${clientData.id}"`;
+        if (clientData.pin_code) msgOrQuery += `,client_pin.eq."${clientData.pin_code}"`;
 
         const { data: mData } = await supabase
           .from('client_messages')
