@@ -353,11 +353,44 @@ function parseCoachMealPlan(text) {
   };
 }
 
+function extractCleanGuidelines(guidelinesText) {
+  if (!guidelinesText || typeof guidelinesText !== 'string') return [];
+  const rawLines = guidelinesText
+    .split(/\n+/)
+    .map(l => l.trim().replace(/^[•\-\*\d\.\)\s]+/, '').trim())
+    .filter(Boolean);
+
+  const clean = [];
+  for (const line of rawLines) {
+    const lower = line.toLowerCase();
+    if (
+      lower.startsWith('note') ||
+      lower.startsWith('correction') ||
+      lower.startsWith('option a') ||
+      lower.startsWith('option b') ||
+      lower.startsWith('re-evaluat') ||
+      lower.includes('mapping was applied') ||
+      lower.includes('to fit the required') ||
+      lower.includes('source text lists') ||
+      lower.includes('the prompt asks') ||
+      lower.includes('here is your') ||
+      lower.length < 3
+    ) {
+      continue;
+    }
+    const formatted = line.endsWith('.') ? line : `${line}.`;
+    clean.push(formatted);
+    if (clean.length >= 4) break;
+  }
+  return clean;
+}
+
 // =========================================================================
 // CLEAN ORGANIZED MEAL SCHEDULE (DAY-BY-DAY & 7-DAY MATRIX)
 // =========================================================================
 function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
   const parsed = useMemo(() => parseCoachMealPlan(plan.content_text), [plan.content_text]);
+  const cleanGuidelines = useMemo(() => extractCleanGuidelines(parsed?.guidelines), [parsed?.guidelines]);
 
   const todayKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()] || 'mon';
   const [selectedDay, setSelectedDay] = useState(todayKey);
@@ -462,17 +495,17 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
           </div>
 
           {/* COACH DIRECTIVES & GUIDELINES BANNER */}
-          {parsed.guidelines && (
+          {cleanGuidelines.length > 0 && (
             <div className="schedule-guidelines-banner">
               <div className="guidelines-banner-header">
                 <Shield size={16} color="#ffc928" />
                 <h4>Coach James Daily Directives &amp; Guidelines</h4>
               </div>
               <div className="guidelines-list">
-                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                {cleanGuidelines.map((item, idx) => (
                   <div key={idx} className="guideline-pill-item">
                     <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span>{item}.</span>
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>
@@ -525,17 +558,17 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
           </div>
 
           {/* COACH DIRECTIVES & GUIDELINES BANNER IN MATRIX VIEW */}
-          {parsed.guidelines && (
+          {cleanGuidelines.length > 0 && (
             <div className="schedule-guidelines-banner">
               <div className="guidelines-banner-header">
                 <Shield size={16} color="#ffc928" />
                 <h4>Coach James Daily Directives &amp; Guidelines</h4>
               </div>
               <div className="guidelines-list">
-                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                {cleanGuidelines.map((item, idx) => (
                   <div key={idx} className="guideline-pill-item">
                     <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span>{item}.</span>
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>

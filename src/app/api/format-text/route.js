@@ -13,30 +13,19 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Groq API Key is missing. Please add it to your environment variables.' }, { status: 500 });
     }
 
-    const systemPrompt = `You are Head Coach James, a professional fitness coach. Your task is to take the user's messy text and organize it into a strict, clean 7-day meal plan.
+    const systemPrompt = `You are Head Coach James, a professional elite fitness and nutrition coach.
+Your task is to take the provided meal text/table and organize it into a clean, structured 7-day meal plan for the client portal.
 
-OUTPUT FORMAT RULES (follow exactly):
-1. Use "Day 1", "Day 2"... "Day 7" as section headers (nothing else before the day header).
-2. Under each day, always use these exact labels followed by a colon: Breakfast:, Lunch:, Snack:, Dinner:
-3. Do NOT use asterisks (*), hash symbols (#), or any markdown. Plain text only.
-4. After Day 7, add a "Daily Basics:" section with water target and general guidelines.
-5. Do NOT add any conversational intro or outro text like "Here is your plan...". Output the plan directly.
-6. Do NOT change any nutritional values, portions, or food items mentioned.
+STRICT FORMATTING RULES:
+1. Output ONLY the meal plan. NEVER output your thinking process, reasoning, internal debate, notes, mapping explanations, or commentary.
+2. Structure each day starting with "Day 1", "Day 2"... up to "Day 7".
+3. Under each day, list each meal on its own line using standard labels followed by a colon (e.g. Breakfast:, Mid-Morning:, Lunch:, Evening Snack:, Dinner:, Before Bed: - preserve all meals and foods mentioned).
+4. Preserve all foods and portions accurately.
+5. If guidelines exist, include at most 2 brief bullet points under "Daily Basics:". Do NOT generate long walls of text.
+6. Use plain text only. No markdown formatting, asterisks (*), or hashes (#).`;
 
-EXACT FORMAT TO FOLLOW:
-Day 1
-Breakfast: [food]
-Lunch: [food]
-Snack: [food]
-Dinner: [food]
-
-Day 2
-Breakfast: [food]
-...
-
-Daily Basics:
-Water: [amount]
-[other guidelines]`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -44,27 +33,61 @@ Water: [amount]
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Please organize and format this messy text: \n\n${text}` }
+          { role: 'user', content: `Please organize and format this meal plan into clean Day 1 to Day 7 plain text:\n\n${text}` }
         ],
         temperature: 0.1,
       }),
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Groq API Error:', errorData);
-      return NextResponse.json({ error: `Groq API Error: ${response.status} - ${errorData}` }, { status: response.status });
+      console.warn('Groq API Non-OK:', response.status, errorData);
+      return NextResponse.json({ formattedText: text.trim() });
     }
 
     const data = await response.json();
-    const rawText = data.choices[0]?.message?.content || text;
+    let rawText = data.choices?.[0]?.message?.content || text;
 
-    // Strip any markdown that the model may have added despite instructions
-    const formattedText = rawText
+    // Sanitize: strip out any AI meta-reasoning lines if the model ever hallucinates commentary
+    const lines = rawText.split('\n');
+    const filteredLines = [];
+    let skipMode = false;
+
+    for (const line of lines) {
+      const l = line.trim().toLowerCase();
+      // Skip meta reasoning/debate blocks
+      if (
+        l.startsWith('note:') ||
+        l.startsWith('correction:') ||
+        l.startsWith('re-evaluating') ||
+        l.startsWith('option a:') ||
+        l.startsWith('option b:') ||
+        l.includes('mapping was applied') ||
+        l.includes('to fit the required') ||
+        l.includes('the prompt asks') ||
+        l.includes('here is your') ||
+        l.includes('source text lists 6 meal slots')
+      ) {
+        skipMode = true;
+        continue;
+      }
+      if (skipMode && (l.startsWith('day 1') || l.startsWith('day 2') || l.startsWith('daily basics:'))) {
+        skipMode = false;
+      }
+      if (!skipMode) {
+        filteredLines.push(line);
+      }
+    }
+
+    // Strip markdown formatting
+    const formattedText = filteredLines.join('\n')
       .replace(/\*\*([^*]+)\*\*/g, '$1')   // **bold** -> plain
       .replace(/\*([^*]+)\*/g, '$1')       // *italic* -> plain
       .replace(/^#{1,6}\s+/gm, '')         // ### headings -> plain
@@ -73,10 +96,11 @@ Water: [amount]
       .replace(/\n{3,}/g, '\n\n')          // collapse triple newlines
       .trim();
 
-    return NextResponse.json({ formattedText });
+    return NextResponse.json({ formattedText: formattedText || text.trim() });
 
   } catch (error) {
-    console.error('Formatting Error:', error);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    console.warn('Formatting Note/Fallback:', error?.message);
+    // Always return original text on timeout or network error so user is never blocked
+    return NextResponse.json({ formattedText: text ? text.trim() : '' });
   }
 }
