@@ -911,6 +911,7 @@ export default function ResourcesPage() {
 
   // Live Toast & Audio Notification State
   const [liveNotice, setLiveNotice] = useState(null); // { id, title, subtitle, targetTab, icon }
+  const [notifications, setNotifications] = useState([]);
   const seenResourceIdsRef = useRef(new Set());
   const seenMessageIdsRef = useRef(new Set());
 
@@ -1012,12 +1013,22 @@ export default function ResourcesPage() {
             : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
           const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
 
-          setLiveNotice({
+          const noticeObj = {
             id: newlyAdded.id,
             title,
             subtitle: newlyAdded.title || "Tap here to review your newly assigned protocol immediately.",
             targetTab,
             icon
+          };
+
+          setLiveNotice(noticeObj);
+          
+          setNotifications(prev => {
+            const exists = prev.some(n => n.id === noticeObj.id);
+            if (exists) return prev;
+            const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+            localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+            return updated;
           });
         }
       }
@@ -1055,12 +1066,22 @@ export default function ResourcesPage() {
         if (newCoachMsg) {
           if (activeTabRef.current !== 'messenger') {
             playNotificationSound();
-            setLiveNotice({
+            const noticeObj = {
               id: newCoachMsg.id,
               title: "New Message from Coach James!",
               subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
               targetTab: 'messenger',
               icon: "💬"
+            };
+            
+            setLiveNotice(noticeObj);
+            
+            setNotifications(prev => {
+              const exists = prev.some(n => n.id === noticeObj.id);
+              if (exists) return prev;
+              const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+              localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+              return updated;
             });
           }
         }
@@ -1220,6 +1241,10 @@ export default function ResourcesPage() {
         coach: matchedClient.coach || "Head Coach James (London)"
       };
       setClient(activeClientObj);
+
+      // Load notifications for local client
+      const storedNotifs = JSON.parse(localStorage.getItem('LOCAL_NOTIFS_' + matchedClient.id) || '[]');
+      setNotifications(storedNotifs);
 
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
@@ -1523,6 +1548,27 @@ export default function ResourcesPage() {
         </button>
 
         <button 
+          className={`portal-tab ${activeTab === 'notifications' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveTab('notifications');
+            setNotifications(prev => {
+              const updated = prev.map(n => ({ ...n, isRead: true }));
+              localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+              return updated;
+            });
+          }}
+          style={{ position: 'relative' }}
+        >
+          <Bell size={18} />
+          <span>Notifications</span>
+          {notifications.filter(n => !n.isRead).length > 0 && (
+            <span style={{ position: 'absolute', top: '5px', right: '5px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '0.15rem 0.35rem', fontSize: '0.6rem', fontWeight: 'bold' }}>
+              {notifications.filter(n => !n.isRead).length}
+            </span>
+          )}
+        </button>
+
+        <button 
           className={`portal-tab ${activeTab === 'guidelines' ? 'active' : ''}`}
           onClick={() => setActiveTab('guidelines')}
         >
@@ -1530,6 +1576,51 @@ export default function ResourcesPage() {
           <span>Coach James&apos;s Rules &amp; Protocols</span>
         </button>
       </div>
+
+      {/* TAB CONTENT 6: NOTIFICATIONS HISTORY */}
+      {activeTab === 'notifications' && (
+        <div className="tab-pane-container">
+          <div className="pane-header">
+            <div>
+              <h2>Your Notification History</h2>
+              <p>Keep track of all new plans, changes, and messages from Coach James.</p>
+            </div>
+            {notifications.length > 0 && (
+              <button onClick={() => {
+                setNotifications([]);
+                localStorage.removeItem('LOCAL_NOTIFS_' + client.id);
+              }} style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#ef4444', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                Clear All
+              </button>
+            )}
+          </div>
+          
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {notifications.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#94a3b8', background: '#f8fafc', borderRadius: '16px' }}>
+                <Bell size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
+                <p>No notifications yet.</p>
+              </div>
+            ) : (
+              notifications.map(n => (
+                <div key={n.id} onClick={() => setActiveTab(n.targetTab)} style={{ background: n.isRead ? '#f8fafc' : '#fff', border: n.isRead ? '1px solid #e2e8f0' : '1px solid #bfdbfe', borderRadius: '12px', padding: '1.25rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: n.isRead ? 'none' : '0 4px 12px rgba(59,130,246,0.08)' }}>
+                  <div style={{ fontSize: '1.5rem' }}>{n.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ color: '#0f172a' }}>{n.title}</strong>
+                      <small style={{ color: '#94a3b8' }}>{new Date(n.timestamp).toLocaleString()}</small>
+                    </div>
+                    <p style={{ margin: '0.3rem 0 0.5rem 0', color: '#475569', fontSize: '0.9rem' }}>{n.subtitle}</p>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      View Details <ArrowRight size={12} />
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
 
       {/* TAB CONTENT 1: MEAL PLAN OF THE DAY */}
       {activeTab === 'meal_plan' && (
