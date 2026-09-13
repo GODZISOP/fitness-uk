@@ -842,11 +842,20 @@ function extractClientResources(allResources, clientObj) {
     return false;
   });
 
-  // Deduplicate by ID
+  // Deduplicate by ID, keeping the most recently updated version
   const map = new Map();
   list.forEach(item => {
-    if (item && item.id && !map.has(item.id)) {
-      map.set(item.id, item);
+    if (item && item.id) {
+      const existing = map.get(item.id);
+      if (!existing) {
+        map.set(item.id, item);
+      } else {
+        const existingTime = new Date(existing.updated_at || existing.created_at || 0).getTime();
+        const newTime = new Date(item.updated_at || item.created_at || 0).getTime();
+        if (newTime > existingTime) {
+          map.set(item.id, item);
+        }
+      }
     }
   });
 
@@ -1105,6 +1114,40 @@ export default function ResourcesPage() {
       const activeData = dbClient || localUpdatedClient;
 
       if (activeData) {
+        let profileChanged = false;
+        let changeDetails = "Your profile has been updated by Coach James.";
+        
+        if (
+            client.calories !== activeData.calories ||
+            client.protein !== activeData.protein ||
+            client.carbs !== activeData.carbs ||
+            client.fats !== activeData.fats ||
+            client.water !== activeData.water
+        ) {
+            profileChanged = true;
+            changeDetails = "Coach James updated your daily macronutrient targets.";
+        } else if (client.current_week !== activeData.current_week) {
+            profileChanged = true;
+            changeDetails = `You have progressed to Week ${activeData.current_week}!`;
+        }
+
+        if (profileChanged) {
+          playNotificationSound();
+          const noticeObj = {
+            id: 'client_update_' + Date.now(),
+            title: "Profile & Targets Updated",
+            subtitle: changeDetails,
+            targetTab: 'weeks',
+            icon: "🔥"
+          };
+          setLiveNotice(noticeObj);
+          setNotifications(prev => {
+            const updated = [{...noticeObj, timestamp: new Date().toISOString(), isRead: false}, ...prev].slice(0, 50);
+            localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+            return updated;
+          });
+        }
+
         setClient(prev => {
           if (!prev) return activeData;
           if (
