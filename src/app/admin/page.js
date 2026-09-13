@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { 
   Lock, 
   Key, 
+  Shield,
   ShieldCheck, 
   UserPlus, 
   PlusCircle, 
