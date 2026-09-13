@@ -153,7 +153,7 @@ function parseCoachMealPlan(text) {
 
   if (isDayBased) {
     // 1. Split text into Day blocks and Guidelines
-    const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
+    const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+basics?|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
 
     let matches = [];
     let match;
@@ -175,14 +175,26 @@ function parseCoachMealPlan(text) {
       const content = text.substring(startIdx, endIdx).trim();
 
       const normalizedHeader = current.header.replace(/\s+/g, ' ');
-      if (normalizedHeader.includes('guideline')) {
-        guidelines.push(content);
-      } else {
-        const dKey = dayIndexMap[normalizedHeader];
-        if (dKey) {
-          dayBlocks[dKey] = content;
+        if (normalizedHeader.includes('guideline') || normalizedHeader.includes('basic')) {
+          guidelines.push(content);
+        } else {
+          const dKey = dayIndexMap[normalizedHeader];
+          if (dKey) {
+            dayBlocks[dKey] = content;
+          }
         }
-      }
+    }
+
+    // Detect if input uses "Day 1" format and relabel matrix headers accordingly
+    const usesDayNumbers = /\bday\s*[1-7]\b/i.test(text);
+    if (usesDayNumbers) {
+      dayNames.mon = 'Day 1';
+      dayNames.tue = 'Day 2';
+      dayNames.wed = 'Day 3';
+      dayNames.thu = 'Day 4';
+      dayNames.fri = 'Day 5';
+      dayNames.sat = 'Day 6';
+      dayNames.sun = 'Day 7';
     }
 
     // 2. Parse meals inside each day block
@@ -425,8 +437,21 @@ function parseCoachMealPlan(text) {
 // =========================================================================
 // ORGANIZED MEAL SCHEDULE COMPONENT (Day-by-Day focus + 7-Day Matrix + Checklist)
 // =========================================================================
+function stripMarkdown(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/###/g, '')
+    .replace(/^\*{1,2}\s*/gm, '• ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function OrganizedMealSchedule({ plan, client, onAskCoach }) {
-  const parsed = useMemo(() => parseCoachMealPlan(plan.content_text), [plan.content_text]);
+  const cleanText = useMemo(() => stripMarkdown(plan.content_text), [plan.content_text]);
+  const parsed = useMemo(() => parseCoachMealPlan(cleanText), [cleanText]);
 
   const todayKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()] || 'mon';
   const [selectedDay, setSelectedDay] = useState('mon');
@@ -462,7 +487,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
       <div className="custom-written-plan-card">
         <div className="written-plan-badge"><FileText size={14} /> Coach James Custom Directives</div>
         <h3 className="written-plan-title">{plan.title}</h3>
-        <div className="written-plan-text">{plan.content_text}</div>
+        <div className="written-plan-text">{cleanText}</div>
       </div>
     );
   }
@@ -623,7 +648,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
 
                   <div className="meal-food-content-row">
                     <div className="food-main-text">
-                      <p>{foodText}</p>
+                      <p>{stripMarkdown(foodText)}</p>
                     </div>
 
                     <button
@@ -697,7 +722,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
 
                       return (
                         <td key={dKey} className={`matrix-food-cell ${dKey === todayKey ? 'today-col' : ''} ${isEaten ? 'cell-eaten' : ''}`}>
-                          <div className="matrix-food-text">{item}</div>
+                          <div className="matrix-food-text">{stripMarkdown(item)}</div>
                           {isEaten && <span className="matrix-eaten-badge">✓ Done</span>}
                         </td>
                       );
@@ -737,7 +762,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
             Verbatim instructions &amp; notes submitted directly by Head Coach James:
           </p>
           <div className="written-plan-text">
-            {plan.content_text}
+            {cleanText}
           </div>
         </div>
       )}

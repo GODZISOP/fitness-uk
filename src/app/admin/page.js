@@ -1467,6 +1467,30 @@ water 3 liters a day. workout is 5pm.`);
       return;
     }
 
+    // AUTO-FORMAT with Groq AI before saving (so matrix is always clean)
+    let finalTextContent = resTextContent.trim();
+    if (resFormat === 'text' && finalTextContent) {
+      setIsFormatting(true);
+      try {
+        const fmtRes = await fetch('/api/format-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: finalTextContent })
+        });
+        if (fmtRes.ok) {
+          const fmtData = await fmtRes.json();
+          if (fmtData.formattedText) {
+            finalTextContent = fmtData.formattedText;
+            setResTextContent(finalTextContent); // update textarea too
+          }
+        }
+      } catch (e) {
+        // silently continue with original if AI fails
+      } finally {
+        setIsFormatting(false);
+      }
+    }
+
     const selectedClientObj = clients.find(c => c.id === resClientId);
     const isZainSelected = selectedClientObj?.name?.toLowerCase().trim() === 'zain' || selectedClientObj?.pin_code === '78601' || selectedClientObj?.pin_code === '8989';
 

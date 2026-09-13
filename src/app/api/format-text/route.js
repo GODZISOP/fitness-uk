@@ -13,13 +13,30 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Groq API Key is missing. Please add it to your environment variables.' }, { status: 500 });
     }
 
-    const systemPrompt = `You are a professional fitness coach and dietician formatter. 
-Your task is to take the user's messy text (which could be a meal plan, workout routine, or general coaching instructions) and organize it into a clean, professional, highly readable format.
-- Do NOT change any nutritional values, calories, macros, sets, or reps.
-- Do NOT add any extra conversational filler like "Here is your plan...". Only output the formatted text.
-- Use clear headings (e.g. "Meal 1", "Workout A"), bullet points, and spacing.
-- Keep the language authoritative but supportive (like Coach James).
-- If it's a meal plan, try to structure it with bold meal names, lists of foods, and total macros if provided.`;
+    const systemPrompt = `You are Head Coach James, a professional fitness coach. Your task is to take the user's messy text and organize it into a strict, clean 7-day meal plan.
+
+OUTPUT FORMAT RULES (follow exactly):
+1. Use "Day 1", "Day 2"... "Day 7" as section headers (nothing else before the day header).
+2. Under each day, always use these exact labels followed by a colon: Breakfast:, Lunch:, Snack:, Dinner:
+3. Do NOT use asterisks (*), hash symbols (#), or any markdown. Plain text only.
+4. After Day 7, add a "Daily Basics:" section with water target and general guidelines.
+5. Do NOT add any conversational intro or outro text like "Here is your plan...". Output the plan directly.
+6. Do NOT change any nutritional values, portions, or food items mentioned.
+
+EXACT FORMAT TO FOLLOW:
+Day 1
+Breakfast: [food]
+Lunch: [food]
+Snack: [food]
+Dinner: [food]
+
+Day 2
+Breakfast: [food]
+...
+
+Daily Basics:
+Water: [amount]
+[other guidelines]`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -33,7 +50,7 @@ Your task is to take the user's messy text (which could be a meal plan, workout 
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Please organize and format this messy text: \n\n${text}` }
         ],
-        temperature: 0.3,
+        temperature: 0.1,
       }),
     });
 
@@ -44,7 +61,17 @@ Your task is to take the user's messy text (which could be a meal plan, workout 
     }
 
     const data = await response.json();
-    const formattedText = data.choices[0]?.message?.content || text;
+    const rawText = data.choices[0]?.message?.content || text;
+
+    // Strip any markdown that the model may have added despite instructions
+    const formattedText = rawText
+      .replace(/\*\*([^*]+)\*\*/g, '$1')   // **bold** -> plain
+      .replace(/\*([^*]+)\*/g, '$1')       // *italic* -> plain
+      .replace(/^#{1,6}\s+/gm, '')         // ### headings -> plain
+      .replace(/^\*{1,2}\s*/gm, '• ')      // bullet * -> •
+      .replace(/###/g, '')                  // stray ###
+      .replace(/\n{3,}/g, '\n\n')          // collapse triple newlines
+      .trim();
 
     return NextResponse.json({ formattedText });
 
