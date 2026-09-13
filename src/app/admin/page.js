@@ -1508,9 +1508,30 @@ water 3 liters a day. workout is 5pm.`);
 
     setIsPublishing(true);
 
-    // Save immediately with original text for instant UI response
-    // AI formatting will update it silently in the background
-    const finalTextContent = resTextContent.trim();
+    let finalTextContent = resTextContent.trim();
+
+    // 1. AUTOMATIC AI FORMATTING ON PUBLISH:
+    // If it's a meal plan text and hasn't already been formatted, run it through AI automatically!
+    if (resFormat === 'text' && resCategory === 'meal_plan' && finalTextContent) {
+      const alreadyClean7Day = /^day\s*1\b/i.test(finalTextContent) && /^day\s*2\b/im.test(finalTextContent);
+      if (!alreadyClean7Day) {
+        try {
+          const fmtRes = await fetch('/api/format-text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: finalTextContent })
+          });
+          if (fmtRes.ok) {
+            const fmtData = await fmtRes.json();
+            if (fmtData.formattedText && fmtData.formattedText.trim().length > 30) {
+              finalTextContent = fmtData.formattedText.trim();
+            }
+          }
+        } catch (fmtErr) {
+          console.warn("Auto AI format fallback:", fmtErr);
+        }
+      }
+    }
 
     const selectedClientObj = clients.find(c => c.id === resClientId);
     const isZainSelected = selectedClientObj?.name?.toLowerCase().trim() === 'zain' || selectedClientObj?.pin_code === '78601' || selectedClientObj?.pin_code === '8989';
@@ -1635,7 +1656,7 @@ water 3 liters a day. workout is 5pm.`);
       }
 
       // Reassuring natural delay for smooth visual feedback
-      await new Promise(res => setTimeout(res, 600));
+      await new Promise(res => setTimeout(res, 500));
     } catch (supaErr) {
       console.warn("Supabase resource upload note:", supaErr);
     } finally {
@@ -1656,38 +1677,6 @@ water 3 liters a day. workout is 5pm.`);
         setPublishSuccessNotice(prev => (prev?.title === successInfo.title ? null : prev));
       }, 5000);
     }
-
-    // BACKGROUND: AI format (non-blocking, fire and forget)
-    ;(async () => {
-      let savedText = finalTextContent;
-
-      // 1. AI Format in background
-      if (resFormat === 'text' && savedText) {
-        try {
-          const fmtRes = await fetch('/api/format-text', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: savedText })
-          });
-          if (fmtRes.ok) {
-            const fmtData = await fmtRes.json();
-            if (fmtData.formattedText) {
-              savedText = fmtData.formattedText;
-              // Silently update localStorage with formatted version
-              const updated = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-              const idx = updated.findIndex(r => r.id === newResource.id);
-              if (idx !== -1) {
-                updated[idx].content_text = savedText;
-                localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updated));
-                setResources([...updated]);
-              }
-              // Silently update Supabase
-              supabase.from('resources').update({ content_text: savedText }).eq('id', newResource.id).then();
-            }
-          }
-        } catch (e) { /* silently skip */ }
-      }
-    })();
   };
 
   const handleEditResourceSetup = (resource) => {
