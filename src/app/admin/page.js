@@ -1411,6 +1411,36 @@ Milk or plain yogurt if you're hungry.`);
     });
   };
 
+  const handleDeleteClient = async (clientId, clientPin) => {
+    if (!window.confirm("Are you sure you want to permanently delete this client? All their data (macros, weigh-ins, resources) will also be removed locally.")) return;
+
+    try {
+      await supabase.from('clients').delete().eq('id', clientId);
+      await supabase.from('resources').delete().eq('client_id', clientId);
+      await supabase.from('client_messages').delete().eq('client_id', clientId);
+      await supabase.from('weigh_ins').delete().eq('client_id', clientId);
+    } catch (e) {
+      console.warn("Delete client Supabase error:", e);
+    }
+
+    const filterLocal = (key) => {
+       const items = JSON.parse(localStorage.getItem(key) || '[]');
+       localStorage.setItem(key, JSON.stringify(items.filter(item => item.client_id !== clientId && item.client_pin !== clientPin)));
+    };
+    
+    const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients.filter(c => c.id !== clientId)));
+    
+    filterLocal(LOCAL_RESOURCES_KEY);
+    filterLocal(LOCAL_MESSAGES_KEY);
+    filterLocal(LOCAL_WEIGHINS_KEY);
+
+    setClients(prev => prev.filter(c => c.id !== clientId));
+    setResources(prev => prev.filter(r => r.client_id !== clientId && r.client_pin !== clientPin));
+    setMessages(prev => prev.filter(m => m.client_id !== clientId && m.client_pin !== clientPin));
+    setWeighIns(prev => prev.filter(w => w.client_id !== clientId && w.client_pin !== clientPin));
+  };
+
   const handleDeleteResource = async (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
@@ -2165,7 +2195,7 @@ Milk or plain yogurt if you're hungry.`);
                           {c.protein || '190g'} P &bull; {c.carbs || '220g'} C &bull; {c.fats || '55g'} F
                         </span>
                       </td>
-                      <td>
+                      <td style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         <button 
                           type="button" 
                           className="btn-table-edit-macros"
@@ -2185,6 +2215,24 @@ Milk or plain yogurt if you're hungry.`);
                           }}
                         >
                           <Flame size={13} color="#f59e0b" /> Assign / Edit Macros
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-row-del"
+                          onClick={() => handleDeleteClient(c.id, c.pin_code)}
+                          title="Delete Client"
+                          style={{
+                            padding: '0.4rem 0.6rem',
+                            background: '#fee2e2',
+                            color: '#ef4444',
+                            border: '1px solid #fecaca',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Trash2 size={15} />
                         </button>
                       </td>
                       <td>
