@@ -1441,6 +1441,28 @@ export default function ResourcesPage() {
           <button onClick={handlePrintPlan} className="btn-print-plan" title="Print Meal Plan">
             <Printer size={15} /> Print / PDF
           </button>
+          
+          <button 
+            className="btn-print-plan"
+            onClick={() => {
+              setActiveTab('notifications');
+              setNotifications(prev => {
+                const updated = prev.map(n => ({ ...n, isRead: true }));
+                localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
+                return updated;
+              });
+            }}
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid #cbd5e1', padding: '0.4rem 0.8rem', borderRadius: '50px', background: '#fff', color: '#475569', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+            title="View Notification History"
+          >
+            <Bell size={15} /> Notifications
+            {notifications.filter(n => !n.isRead).length > 0 && (
+              <span style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '0.15rem 0.35rem', fontSize: '0.6rem', fontWeight: 'bold', border: '2px solid #fff' }}>
+                {notifications.filter(n => !n.isRead).length}
+              </span>
+            )}
+          </button>
+
           <div className="user-badge">
             <User size={15} />
             <span>{client.name} (PIN: {client.pin_code})</span>
@@ -1545,27 +1567,6 @@ export default function ResourcesPage() {
         >
           <Calendar size={18} />
           <span>13-Week Transformation Timeline</span>
-        </button>
-
-        <button 
-          className={`portal-tab ${activeTab === 'notifications' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('notifications');
-            setNotifications(prev => {
-              const updated = prev.map(n => ({ ...n, isRead: true }));
-              localStorage.setItem('LOCAL_NOTIFS_' + client.id, JSON.stringify(updated));
-              return updated;
-            });
-          }}
-          style={{ position: 'relative' }}
-        >
-          <Bell size={18} />
-          <span>Notifications</span>
-          {notifications.filter(n => !n.isRead).length > 0 && (
-            <span style={{ position: 'absolute', top: '5px', right: '5px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '0.15rem 0.35rem', fontSize: '0.6rem', fontWeight: 'bold' }}>
-              {notifications.filter(n => !n.isRead).length}
-            </span>
-          )}
         </button>
 
         <button 
