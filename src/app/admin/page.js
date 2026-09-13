@@ -1738,17 +1738,16 @@ water 3 liters a day. workout is 5pm.`);
     setWeighIns(prev => prev.filter(w => w.client_id !== clientId && w.client_pin !== clientPin));
   };
 
-  const handleDeleteResource = async (id) => {
+  const handleDeleteResource = (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
-      try {
-        await supabase.from('resources').delete().eq('id', id);
-      } catch (e) { }
-
+      // INSTANT: update UI and localStorage immediately
       const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const filtered = localResources.filter(r => r.id !== id);
       localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(filtered));
-
       setResources(prev => prev.filter(r => r.id !== id));
+
+      // BACKGROUND: delete from Supabase (fire and forget)
+      supabase.from('resources').delete().eq('id', id).then();
     }
   };
 
