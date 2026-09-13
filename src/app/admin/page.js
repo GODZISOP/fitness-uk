@@ -599,6 +599,9 @@ export default function AdminPage() {
   // Dedicated Chat Active Client Selection
   const [chatActiveClientId, setChatActiveClientId] = useState('demo-client-1');
   const [chatReplyText, setChatReplyText] = useState('');
+  
+  // Resource Filter
+  const [filterResClientId, setFilterResClientId] = useState('');
 
   // Diet History & Audit Trail State ("Pehle vs Ab")
   const [selectedAuditClientId, setSelectedAuditClientId] = useState('client-zain-1');
@@ -1398,7 +1401,7 @@ Milk or plain yogurt if you're hungry.`);
       const filtered = localResources.filter(r => r.id !== id);
       localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(filtered));
 
-      fetchData();
+      setResources(prev => prev.filter(r => r.id !== id));
     }
   };
 
@@ -2250,9 +2253,30 @@ Milk or plain yogurt if you're hungry.`);
          ========================================================================= */}
       {adminTab === 'resources' && (
         <div className="admin-table-section">
-          <div className="table-header">
-            <h2>Assigned Content, Videos &amp; Written Directives</h2>
-            <span className="total-badge">{resources.length} Published Items</span>
+          <div className="table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h2>Assigned Content, Videos &amp; Written Directives</h2>
+              <span className="total-badge">{resources.length} Published Items</span>
+            </div>
+            <div>
+              <select 
+                value={filterResClientId} 
+                onChange={e => setFilterResClientId(e.target.value)}
+                style={{
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  color: '#475569',
+                  fontWeight: 600
+                }}
+              >
+                <option value="">All Clients</option>
+                {clients.map(c => (
+                  <option key={c.id} value={c.id}>{c.name} (PIN: {c.pin_code})</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="table-responsive">
@@ -2276,8 +2300,10 @@ Milk or plain yogurt if you're hungry.`);
                     </td>
                   </tr>
                 ) : (
-                  resources.map(r => {
-                    const clientObj = clients.find(c => c.id === r.client_id);
+                  resources
+                    .filter(r => filterResClientId ? r.client_id === filterResClientId : true)
+                    .map(r => {
+                      const clientObj = clients.find(c => c.id === r.client_id);
                     const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
                     const isActive = r.status === 'active';
 
