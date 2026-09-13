@@ -1373,10 +1373,12 @@ Milk or plain yogurt if you're hungry.`);
     localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients));
 
     window.dispatchEvent(new Event('storage'));
-    alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal, Week ${newClient.current_week}). Saved directly to database!`);
+    alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal, Week ${newClient.current_week}). Saved directly to database!\n\nTarget client for Meal Plan is now automatically set to "${newClient.name}"!`);
     setClientName('');
     setClientPin('');
     setClientCurrentWeek(1);
+    setResClientId(newClient.id);
+    setChatActiveClientId(newClient.id);
     fetchData();
   };
 
@@ -2274,6 +2276,30 @@ Milk or plain yogurt if you're hungry.`);
             <p className="panel-sub">Coach James ki marzi: aap written diet text likh sakte hain, video add kar sakte hain, ya image/sheet upload kar sakte hain.</p>
 
             <form onSubmit={handleCreateResource} className="panel-form">
+              {/* CURRENT TARGET CLIENT HIGHLIGHT BANNER */}
+              {(() => {
+                const targetObj = clients.find(c => c.id === resClientId);
+                return (
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '1.5px solid #86efac',
+                    borderRadius: '10px',
+                    padding: '0.65rem 1rem',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '0.88rem',
+                    color: '#166534',
+                    fontWeight: '700'
+                  }}>
+                    <span>🎯 Active Target Client for this Protocol:</span>
+                    <strong style={{ color: '#071a2b', background: '#dcfce7', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                      {targetObj ? `${targetObj.name} (PIN: ${targetObj.pin_code})` : 'Please select a client below'}
+                    </strong>
+                  </div>
+                );
+              })()}
 
               <div className="form-row-2">
                 <div className="form-group">
