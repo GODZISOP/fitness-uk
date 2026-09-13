@@ -1222,50 +1222,16 @@ Meal 3 (Post-Lift): 60g Dextrose or Gummy Bears with 40g Whey Isolate (36g P / 6
 Meal 4: 200g Lean Turkey Mince with 350g Baked White Potato (48g P / 75g C / 5g F)
 
 Drink plenty of water with sea salt to pull water directly into the muscle belly!`);
-    } else if (templateType === 'zain_week1') {
-      setResTitle('Week 1 Plan — 7-Day Precision Meal Protocol');
+    } else if (templateType === 'ai_prompt') {
+      setResTitle('Week 1 Customized AI Plan');
       setResFormat('text');
       setResCategory('meal_plan');
-      setResTextContent(`Coach James Custom Directives
-Week 1 Plan — 7-Day Precision Meal Protocol
-Assigned to: Zain • Updated: 12/09/2026
-Daily Targets: 2,350 kcal | 185g Protein | 210g Carbs | 55g Fats
-
-7:30 AM — Breakfast
-Mon: 2 eggs + 1 roti + tea
-Tue: Oats + banana + milk
-Wed: 2 eggs + 1–2 slices whole-wheat bread
-Thu: 1 paratha + 2 eggs
-Fri: Oats + apple
-Sat: 2 eggs + 1 roti + tea
-Sun: Omelette + 2 slices bread
-
-10:30 AM — Snack
-1 fruit + handful of almonds/peanuts
-
-1:30–2:00 PM — Lunch
-Mon: Chicken + 1–2 roti + salad
-Tue: Daal + 1–2 roti + salad
-Wed: Chicken rice + raita
-Thu: Beef/chicken + 1–2 roti + vegetables
-Fri: Daal + rice + salad
-Sat: Chicken + roti + vegetables
-Sun: Biryani/pulao + raita (moderate portion)
-
-5:00 PM — Snack
-Fruit / yogurt / handful of nuts
-
-8:00–8:30 PM — Dinner
-Mon: Chicken + vegetables
-Tue: 2 eggs + roti + salad
-Wed: Chicken + 1 roti + salad
-Thu: Daal + roti + vegetables
-Fri: Chicken/fish + salad
-Sat: Chicken + roti
-Sun: Light dinner — eggs/chicken + salad
-
-10:30 PM — Optional
-Milk or plain yogurt if you're hungry.`);
+      setResTextContent(`client needs 4 meals a day. total 2400 cals, 190g protein, 200g carb. 
+meal 1: morning 8am, 4 eggs, 2 slice whole wheat bread, coffee.
+snack: 11am apple and 30g almonds.
+lunch: 1pm chicken 200g, rice 150g, broccoli.
+dinner: 8pm steak 250g, sweet potato 200g, side salad. 
+water 3 liters a day. workout is 5pm.`);
     }
   };
 
@@ -2408,7 +2374,7 @@ Milk or plain yogurt if you're hungry.`);
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                       <label>Written Meal Plan Instructions</label>
                       <div className="template-quick-buttons">
-                        <button type="button" onClick={() => applyDietTemplate('zain_week1')} className="btn-tmpl-pill active" title="Load Zain's Week 1 7-Day Schedule">⚡ Zain&apos;s 7-Day Plan</button>
+                        <button type="button" onClick={() => applyDietTemplate('ai_prompt')} className="btn-tmpl-pill active" title="Load a messy prompt to test AI formatting">🤖 AI Sample Prompt</button>
                         <button type="button" onClick={() => applyDietTemplate('standard')} className="btn-tmpl-pill">⚡ 4-Meal Plan</button>
                         <button type="button" onClick={() => applyDietTemplate('lowcarb')} className="btn-tmpl-pill">🥩 Low Carb</button>
                         <button type="button" onClick={() => applyDietTemplate('refeed')} className="btn-tmpl-pill">⚡ Refeed</button>
