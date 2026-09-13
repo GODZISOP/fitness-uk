@@ -1131,6 +1131,11 @@ Milk or plain yogurt if you're hungry.`);
 
     window.dispatchEvent(new Event('storage'));
     alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal, Week ${newClient.current_week}). Saved directly to database!`);
+    
+    // Automatically select the new client for meal plan assignment and chat
+    setResClientId(newClient.id);
+    setChatActiveClientId(newClient.id);
+
     setClientName('');
     setClientPin('');
     setClientCurrentWeek(1);

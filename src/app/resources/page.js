@@ -1118,15 +1118,17 @@ export default function ResourcesPage() {
         let changeDetails = "Your profile has been updated by Coach James.";
         
         if (
-            client.calories !== activeData.calories ||
-            client.protein !== activeData.protein ||
-            client.carbs !== activeData.carbs ||
-            client.fats !== activeData.fats ||
-            client.water !== activeData.water
+            client.calories && (
+              client.calories !== activeData.calories ||
+              client.protein !== activeData.protein ||
+              client.carbs !== activeData.carbs ||
+              client.fats !== activeData.fats ||
+              client.water !== activeData.water
+            )
         ) {
             profileChanged = true;
             changeDetails = "Coach James updated your daily macronutrient targets.";
-        } else if (client.current_week !== activeData.current_week) {
+        } else if (client.current_week && client.current_week !== activeData.current_week) {
             profileChanged = true;
             changeDetails = `You have progressed to Week ${activeData.current_week}!`;
         }
