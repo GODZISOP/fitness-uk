@@ -588,7 +588,9 @@ export default function AdminPage() {
   const [resCategory, setResCategory] = useState('meal_plan'); // meal_plan, routine_video, coach_note
   const [resTextContent, setResTextContent] = useState('');
   const [resUrl, setResUrl] = useState('');
+  const [resChangeNotes, setResChangeNotes] = useState('');
   const [resLayout, setResLayout] = useState('layout_a');
+  const [editingResourceId, setEditingResourceId] = useState(null);
 
   // File Upload
   const [uploadFile, setUploadFile] = useState(null);
@@ -599,7 +601,6 @@ export default function AdminPage() {
   const [chatReplyText, setChatReplyText] = useState('');
 
   // Diet History & Audit Trail State ("Pehle vs Ab")
-  const [resChangeNotes, setResChangeNotes] = useState('');
   const [selectedAuditClientId, setSelectedAuditClientId] = useState('client-zain-1');
   const [diffModal, setDiffModal] = useState({
     isOpen: false,
@@ -1214,9 +1215,9 @@ Milk or plain yogurt if you're hungry.`);
       return matches && (r.category === 'meal_plan' || r.type === 'meal_plan');
     });
 
-    // If publishing a meal plan, archive previously active plans for this client (NEVER DELETE)
+    // If publishing a new meal plan, archive previously active plans for this client (NEVER DELETE)
     let updatedLocalResources = localResources;
-    if (resCategory === 'meal_plan') {
+    if (!editingResourceId && resCategory === 'meal_plan') {
       updatedLocalResources = localResources.map(r => {
         const matches = r.client_id === resClientId || 
           (r.client_pin && selectedClientObj?.pin_code && r.client_pin === selectedClientObj.pin_code) ||
@@ -1230,7 +1231,7 @@ Milk or plain yogurt if you're hungry.`);
     }
 
     const newResource = {
-      id: "res_" + Date.now(),
+      id: editingResourceId || ("res_" + Date.now()),
       client_id: resClientId,
       client_name: selectedClientObj?.name || '',
       client_pin: selectedClientObj?.pin_code || '',
@@ -1246,46 +1247,99 @@ Milk or plain yogurt if you're hungry.`);
       content_url: resUrl.trim() || '',
       layout_type: resLayout,
       assigned_at: new Date().toISOString(),
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
+    if (editingResourceId) {
+      const existingRes = localResources.find(r => r.id === editingResourceId);
+      if (existingRes) {
+        newResource.created_at = existingRes.created_at; // Keep original creation date
+        newResource.version = existingRes.version; // Keep original version
+      }
+    }
+
     try {
-      const { error } = await supabase.from('resources').insert([{
-        id: newResource.id,
-        client_id: newResource.client_id,
-        client_name: newResource.client_name,
-        client_pin: newResource.client_pin,
-        title: newResource.title,
-        category: newResource.category,
-        type: newResource.type,
-        format: newResource.format,
-        status: newResource.status,
-        version: newResource.version,
-        change_notes: newResource.change_notes,
-        content_text: newResource.content_text,
-        content_url: newResource.content_url,
-        layout_type: newResource.layout_type,
-        assigned_at: newResource.assigned_at,
-        created_at: newResource.created_at
-      }]);
-      if (error) console.warn("Supabase resource insert note:", error.message);
+      if (editingResourceId) {
+        const { error } = await supabase.from('resources').update({
+          client_id: newResource.client_id,
+          client_name: newResource.client_name,
+          client_pin: newResource.client_pin,
+          title: newResource.title,
+          category: newResource.category,
+          type: newResource.type,
+          format: newResource.format,
+          status: newResource.status,
+          change_notes: newResource.change_notes,
+          content_text: newResource.content_text,
+          content_url: newResource.content_url,
+          layout_type: newResource.layout_type,
+          updated_at: newResource.updated_at
+        }).eq('id', editingResourceId);
+        if (error) console.warn("Supabase resource update note:", error.message);
+      } else {
+        const { error } = await supabase.from('resources').insert([{
+          id: newResource.id,
+          client_id: newResource.client_id,
+          client_name: newResource.client_name,
+          client_pin: newResource.client_pin,
+          title: newResource.title,
+          category: newResource.category,
+          type: newResource.type,
+          format: newResource.format,
+          status: newResource.status,
+          version: newResource.version,
+          change_notes: newResource.change_notes,
+          content_text: newResource.content_text,
+          content_url: newResource.content_url,
+          layout_type: newResource.layout_type,
+          assigned_at: newResource.assigned_at,
+          created_at: newResource.created_at,
+          updated_at: newResource.updated_at
+        }]);
+        if (error) console.warn("Supabase resource insert note:", error.message);
+      }
     } catch (err) {}
 
     // Save to localStorage
-    updatedLocalResources.unshift(newResource);
+    if (editingResourceId) {
+      updatedLocalResources = updatedLocalResources.map(r => r.id === editingResourceId ? newResource : r);
+    } else {
+      updatedLocalResources.unshift(newResource);
+    }
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updatedLocalResources));
 
     alert(
-      resCategory === 'meal_plan'
-        ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nPrevious plan safely archived in history.`
-        : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`
+      editingResourceId 
+        ? `🟢 "${newResource.title}" updated successfully!`
+        : (resCategory === 'meal_plan'
+            ? `🟢 "${newResource.title}" published as CURRENT ACTIVE PROTOCOL for ${selectedClientObj ? selectedClientObj.name : 'client'}!\nPrevious plan safely archived in history.`
+            : `Resource "${newResource.title}" published to ${selectedClientObj ? selectedClientObj.name : 'client'}!`)
     );
 
+    cancelEditResource();
+    fetchData();
+  };
+
+  const handleEditResourceSetup = (resource) => {
+    setEditingResourceId(resource.id);
+    setResClientId(resource.client_id);
+    setResTitle(resource.title);
+    setResCategory(resource.category || 'meal_plan');
+    setResFormat(resource.format || 'text');
+    setResTextContent(resource.content_text || '');
+    setResUrl(resource.content_url || '');
+    setResChangeNotes(resource.change_notes || '');
+    setAdminTab('add_resource');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEditResource = () => {
+    setEditingResourceId(null);
     setResTitle('');
     setResTextContent('');
     setResChangeNotes('');
     setResUrl('');
-    fetchData();
   };
 
   const handleReactivatePlan = (targetPlanId, clientId) => {
@@ -1906,9 +1960,16 @@ Milk or plain yogurt if you're hungry.`);
                 </div>
               )}
 
-              <button type="submit" className="btn-primary-action" disabled={uploading}>
-                <CheckCircle2 size={17} /> Publish Content to Client Portal
-              </button>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                <button type="submit" className="btn-primary-action" disabled={uploading}>
+                  <CheckCircle2 size={17} /> {editingResourceId ? "Update Resource & Notify" : "Publish Content to Client Portal"}
+                </button>
+                {editingResourceId && (
+                  <button type="button" onClick={cancelEditResource} className="btn-cancel-edit" style={{ padding: '0.85rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', color: '#475569', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
             </form>
           </div>
 
@@ -2273,6 +2334,9 @@ Milk or plain yogurt if you're hungry.`);
                                 <History size={12} /> Audit
                               </button>
                             )}
+                            <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
+                              Edit
+                            </button>
                             <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete">
                               <Trash2 size={15} /> Delete
                             </button>
