@@ -847,10 +847,30 @@ Hydration: 3.0 Litres water daily`
       localStorage.setItem(LOCAL_WEIGHINS_KEY, JSON.stringify(localWeighIns));
     }
 
-    const combinedClients = [...fetchedClients, ...localClients.filter(lc => !fetchedClients.some(fc => fc.id === lc.id || fc.pin_code === lc.pin_code))];
-    const combinedResources = [...fetchedResources, ...localResources.filter(lr => !fetchedResources.some(fr => fr.id === lr.id))];
-    const combinedMessages = [...fetchedMessages, ...localMessages.filter(lm => !fetchedMessages.some(fm => fm.id === lm.id))];
-    const combinedWeighIns = [...fetchedWeighIns, ...localWeighIns.filter(lw => !fetchedWeighIns.some(fw => fw.id === lw.id))];
+    const mergeByTimestamp = (arr1, arr2) => {
+      const map = new Map();
+      [...arr1, ...arr2].forEach(item => {
+        if (item && item.id) {
+          const existing = map.get(item.id);
+          if (!existing) {
+            map.set(item.id, item);
+          } else {
+            // Prefer the item with the newest updated_at or timestamp or created_at
+            const existingTime = new Date(existing.updated_at || existing.timestamp || existing.created_at || 0).getTime();
+            const newTime = new Date(item.updated_at || item.timestamp || item.created_at || 0).getTime();
+            if (newTime > existingTime) {
+              map.set(item.id, item);
+            }
+          }
+        }
+      });
+      return Array.from(map.values());
+    };
+
+    const combinedClients = mergeByTimestamp(localClients, fetchedClients);
+    const combinedResources = mergeByTimestamp(localResources, fetchedResources).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const combinedWeighIns = mergeByTimestamp(localWeighIns, fetchedWeighIns).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
 
     setClients(combinedClients);
     setResources(combinedResources);
