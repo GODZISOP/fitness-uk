@@ -1333,7 +1333,7 @@ Milk or plain yogurt if you're hungry.`);
     setResTextContent(resource.content_text || '');
     setResUrl(resource.content_url || '');
     setResChangeNotes(resource.change_notes || '');
-    setAdminTab('add_resource');
+    setAdminTab('overview');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
