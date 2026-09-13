@@ -705,6 +705,7 @@ export default function AdminPage() {
   const [resFormat, setResFormat] = useState('text'); // text, video, image
   const [resCategory, setResCategory] = useState('meal_plan'); // meal_plan, routine_video, coach_note
   const [resTextContent, setResTextContent] = useState('');
+  const [isFormatting, setIsFormatting] = useState(false);
   const [resUrl, setResUrl] = useState('');
   const [resChangeNotes, setResChangeNotes] = useState('');
   const [resLayout, setResLayout] = useState('layout_a');
@@ -1455,6 +1456,36 @@ Milk or plain yogurt if you're hungry.`);
       alert("Upload note: " + err.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleAutoFormat = async () => {
+    if (!resTextContent.trim()) {
+      alert("Please paste some text first before auto-formatting.");
+      return;
+    }
+
+    setIsFormatting(true);
+    try {
+      const response = await fetch('/api/format-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: resTextContent })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to format');
+      }
+
+      const data = await response.json();
+      if (data.formattedText) {
+        setResTextContent(data.formattedText);
+      }
+    } catch (err) {
+      alert("Auto-Format Error: " + err.message + "\nMake sure you added the GROQ_API_KEY to your .env.local file.");
+    } finally {
+      setIsFormatting(false);
     }
   };
 
@@ -2381,6 +2412,15 @@ Milk or plain yogurt if you're hungry.`);
                         <button type="button" onClick={() => applyDietTemplate('standard')} className="btn-tmpl-pill">⚡ 4-Meal Plan</button>
                         <button type="button" onClick={() => applyDietTemplate('lowcarb')} className="btn-tmpl-pill">🥩 Low Carb</button>
                         <button type="button" onClick={() => applyDietTemplate('refeed')} className="btn-tmpl-pill">⚡ Refeed</button>
+                        <button 
+                          type="button" 
+                          onClick={handleAutoFormat} 
+                          className="btn-tmpl-pill" 
+                          style={{ background: '#ecfdf5', color: '#059669', border: '1.5px solid #10b981', marginLeft: '8px' }}
+                          disabled={isFormatting}
+                        >
+                          {isFormatting ? '⏳ Formatting...' : '✨ AI Auto-Format'}
+                        </button>
                       </div>
                     </div>
                     <textarea
