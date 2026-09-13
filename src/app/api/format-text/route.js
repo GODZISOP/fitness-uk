@@ -28,7 +28,7 @@ Your task is to take the user's messy text (which could be a meal plan, workout 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama3-8b-8192',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Please organize and format this messy text: \n\n${text}` }
@@ -40,7 +40,7 @@ Your task is to take the user's messy text (which could be a meal plan, workout 
     if (!response.ok) {
       const errorData = await response.text();
       console.error('Groq API Error:', errorData);
-      return NextResponse.json({ error: 'Failed to format text with AI.' }, { status: response.status });
+      return NextResponse.json({ error: `Groq API Error: ${response.status} - ${errorData}` }, { status: response.status });
     }
 
     const data = await response.json();
