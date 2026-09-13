@@ -1120,7 +1120,8 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     if (liveNotice) {
-      const timer = setTimeout(() => setLiveNotice(null), 9000);
+      // Increased timeout to 25 seconds so they don't miss it if switching tabs
+      const timer = setTimeout(() => setLiveNotice(null), 25000);
       return () => clearTimeout(timer);
     }
   }, [liveNotice]);
@@ -1163,7 +1164,12 @@ export default function ResourcesPage() {
         const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
         const clientLocalRes = extractClientResources([...(resData || []), ...localRes], activeClientObj);
         setResources(clientLocalRes);
-        seenResourceIdsRef.current = new Set(clientLocalRes.map(r => r.id));
+        
+        // Don't mark items created in the last 60 seconds as 'seen', so they trigger a notification upon login!
+        const seenIds = clientLocalRes
+          .filter(r => (Date.now() - new Date(r.created_at).getTime()) > 60000)
+          .map(r => r.id);
+        seenResourceIdsRef.current = new Set(seenIds);
 
         // Fetch Messages without deleting any history
         const { data: mData } = await supabase
@@ -1205,7 +1211,12 @@ export default function ResourcesPage() {
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
       setResources(clientLocalRes);
-      seenResourceIdsRef.current = new Set(clientLocalRes.map(r => r.id));
+      
+      // Don't mark items created in the last 60 seconds as 'seen', so they trigger a notification upon login!
+      const seenIds = clientLocalRes
+        .filter(r => (Date.now() - new Date(r.created_at).getTime()) > 60000)
+        .map(r => r.id);
+      seenResourceIdsRef.current = new Set(seenIds);
 
       const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
       const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === matchedClient.pin_code || m.client_id === matchedClient.id);
