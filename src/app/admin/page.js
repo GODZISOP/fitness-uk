@@ -39,7 +39,8 @@ import {
   ChevronRight,
   Printer,
   LayoutGrid,
-  Bell
+  Bell,
+  Loader2
 } from 'lucide-react';
 import './admin.css';
 
@@ -711,6 +712,8 @@ export default function AdminPage() {
   const [resChangeNotes, setResChangeNotes] = useState('');
   const [resLayout, setResLayout] = useState('layout_a');
   const [editingResourceId, setEditingResourceId] = useState(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishSuccessNotice, setPublishSuccessNotice] = useState(null);
 
   // File Upload
   const [uploadFile, setUploadFile] = useState(null);
@@ -1470,6 +1473,8 @@ water 3 liters a day. workout is 5pm.`);
       return;
     }
 
+    setIsPublishing(true);
+
     // Save immediately with original text for instant UI response
     // AI formatting will update it silently in the background
     const finalTextContent = resTextContent.trim();
@@ -1548,9 +1553,78 @@ water 3 liters a day. workout is 5pm.`);
     localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updatedLocalResources));
     window.dispatchEvent(new Event('storage'));
     setResources(updatedLocalResources);
-    cancelEditResource();
 
-    // BACKGROUND: AI format + Supabase (non-blocking, fire and forget)
+    try {
+      // Supabase upload & sync
+      if (editingResourceId) {
+        await supabase.from('resources').update({
+          title: newResource.title,
+          category: newResource.category,
+          type: newResource.type,
+          format: newResource.format,
+          status: newResource.status,
+          change_notes: newResource.change_notes,
+          content_text: finalTextContent,
+          content_url: newResource.content_url,
+          layout_type: newResource.layout_type,
+          assigned_at: newResource.assigned_at
+        }).eq('id', editingResourceId);
+      } else {
+        if (resCategory === 'meal_plan') {
+          try {
+            await supabase.from('resources')
+              .update({ status: 'archived', archived_at: new Date().toISOString() })
+              .eq('client_id', newResource.client_id)
+              .eq('category', 'meal_plan')
+              .eq('status', 'active');
+          } catch (archErr) {
+            console.warn("Archive previous plan note:", archErr);
+          }
+        }
+        await supabase.from('resources').insert([{
+          id: newResource.id,
+          client_id: newResource.client_id,
+          client_name: newResource.client_name,
+          client_pin: newResource.client_pin,
+          title: newResource.title,
+          category: newResource.category,
+          type: newResource.type,
+          format: newResource.format,
+          status: newResource.status,
+          version: newResource.version,
+          change_notes: newResource.change_notes,
+          content_text: finalTextContent,
+          content_url: newResource.content_url,
+          layout_type: newResource.layout_type,
+          assigned_at: newResource.assigned_at,
+          created_at: newResource.created_at
+        }]);
+      }
+
+      // Reassuring natural delay for smooth visual feedback
+      await new Promise(res => setTimeout(res, 600));
+    } catch (supaErr) {
+      console.warn("Supabase resource upload note:", supaErr);
+    } finally {
+      setIsPublishing(false);
+      cancelEditResource();
+
+      const successInfo = {
+        title: newResource.title,
+        clientName: selectedClientObj?.name || 'Client',
+        category: resCategory,
+        isEdit: !!editingResourceId,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setPublishSuccessNotice(successInfo);
+      playNotificationSound();
+
+      setTimeout(() => {
+        setPublishSuccessNotice(prev => (prev?.title === successInfo.title ? null : prev));
+      }, 5000);
+    }
+
+    // BACKGROUND: AI format (non-blocking, fire and forget)
     ;(async () => {
       let savedText = finalTextContent;
 
@@ -1574,58 +1648,12 @@ water 3 liters a day. workout is 5pm.`);
                 localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(updated));
                 setResources([...updated]);
               }
+              // Silently update Supabase
+              supabase.from('resources').update({ content_text: savedText }).eq('id', newResource.id).then();
             }
           }
         } catch (e) { /* silently skip */ }
       }
-
-      // 2. Supabase sync in background
-      try {
-        if (editingResourceId) {
-          supabase.from('resources').update({
-            title: newResource.title,
-            category: newResource.category,
-            type: newResource.type,
-            format: newResource.format,
-            status: newResource.status,
-            change_notes: newResource.change_notes,
-            content_text: savedText,
-            content_url: newResource.content_url,
-            layout_type: newResource.layout_type,
-            assigned_at: newResource.assigned_at
-          }).eq('id', editingResourceId).then();
-        } else {
-          if (resCategory === 'meal_plan') {
-            try {
-              await supabase.from('resources')
-                .update({ status: 'archived', archived_at: new Date().toISOString() })
-                .eq('client_id', newResource.client_id)
-                .eq('category', 'meal_plan')
-                .eq('status', 'active');
-            } catch (archErr) {
-              console.warn("Archive previous plan note:", archErr);
-            }
-          }
-          supabase.from('resources').insert([{
-            id: newResource.id,
-            client_id: newResource.client_id,
-            client_name: newResource.client_name,
-            client_pin: newResource.client_pin,
-            title: newResource.title,
-            category: newResource.category,
-            type: newResource.type,
-            format: newResource.format,
-            status: newResource.status,
-            version: newResource.version,
-            change_notes: newResource.change_notes,
-            content_text: savedText,
-            content_url: newResource.content_url,
-            layout_type: newResource.layout_type,
-            assigned_at: newResource.assigned_at,
-            created_at: newResource.created_at
-          }]).then();
-        }
-      } catch (e) { /* silently skip */ }
     })();
   };
 
@@ -1885,6 +1913,31 @@ water 3 liters a day. workout is 5pm.`);
 
   return (
     <div className="admin-dashboard-wrapper">
+
+      {/* FLOATING TOP SUCCESS TOAST WITH TICK NOTIFICATION */}
+      {publishSuccessNotice && (
+        <div className="floating-top-success-toast">
+          <div className="floating-toast-tick-circle">
+            <CheckCircle2 size={22} color="#ffffff" />
+          </div>
+          <div className="floating-toast-body">
+            <div className="floating-toast-heading">
+              ✓ {publishSuccessNotice.category === 'meal_plan' ? 'Meal Plan' : publishSuccessNotice.category === 'macros' ? 'Nutrition & Macros' : 'Protocol'} Uploaded!
+            </div>
+            <div className="floating-toast-msg">
+              <strong>{publishSuccessNotice.title}</strong> is now live for <strong>{publishSuccessNotice.clientName}</strong>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="floating-toast-dismiss"
+            onClick={() => setPublishSuccessNotice(null)}
+            title="Dismiss notification"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
 
       {/* CLEAN TOP BRAND & HEADER */}
       <div className="admin-nav-bar">
@@ -2483,9 +2536,58 @@ water 3 liters a day. workout is 5pm.`);
                 </div>
               )}
 
+              {/* SUCCESS NOTIFICATION WITH TICK */}
+              {publishSuccessNotice && (
+                <div className="publish-success-notification">
+                  <div className="success-icon-badge">
+                    <CheckCircle2 size={24} color="#ffffff" />
+                  </div>
+                  <div className="success-text-col">
+                    <div className="success-title">
+                      ✓ {publishSuccessNotice.category === 'meal_plan' ? 'Meal Plan' : publishSuccessNotice.category === 'macros' ? 'Macros' : 'Protocol'} Uploaded &amp; Assigned!
+                    </div>
+                    <div className="success-details">
+                      <strong>&quot;{publishSuccessNotice.title}&quot;</strong> has been uploaded to the database and assigned to <strong>{publishSuccessNotice.clientName}</strong>. Live on their portal now!
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="success-close-btn"
+                    onClick={() => setPublishSuccessNotice(null)}
+                    title="Dismiss"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                <button type="submit" className="btn-primary-action" disabled={uploading || isFormatting}>
-                  <CheckCircle2 size={17} /> {isFormatting ? '✨ AI Formatting & Publishing...' : editingResourceId ? "Update Resource & Notify" : "Publish Content to Client Portal"}
+                <button
+                  type="submit"
+                  className={`btn-primary-action ${isPublishing ? 'btn-publishing' : ''}`}
+                  disabled={uploading || isFormatting || isPublishing}
+                >
+                  {isPublishing ? (
+                    <>
+                      <Loader2 className="animate-spin" size={18} />
+                      <span>Uploading &amp; Syncing Protocol...</span>
+                    </>
+                  ) : isFormatting ? (
+                    <>
+                      <Sparkles className="animate-spin" size={18} />
+                      <span>✨ AI Formatting &amp; Publishing...</span>
+                    </>
+                  ) : editingResourceId ? (
+                    <>
+                      <CheckCircle2 size={17} />
+                      <span>Update Resource &amp; Notify</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 size={17} />
+                      <span>Publish Content to Client Portal</span>
+                    </>
+                  )}
                 </button>
                 {editingResourceId && (
                   <button type="button" onClick={cancelEditResource} className="btn-cancel-edit" style={{ padding: '0.85rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', color: '#475569', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>

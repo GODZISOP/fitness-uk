@@ -3371,3 +3371,186 @@
     font-size: 1.15rem;
   }
 }
+
+/* ==========================================================================
+   UPLOAD LOADING STATE & SUCCESS TICK NOTIFICATIONS
+   ========================================================================== */
+
+/* Publishing Button Loading State */
+.btn-primary-action.btn-publishing {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.35) !important;
+  cursor: wait !important;
+  border: 1.5px solid #334155 !important;
+}
+
+/* Card In-Form Success Notification */
+.publish-success-notification {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #22c55e;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.16);
+  animation: noticeSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+@keyframes noticeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-icon-badge {
+  width: 44px;
+  height: 44px;
+  background: #16a34a;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+}
+
+.success-text-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.success-title {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #14532d;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.success-details {
+  font-size: 0.88rem;
+  color: #166534;
+  line-height: 1.45;
+}
+
+.success-details strong {
+  color: #14532d;
+}
+
+.success-close-btn {
+  background: transparent;
+  border: none;
+  color: #15803d;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.success-close-btn:hover {
+  background: rgba(21, 128, 61, 0.12);
+  color: #14532d;
+}
+
+/* Floating Top Toast with Tick */
+.floating-top-success-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999999;
+  background: #0f172a;
+  border: 1.5px solid #22c55e;
+  border-radius: 50px;
+  padding: 0.75rem 1.4rem 0.75rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(34, 197, 94, 0.35);
+  animation: toastSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 92vw;
+}
+
+@keyframes toastSlideDown {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.floating-toast-tick-circle {
+  width: 36px;
+  height: 36px;
+  background: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(22, 163, 74, 0.4);
+}
+
+.floating-toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.floating-toast-heading {
+  font-family: var(--font-outfit, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #4ade80;
+  line-height: 1.2;
+}
+
+.floating-toast-msg {
+  font-size: 0.84rem;
+  color: #e2e8f0;
+  line-height: 1.25;
+}
+
+.floating-toast-msg strong {
+  color: #ffffff;
+}
+
+.floating-toast-dismiss {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #94a3b8;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.floating-toast-dismiss:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
