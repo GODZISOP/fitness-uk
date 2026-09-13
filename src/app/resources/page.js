@@ -861,7 +861,7 @@ function extractClientResources(allResources, clientObj) {
       } else {
         const existingTime = new Date(existing.assigned_at || existing.created_at || 0).getTime();
         const newTime = new Date(item.assigned_at || item.created_at || 0).getTime();
-        if (newTime > existingTime) {
+        if (newTime >= existingTime) {
           map.set(item.id, item);
         }
       }
@@ -965,11 +965,19 @@ export default function ResourcesPage() {
   const [notifications, setNotifications] = useState([]);
   const seenResourceIdsRef = useRef(new Set());
   const seenMessageIdsRef = useRef(new Set());
+  const clientChatScrollRef = useRef(null);
 
   // Client to Coach Messenger State
   const [clientMsgText, setClientMsgText] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const [msgSentNotice, setMsgSentNotice] = useState(false);
+
+  // Auto-scroll client chat to bottom on new messages or tab switch
+  useEffect(() => {
+    if (activeTab === 'messenger') {
+      clientChatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeTab, chatMessages.length]);
 
   // Daily Meal Checklist & Adherence State
   const [eatenMeals, setEatenMeals] = useState({});
@@ -998,16 +1006,19 @@ export default function ResourcesPage() {
     return resources.filter(r => r.format !== 'text' && (r.content_url || r.format === 'video' || r.format === 'image'));
   }, [resources]);
 
+  const activeCustomPlan = sortedCustomPlans.find(p => p.status === 'active') || sortedCustomPlans[0] || null;
+  const previousCustomPlans = sortedCustomPlans.filter(p => p.id !== activeCustomPlan?.id);
+
   const activePlan = useMemo(() => {
+    if (protocolFilterType === 'active') {
+      return activeCustomPlan;
+    }
     if (selectedPlanId) {
       const match = sortedCustomPlans.find(p => p.id === selectedPlanId);
       if (match) return match;
     }
-    return sortedCustomPlans[0] || null;
-  }, [sortedCustomPlans, selectedPlanId]);
-
-  const activeCustomPlan = sortedCustomPlans.find(p => p.status === 'active') || sortedCustomPlans[0] || null;
-  const previousCustomPlans = sortedCustomPlans.filter(p => p.id !== activeCustomPlan?.id);
+    return activeCustomPlan || sortedCustomPlans[0] || null;
+  }, [sortedCustomPlans, selectedPlanId, protocolFilterType, activeCustomPlan]);
 
   const displayedPlans = useMemo(() => {
     if (protocolFilterType === 'active') {
@@ -1049,7 +1060,10 @@ export default function ResourcesPage() {
       } catch (e) { }
 
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      const combinedRes = extractClientResources([...dbRes, ...localRes], client);
+      const combinedRes = extractClientResources([...localRes, ...dbRes], client);
+      try {
+        localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(combinedRes));
+      } catch (e) {}
 
       // Load seen resources from local storage if empty to support offline missed notifications
       if (seenResourceIdsRef.current.size === 0) {
@@ -1062,7 +1076,7 @@ export default function ResourcesPage() {
         // Collect ALL newly added items since last login
         const newlyAddedItems = combinedRes.filter(r => {
           if (!r || !r.id) return false;
-          const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
+          const trackingKey = r.id + "_" + (r.assigned_at || r.created_at || "");
           return !seenResourceIdsRef.current.has(trackingKey);
         });
 
@@ -1102,7 +1116,7 @@ export default function ResourcesPage() {
       // Update seen resources and save to localStorage
       combinedRes.forEach(r => {
         if (r?.id) {
-          const trackingKey = r.id + "_" + (r.updated_at || r.created_at || "");
+          const trackingKey = r.id + "_" + (r.assigned_at || r.created_at || "");
           seenResourceIdsRef.current.add(trackingKey);
         }
       });
@@ -1254,26 +1268,47 @@ export default function ResourcesPage() {
   };
 
   useEffect(() => {
+    if (!client) return;
     syncData();
 
-    // Fast polling every 5 seconds for instant cross-device updates
+    // 1. Instant Realtime WebSocket subscription from Supabase
+    let realtimeChannel;
+    try {
+      realtimeChannel = supabase
+        .channel(`client_realtime_${client.id || client.pin_code}_${Date.now()}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => {
+          syncData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+          syncData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => {
+          syncData();
+        })
+        .subscribe();
+    } catch (err) {
+      console.warn("Client realtime channel note:", err);
+    }
+
+    // 2. High-speed polling fallback (every 2.5 seconds)
     const pollInterval = setInterval(() => {
       syncData();
-    }, 5000);
+    }, 2500);
 
-    // Cross-tab real-time sync with Admin Dashboard
+    // 3. Cross-tab real-time sync with Admin Dashboard
     const handleStorageChange = (e) => {
-      if (e.key?.startsWith('wfz_')) {
+      if (!e.key || e.key.startsWith('wfz_')) {
         syncData();
       }
     };
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
+      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
       clearInterval(pollInterval);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [client]);
+  }, [client?.id, client?.pin_code]);
 
   // Live notice will now persist until the user explicitly clicks it or dismisses it
   useEffect(() => {
@@ -2180,16 +2215,18 @@ export default function ResourcesPage() {
                     <div key={m.id} className={`chat-bubble-row ${isCoach ? 'from-coach' : 'from-client'}`}>
                       {isCoach && <div className="chat-coach-avatar">CJ</div>}
                       <div className="chat-bubble-content">
-                        <div className="chat-bubble-top">
-                          <strong>{isCoach ? 'Head Coach James' : 'You (' + client.name + ')'}</strong>
+                        {isCoach && <div className="chat-bubble-sender">Head Coach James</div>}
+                        <p className="chat-bubble-text">{m.text}</p>
+                        <div className="chat-bubble-meta-bottom">
                           <span>{new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          {!isCoach && <span className="chat-bubble-ticks">✓✓</span>}
                         </div>
-                        <p>{m.text}</p>
                       </div>
                     </div>
                   );
                 })
               )}
+              <div ref={clientChatScrollRef} />
             </div>
 
             <form onSubmit={handleSendClientMessage} className="messenger-form" style={{ marginTop: '1.5rem' }}>
