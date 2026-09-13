@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Utensils, 
@@ -34,7 +34,9 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
-  History
+  History,
+  X,
+  Bell
 } from 'lucide-react';
 import './resources.css';
 
@@ -136,18 +138,230 @@ function parseCoachMealPlan(text) {
     sun: 'Sunday'
   };
 
+  const dayIndexMap = {
+    'day 1': 'mon', 'day1': 'mon', 'mon': 'mon', 'monday': 'mon',
+    'day 2': 'tue', 'day2': 'tue', 'tue': 'tue', 'tuesday': 'tue',
+    'day 3': 'wed', 'day3': 'wed', 'wed': 'wed', 'wednesday': 'wed',
+    'day 4': 'thu', 'day4': 'thu', 'thu': 'thu', 'thursday': 'thu',
+    'day 5': 'fri', 'day5': 'fri', 'fri': 'fri', 'friday': 'fri',
+    'day 6': 'sat', 'day6': 'sat', 'sat': 'sat', 'saturday': 'sat',
+    'day 7': 'sun', 'day7': 'sun', 'sun': 'sun', 'sunday': 'sun'
+  };
+
+  // Check if text is organized by Day (e.g. Day 1, Day 2... or Monday, Tuesday...)
+  const isDayBased = /(?:[\*\#_]*\b)(?:day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:[\*\#_]*\b)/i.test(text);
+
+  if (isDayBased) {
+    // 1. Split text into Day blocks and Guidelines
+    const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
+    
+    let matches = [];
+    let match;
+    while ((match = dayRegex.exec(text)) !== null) {
+      matches.push({
+        index: match.index,
+        header: match[1].toLowerCase().trim(),
+        fullMatchLength: match[0].length
+      });
+    }
+
+    const dayBlocks = {};
+    const guidelines = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      const current = matches[i];
+      const startIdx = current.index + current.fullMatchLength;
+      const endIdx = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
+      const content = text.substring(startIdx, endIdx).trim();
+
+      const normalizedHeader = current.header.replace(/\s+/g, ' ');
+      if (normalizedHeader.includes('guideline')) {
+        guidelines.push(content);
+      } else {
+        const dKey = dayIndexMap[normalizedHeader];
+        if (dKey) {
+          dayBlocks[dKey] = content;
+        }
+      }
+    }
+
+    // 2. Parse meals inside each day block
+    const mealRegex = /(?:^|[\n,;]|\*+)\s*(Breakfast|Morning\s*Meal|Lunch|Afternoon\s*Meal|Dinner|Evening\s*Meal|Night\s*Meal|Snack\s*\d?|Meal\s*\d?|Pre[- ]?Workout|Post[- ]?Workout)\s*[:\-–—]\s*/gi;
+
+    const parsedDays = {};
+    let maxSnacksObserved = 1;
+
+    for (const dKey of dayKeys) {
+      parsedDays[dKey] = {};
+      const block = dayBlocks[dKey];
+      if (!block) continue;
+
+      let mMatches = [];
+      let mMatch;
+      while ((mMatch = mealRegex.exec(block)) !== null) {
+        mMatches.push({
+          index: mMatch.index,
+          mealType: mMatch[1].trim(),
+          fullMatchLength: mMatch[0].length
+        });
+      }
+
+      if (mMatches.length === 0) {
+        parsedDays[dKey]['general'] = block.replace(/^[•\-\*,\s]+/, '').trim();
+        continue;
+      }
+
+      let snackCount = 0;
+      let mealCount = 0;
+
+      for (let j = 0; j < mMatches.length; j++) {
+        const curM = mMatches[j];
+        const mStart = curM.index + curM.fullMatchLength;
+        const mEnd = (j + 1 < mMatches.length) ? mMatches[j + 1].index : block.length;
+        let mealContent = block.substring(mStart, mEnd).trim().replace(/^[,;\*\s]+|[,;\*\s]+$/g, '');
+
+        const typeLower = curM.mealType.toLowerCase();
+        if (typeLower.includes('breakfast') || typeLower.includes('morning meal')) {
+          parsedDays[dKey]['breakfast'] = mealContent;
+        } else if (typeLower.includes('lunch') || typeLower.includes('afternoon meal')) {
+          parsedDays[dKey]['lunch'] = mealContent;
+        } else if (typeLower.includes('dinner') || typeLower.includes('evening meal') || typeLower.includes('night meal')) {
+          parsedDays[dKey]['dinner'] = mealContent;
+        } else if (typeLower.includes('snack')) {
+          snackCount++;
+          if (snackCount > maxSnacksObserved) maxSnacksObserved = snackCount;
+          parsedDays[dKey][`snack_${snackCount}`] = mealContent;
+        } else if (typeLower.includes('meal')) {
+          mealCount++;
+          parsedDays[dKey][`meal_${mealCount}`] = mealContent;
+        } else {
+          parsedDays[dKey][typeLower.replace(/[^a-z0-9]/g, '_')] = mealContent;
+        }
+      }
+    }
+
+    const hasBreakfast = dayKeys.some(k => !!parsedDays[k]?.breakfast);
+    const hasLunch = dayKeys.some(k => !!parsedDays[k]?.lunch);
+    const hasDinner = dayKeys.some(k => !!parsedDays[k]?.dinner);
+
+    const slotDefinitions = [];
+
+    if (hasBreakfast) {
+      slotDefinitions.push({
+        id: 'breakfast',
+        title: 'Breakfast',
+        time: '07:30 – 08:30 AM',
+        icon: 'sunrise'
+      });
+    }
+
+    if (dayKeys.some(k => !!parsedDays[k]?.snack_1)) {
+      slotDefinitions.push({
+        id: 'snack_1',
+        title: maxSnacksObserved > 1 ? 'Mid-Morning Snack' : 'Daily Snack',
+        time: '10:30 – 11:00 AM',
+        icon: 'apple'
+      });
+    }
+
+    if (hasLunch) {
+      slotDefinitions.push({
+        id: 'lunch',
+        title: 'Lunch',
+        time: '01:00 – 02:00 PM',
+        icon: 'sun'
+      });
+    }
+
+    if (dayKeys.some(k => !!parsedDays[k]?.snack_2)) {
+      slotDefinitions.push({
+        id: 'snack_2',
+        title: 'Afternoon Snack',
+        time: '04:30 – 05:00 PM',
+        icon: 'coffee'
+      });
+    }
+
+    if (hasDinner) {
+      slotDefinitions.push({
+        id: 'dinner',
+        title: 'Dinner',
+        time: '07:30 – 08:30 PM',
+        icon: 'moon'
+      });
+    }
+
+    for (let s = 3; s <= maxSnacksObserved; s++) {
+      if (dayKeys.some(k => !!parsedDays[k]?.[`snack_${s}`])) {
+        slotDefinitions.push({
+          id: `snack_${s}`,
+          title: `Evening Snack ${s}`,
+          time: '09:30 – 10:00 PM',
+          icon: 'coffee'
+        });
+      }
+    }
+
+    if (slotDefinitions.length === 0) {
+      for (let m = 1; m <= 6; m++) {
+        if (dayKeys.some(k => !!parsedDays[k]?.[`meal_${m}`])) {
+          slotDefinitions.push({
+            id: `meal_${m}`,
+            title: `Meal ${m}`,
+            time: `Meal Window ${m}`,
+            icon: 'utensils'
+          });
+        }
+      }
+    }
+
+    if (slotDefinitions.length === 0) {
+      slotDefinitions.push({
+        id: 'general_daily',
+        title: 'Daily Meal Protocol',
+        time: 'Prescribed Routine',
+        icon: 'utensils'
+      });
+    }
+
+    const sections = slotDefinitions.map(slot => {
+      const days = {};
+      for (const dKey of dayKeys) {
+        if (parsedDays[dKey]) {
+          days[dKey] = parsedDays[dKey][slot.id] || (slot.id === 'general_daily' ? parsedDays[dKey]['general'] : '');
+        }
+      }
+      return {
+        id: slot.id,
+        time: slot.time,
+        title: slot.title,
+        days: days,
+        generalItems: []
+      };
+    });
+
+    return {
+      is7Day: true,
+      sections,
+      dayKeys,
+      dayNames,
+      guidelines: guidelines.join('\n').replace(/^[,;\s]+/, '').trim()
+    };
+  }
+
+  // -------------------------------------------------------------
+  // FALLBACK: TIME-FIRST OR GENERIC FORMAT
+  // -------------------------------------------------------------
   const lines = text.split('\n');
   const sections = [];
   let currentSection = null;
 
-  // Regex to detect time/meal headers (e.g. "7:30 AM — Breakfast", "1:30–2:00 PM — Lunch", "MEAL 1 (08:00 AM)")
   const timeOrMealRegex = /^(\d{1,2}:\d{2}(?:\s*[-–—]\s*\d{1,2}:\d{2})?\s*(?:am|pm)?)\s*[-—:]\s*(.+)|^meal\s*\d+\s*(?:\([^)]+\))?\s*[-—:]?\s*(.*)/i;
 
   for (let rawLine of lines) {
     const line = rawLine.trim();
     if (!line) continue;
 
-    // Skip metadata lines
     if (
       line.toLowerCase().startsWith('coach james') ||
       line.toLowerCase().startsWith('assigned to') ||
@@ -177,14 +391,13 @@ function parseCoachMealPlan(text) {
     if (!currentSection) {
       currentSection = {
         id: 'slot_0',
-        time: 'General Timing',
-        title: 'Coach Protocol',
+        time: 'Scheduled Routine',
+        title: 'Prescribed Meals',
         days: {},
         generalItems: []
       };
     }
 
-    // Check for day prefixes: "Mon: ...", "Tue: ..."
     const dayMatch = line.match(/^(mon|tue|wed|thu|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*:\s*(.+)/i);
     if (dayMatch) {
       const key = dayMatch[1].substring(0, 3).toLowerCase();
@@ -204,7 +417,8 @@ function parseCoachMealPlan(text) {
     is7Day,
     sections,
     dayKeys,
-    dayNames
+    dayNames,
+    guidelines: ''
   };
 }
 
@@ -378,7 +592,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
           {/* CHRONOLOGICAL MEAL CARDS FOR THIS DAY */}
           <div className="daily-meals-timeline">
             {parsed.sections.map((sec) => {
-              const foodText = sec.days[selectedDay] || (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : 'Follow daily guidelines');
+              const foodText = sec.days[selectedDay] || (parsed.is7Day ? 'No specific meal assigned for this day' : (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : 'Follow daily guidelines'));
               const isEaten = !!dailyChecks[`${selectedDay}_${sec.id}`];
 
               return (
@@ -425,6 +639,24 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
               );
             })}
           </div>
+
+          {/* COACH DIRECTIVES & GUIDELINES BANNER */}
+          {parsed.guidelines && (
+            <div className="schedule-guidelines-banner">
+              <div className="guidelines-banner-header">
+                <Shield size={16} color="#ffc928" />
+                <h4>Coach James Daily Directives &amp; Guidelines</h4>
+              </div>
+              <div className="guidelines-list">
+                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                  <div key={idx} className="guideline-pill-item">
+                    <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>{item}.</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -460,7 +692,7 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
                     </td>
 
                     {parsed.dayKeys.map(dKey => {
-                      const item = sec.days[dKey] || (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : '—');
+                      const item = sec.days[dKey] || (parsed.is7Day ? '—' : (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : '—'));
                       const isEaten = !!dailyChecks[`${dKey}_${sec.id}`];
 
                       return (
@@ -475,6 +707,24 @@ function OrganizedMealSchedule({ plan, client, onAskCoach }) {
               </tbody>
             </table>
           </div>
+
+          {/* COACH DIRECTIVES & GUIDELINES BANNER IN MATRIX VIEW */}
+          {parsed.guidelines && (
+            <div className="schedule-guidelines-banner">
+              <div className="guidelines-banner-header">
+                <Shield size={16} color="#ffc928" />
+                <h4>Coach James Daily Directives &amp; Guidelines</h4>
+              </div>
+              <div className="guidelines-list">
+                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                  <div key={idx} className="guideline-pill-item">
+                    <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>{item}.</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -579,50 +829,70 @@ const defaultWeeks = [
 ];
 
 // =========================================================================
-// CLIENT RESOURCES EXTRACTOR (Never drops old plans; matches by ID, PIN & Name)
+// CLIENT RESOURCES EXTRACTOR (Strict Isolation: Only returns resources for the authenticated client)
 // =========================================================================
 function extractClientResources(allResources, clientObj) {
-  if (!clientObj) return [];
-  const isZain = clientObj.name?.toLowerCase().trim() === 'zain' || 
-                 clientObj.pin_code === '78601' || 
-                 clientObj.pin_code === '8989' || 
-                 clientObj.id === 'client-zain-1';
+  if (!clientObj || !clientObj.id) return [];
 
-  let list = (allResources || []).filter(r => {
-    if (r.client_id === clientObj.id) return true;
-    if (r.client_pin && clientObj.pin_code && r.client_pin === clientObj.pin_code) return true;
-    if (isZain) {
-      if (r.client_id === 'client-zain-1') return true;
-      if (r.client_name?.toLowerCase().trim() === 'zain') return true;
-      if (r.id?.includes('zain')) return true;
-      if (r.title?.toLowerCase().includes('zain')) return true;
-    }
+  // Strictly match resources assigned to this specific client
+  const list = (allResources || []).filter(r => {
+    if (!r) return false;
+    if (r.client_id && String(r.client_id) === String(clientObj.id)) return true;
+    if (r.client_pin && clientObj.pin_code && String(r.client_pin).trim() === String(clientObj.pin_code).trim()) return true;
     return false;
   });
-
-  // Always ensure Zain has his foundational Week 1 7-Day Plan
-  if (isZain) {
-    defaultZainResources.forEach(dz => {
-      if (!list.some(item => item.id === dz.id)) {
-        list.push({ ...dz, client_id: clientObj.id });
-      }
-    });
-  }
-
-  // If Marcus or demo client with empty resources, provide demo fallback
-  if (list.length === 0 && (clientObj.id === 'demo-client-1' || clientObj.pin_code === '12345')) {
-    list = (allResources || []).filter(r => r.client_id === "demo-client-1" || !r.client_id);
-  }
 
   // Deduplicate by ID
   const map = new Map();
   list.forEach(item => {
-    if (!map.has(item.id)) {
+    if (item && item.id && !map.has(item.id)) {
       map.set(item.id, item);
     }
   });
 
   return Array.from(map.values());
+}
+
+// =========================================================================
+// CRISP AUDIO CHIME FOR REAL-TIME COACH DIRECTIVES & UPLOADS
+// =========================================================================
+function playNotificationSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const now = ctx.currentTime;
+
+    // First note: 587.33 Hz (D5)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, now);
+    gain1.gain.setValueAtTime(0.2, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.32);
+
+    // Second note: 880 Hz (A5)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880, now + 0.12);
+    gain2.gain.setValueAtTime(0.25, now + 0.12);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.12);
+    osc2.stop(now + 0.65);
+  } catch (e) {
+    // Non-blocking fallback
+  }
 }
 
 export default function ResourcesPage() {
@@ -631,8 +901,13 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [activeTab, setActiveTab] = useState('meal_plan'); // meal_plan, videos, messenger, weighin, weeks, guidelines
-  const [selectedWeek, setSelectedWeek] = useState(4);
+  const [activeTab, setActiveTab] = useState('meal_plan'); // meal_plan, videos, messenger, weeks, guidelines
+  const [selectedWeek, setSelectedWeek] = useState(1);
+
+  // Live Toast & Audio Notification State
+  const [liveNotice, setLiveNotice] = useState(null); // { id, title, subtitle, targetTab, icon }
+  const seenResourceIdsRef = useRef(new Set());
+  const seenMessageIdsRef = useRef(new Set());
 
   // Client to Coach Messenger State
   const [clientMsgText, setClientMsgText] = useState('');
@@ -641,12 +916,6 @@ export default function ResourcesPage() {
 
   // Daily Meal Checklist & Adherence State
   const [eatenMeals, setEatenMeals] = useState({});
-
-  // Fasted Weigh-In State
-  const [weighInVal, setWeighInVal] = useState('');
-  const [weighInNote, setWeighInNote] = useState('');
-  const [weighInList, setWeighInList] = useState([]);
-  const [weighInNotice, setWeighInNotice] = useState(false);
 
   // Multiple Meal Plans Filter & View State
   const [selectedPlanId, setSelectedPlanId] = useState('');
@@ -702,44 +971,138 @@ export default function ResourcesPage() {
     setClientMsgText(`Hi Coach James, question regarding ${dayName ? dayName + ' ' : ''}${mealTitle} (${foodText}): `);
   };
 
-  // Load chat messages & weigh-ins when client logs in or when storage changes
-  const syncData = () => {
-    if (client) {
-      const allMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
-      const filteredMsgs = allMsgs.filter(m => m.client_pin === client.pin_code || m.client_id === client.id);
-      setChatMessages(filteredMsgs);
+  // Real-time synchronization of Coach uploads, weekly roadmap & 2-way chat messages
+  const syncData = async () => {
+    if (!client) return;
 
-      const allWeigh = JSON.parse(localStorage.getItem(LOCAL_WEIGHINS_KEY) || '[]');
-      const filteredWeigh = allWeigh.filter(w => w.client_id === client.id || w.client_pin === client.pin_code);
-      setWeighInList(filteredWeigh);
+    try {
+      // 1. Live Fetch Resources from Supabase & LocalStorage
+      let dbRes = [];
+      try {
+        const { data } = await supabase
+          .from('resources')
+          .select('*')
+          .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
+          .order('created_at', { ascending: false });
+        if (data && data.length > 0) dbRes = data;
+      } catch (e) {}
 
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      const clientLocalRes = extractClientResources(localRes, client);
-      setResources(clientLocalRes);
+      const combinedRes = extractClientResources([...dbRes, ...localRes], client);
+
+      // Check if Coach James just uploaded a new Meal Plan or Exercise Video!
+      if (seenResourceIdsRef.current.size > 0) {
+        const newlyAdded = combinedRes.find(r => r && r.id && !seenResourceIdsRef.current.has(r.id));
+        if (newlyAdded) {
+          playNotificationSound();
+          const isMealPlan = newlyAdded.category === 'meal_plan' || newlyAdded.format === 'text' || newlyAdded.type === 'meal_plan';
+          const isVideo = newlyAdded.format === 'video' || newlyAdded.type === 'routine_video';
+          const targetTab = isMealPlan ? 'meal_plan' : (isVideo ? 'videos' : 'meal_plan');
+          const title = isMealPlan 
+            ? "Coach James updated your Meal Plan!" 
+            : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
+          const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
+
+          setLiveNotice({
+            id: newlyAdded.id,
+            title,
+            subtitle: newlyAdded.title || "Tap here to review your newly assigned protocol immediately.",
+            targetTab,
+            icon
+          });
+        }
+      }
+      combinedRes.forEach(r => { if (r?.id) seenResourceIdsRef.current.add(r.id); });
+      setResources(combinedRes);
+
+      // 2. Live Fetch Messages from Supabase & LocalStorage (Never delete any message history!)
+      let dbMsgs = [];
+      try {
+        const { data } = await supabase
+          .from('client_messages')
+          .select('*')
+          .or(`client_id.eq.${client.id},client_pin.eq.${client.pin_code}`)
+          .order('timestamp', { ascending: true });
+        if (data && data.length > 0) dbMsgs = data;
+      } catch (e) {}
+
+      const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
+      const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === client.pin_code || m.client_id === client.id);
+
+      const msgMap = new Map();
+      [...filteredLocalMsgs, ...dbMsgs].forEach(m => {
+        if (m && m.id) msgMap.set(m.id, m);
+      });
+      const combinedMsgs = Array.from(msgMap.values()).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+      // Check if Coach James just sent a direct reply!
+      if (seenMessageIdsRef.current.size > 0) {
+        const newCoachMsg = combinedMsgs.find(m => m && m.id && m.sender === 'coach' && !seenMessageIdsRef.current.has(m.id));
+        if (newCoachMsg) {
+          playNotificationSound();
+          setLiveNotice({
+            id: newCoachMsg.id,
+            title: "New Message from Coach James!",
+            subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
+            targetTab: 'messenger',
+            icon: "💬"
+          });
+        }
+      }
+      combinedMsgs.forEach(m => { if (m?.id) seenMessageIdsRef.current.add(m.id); });
+      setChatMessages(combinedMsgs);
+
+      // 3. Live Sync Client Macros & Real-time Transformation Week
+      let dbClient = null;
+      try {
+        const { data } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('pin_code', client.pin_code)
+          .single();
+        if (data) dbClient = data;
+      } catch (e) {}
+
+      const allClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
+      const localUpdatedClient = allClients.find(c => c.pin_code === client.pin_code || c.id === client.id);
+      const activeData = dbClient || localUpdatedClient;
+
+      if (activeData) {
+        setClient(prev => {
+          if (!prev) return activeData;
+          if (
+            prev.calories !== activeData.calories ||
+            prev.protein !== activeData.protein ||
+            prev.carbs !== activeData.carbs ||
+            prev.fats !== activeData.fats ||
+            prev.water !== activeData.water ||
+            prev.current_week !== activeData.current_week ||
+            prev.name !== activeData.name
+          ) {
+            if (activeData.current_week && activeData.current_week !== prev.current_week) {
+              setSelectedWeek(Number(activeData.current_week));
+            }
+            return { ...prev, ...activeData };
+          }
+          return prev;
+        });
+      }
 
       const savedEaten = JSON.parse(localStorage.getItem('wfz_eaten_' + client.id) || '{}');
       setEatenMeals(savedEaten);
 
-      // Refresh client's macros if updated by Coach in Admin
-      const allClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
-      const updatedClient = allClients.find(c => c.pin_code === client.pin_code || c.id === client.id || (client.name?.toLowerCase() === 'zain' && c.name?.toLowerCase() === 'zain'));
-      if (updatedClient && (
-        updatedClient.calories !== client.calories ||
-        updatedClient.protein !== client.protein ||
-        updatedClient.carbs !== client.carbs ||
-        updatedClient.fats !== client.fats ||
-        updatedClient.water !== client.water
-      )) {
-        setClient(prev => ({
-          ...prev,
-          ...updatedClient
-        }));
-      }
+    } catch (err) {
+      console.warn("syncData error note:", err);
     }
   };
 
   useEffect(() => {
     syncData();
+
+    // Fast polling every 5 seconds for instant cross-device updates
+    const pollInterval = setInterval(() => {
+      syncData();
+    }, 5000);
 
     // Cross-tab real-time sync with Admin Dashboard
     const handleStorageChange = (e) => {
@@ -748,8 +1111,19 @@ export default function ResourcesPage() {
       }
     };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [client]);
+
+  useEffect(() => {
+    if (liveNotice) {
+      const timer = setTimeout(() => setLiveNotice(null), 9000);
+      return () => clearTimeout(timer);
+    }
+  }, [liveNotice]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -757,92 +1131,94 @@ export default function ResourcesPage() {
     setErrorMsg('');
 
     const cleanPin = pin.trim();
+    if (!cleanPin) {
+      setErrorMsg('Please enter your private PIN code.');
+      setLoading(false);
+      return;
+    }
 
-    // 1. Try Supabase
+    // 1. Check Supabase
     try {
-      const { data: clientData, error: clientError } = await supabase
+      const { data: clientRows, error: clientError } = await supabase
         .from('clients')
         .select('*')
-        .eq('pin_code', cleanPin)
-        .single();
+        .eq('pin_code', cleanPin);
 
-      if (!clientError && clientData) {
+      if (!clientError && clientRows && clientRows.length > 0) {
+        const clientData = clientRows[0];
         const activeClientObj = {
-          ...defaultDemoClient,
           ...clientData,
-          name: clientData.name || "Client"
+          current_week: Number(clientData.current_week) || 1,
+          coach: clientData.coach || "Head Coach James (London)"
         };
         setClient(activeClientObj);
 
+        // Fetch Resources
         const { data: resData } = await supabase
           .from('resources')
           .select('*')
-          .eq('client_id', clientData.id)
+          .or(`client_id.eq.${clientData.id},client_pin.eq.${clientData.pin_code}`)
           .order('created_at', { ascending: false });
 
         const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
         const clientLocalRes = extractClientResources([...(resData || []), ...localRes], activeClientObj);
         setResources(clientLocalRes);
+        seenResourceIdsRef.current = new Set(clientLocalRes.map(r => r.id));
 
+        // Fetch Messages without deleting any history
+        const { data: mData } = await supabase
+          .from('client_messages')
+          .select('*')
+          .or(`client_id.eq.${clientData.id},client_pin.eq.${clientData.pin_code}`)
+          .order('timestamp', { ascending: true });
+
+        const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
+        const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === clientData.pin_code || m.client_id === clientData.id);
+        const msgMap = new Map();
+        [...filteredLocalMsgs, ...(mData || [])].forEach(m => {
+          if (m && m.id) msgMap.set(m.id, m);
+        });
+        const combinedMsgs = Array.from(msgMap.values()).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+        setChatMessages(combinedMsgs);
+        seenMessageIdsRef.current = new Set(combinedMsgs.map(m => m.id));
+
+        setSelectedWeek(Number(activeClientObj.current_week) || 1);
         setLoading(false);
         return;
       }
     } catch (err) {
-      console.warn("Supabase connection fallback to local storage:", err);
+      console.warn("Supabase lookup note:", err?.message);
     }
 
-    // 2. Try LocalStorage for registered clients
+    // 2. Check LocalStorage registered clients
     const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
-    const matchedClient = localClients.find(c => c.pin_code === cleanPin || (cleanPin.toLowerCase() === 'zain' && c.name?.toLowerCase() === 'zain'));
+    const matchedClient = localClients.find(c => c.pin_code === cleanPin);
 
     if (matchedClient) {
       const activeClientObj = {
-        ...defaultDemoClient,
         ...matchedClient,
-        coach: "Head Coach James (London)"
+        current_week: Number(matchedClient.current_week) || 1,
+        coach: matchedClient.coach || "Head Coach James (London)"
       };
       setClient(activeClientObj);
 
       const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
       setResources(clientLocalRes);
+      seenResourceIdsRef.current = new Set(clientLocalRes.map(r => r.id));
+
+      const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
+      const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === matchedClient.pin_code || m.client_id === matchedClient.id);
+      setChatMessages(filteredLocalMsgs);
+      seenMessageIdsRef.current = new Set(filteredLocalMsgs.map(m => m.id));
+
+      setSelectedWeek(Number(activeClientObj.current_week) || 1);
       setLoading(false);
       return;
     }
 
-    // 3. Zain Quick Access Fallback (PIN 78601 or 'zain' or '8989')
-    if (cleanPin === '78601' || cleanPin === '8989' || cleanPin.toLowerCase() === 'zain') {
-      const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
-      const localZain = localClients.find(c => c.name?.toLowerCase() === 'zain' || c.pin_code === cleanPin || c.id === 'client-zain-1');
-      const activeClientObj = {
-        ...defaultZainClient,
-        ...(localZain || {}),
-        pin_code: cleanPin
-      };
-      setClient(activeClientObj);
-      const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      const clientLocalRes = extractClientResources(localRes, activeClientObj);
-      setResources(clientLocalRes);
-      setLoading(false);
-      return;
-    }
-
-    // 4. Demo fallback for 12345 or general testing
-    if (cleanPin === '12345' || cleanPin.length >= 4) {
-      const activeClientObj = {
-        ...defaultDemoClient,
-        pin_code: cleanPin
-      };
-      setClient(activeClientObj);
-
-      const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      const clientLocalRes = extractClientResources(localRes, activeClientObj);
-      setResources(clientLocalRes);
-      setLoading(false);
-      return;
-    }
-
-    setErrorMsg('Invalid PIN. Enter 78601 / 8989 (Zain) or 12345 (Marcus T.) to view plans.');
+    // 3. Strict: Invalid PIN (No accidental logins into someone else's account!)
+    setErrorMsg('Invalid PIN code. Please enter the private PIN code assigned to you by Coach James.');
     setLoading(false);
   };
 
@@ -850,6 +1226,9 @@ export default function ResourcesPage() {
     setClient(null);
     setResources([]);
     setPin('');
+    seenResourceIdsRef.current = new Set();
+    seenMessageIdsRef.current = new Set();
+    setLiveNotice(null);
   };
 
   // Toggle Meal Eaten
@@ -902,44 +1281,6 @@ export default function ResourcesPage() {
     setTimeout(() => setMsgSentNotice(false), 4000);
   };
 
-  // Log Fasted Weigh-In
-  const handleLogWeighIn = (e) => {
-    e.preventDefault();
-    if (!weighInVal) return;
-
-    const newEntry = {
-      id: "w_" + Date.now(),
-      client_id: client.id,
-      client_name: client.name,
-      client_pin: client.pin_code,
-      weight: weighInVal.trim(),
-      notes: weighInNote.trim() || "Fasted morning check-in",
-      timestamp: new Date().toISOString()
-    };
-
-    try {
-      supabase.from('weigh_ins').insert([{
-        id: newEntry.id,
-        client_id: newEntry.client_id,
-        client_name: newEntry.client_name,
-        client_pin: newEntry.client_pin,
-        weight: parseFloat(newEntry.weight) || 0,
-        notes: newEntry.notes,
-        timestamp: newEntry.timestamp
-      }]).then();
-    } catch (e) {}
-
-    const allWeigh = JSON.parse(localStorage.getItem(LOCAL_WEIGHINS_KEY) || '[]');
-    allWeigh.unshift(newEntry);
-    localStorage.setItem(LOCAL_WEIGHINS_KEY, JSON.stringify(allWeigh));
-
-    setWeighInList(prev => [newEntry, ...prev]);
-    setWeighInVal('');
-    setWeighInNote('');
-    setWeighInNotice(true);
-    setTimeout(() => setWeighInNotice(false), 4000);
-  };
-
   const handlePrintPlan = () => {
     window.print();
   };
@@ -964,7 +1305,7 @@ export default function ResourcesPage() {
             <div className="input-wrap">
               <input 
                 type="password" 
-                placeholder="Enter PIN (e.g. 12345)" 
+                placeholder="Enter your 4-6 digit private PIN" 
                 value={pin} 
                 onChange={e => setPin(e.target.value)} 
                 maxLength={8}
@@ -978,26 +1319,11 @@ export default function ResourcesPage() {
             </button>
           </form>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1.25rem' }}>
-            <div 
-              className="demo-hint-box active-zain-btn" 
-              style={{ cursor: 'pointer', userSelect: 'none', background: '#eff6ff', border: '1.5px solid #93c5fd', padding: '0.65rem 0.95rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} 
-              onClick={() => { setPin('78601'); setErrorMsg(''); }}
-              title="Click to auto-fill Zain's PIN"
-            >
-              <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#1d4ed8' }}>⚡ Auto-Fill: <strong>Zain</strong> (Week 1 7-Day Plan)</span>
-              <code style={{ background: '#dbeafe', padding: '0.2rem 0.5rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.8rem', color: '#1e40af' }}>PIN: 78601</code>
-            </div>
-
-            <div 
-              className="demo-hint-box" 
-              style={{ cursor: 'pointer', userSelect: 'none', background: '#f8fafc', border: '1px solid #cbd5e1', padding: '0.55rem 0.95rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} 
-              onClick={() => { setPin('12345'); setErrorMsg(''); }}
-              title="Click to auto-fill Marcus's PIN"
-            >
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569' }}>Marcus T. (Week 4 Plan)</span>
-              <code style={{ background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '6px', fontWeight: 700, fontSize: '0.78rem', color: '#64748b' }}>PIN: 12345</code>
-            </div>
+          <div className="login-security-notice" style={{ marginTop: '1.25rem', padding: '0.8rem 1rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <Shield size={18} color="#155eef" />
+            <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+              Encrypted Private Access &bull; Use the personal PIN provided by Coach James.
+            </span>
           </div>
 
           <div style={{ marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px solid #e2e8f0' }}>
@@ -1016,6 +1342,45 @@ export default function ResourcesPage() {
   return (
     <div className="client-portal-wrapper" onContextMenu={disableRightClick}>
       
+      {/* REAL-TIME AUDIO & VISUAL NOTIFICATION TOAST */}
+      {liveNotice && (
+        <div 
+          className="live-notification-toast"
+          onClick={() => {
+            setActiveTab(liveNotice.targetTab);
+            setLiveNotice(null);
+            window.scrollTo({ top: 350, behavior: 'smooth' });
+          }}
+          role="alert"
+        >
+          <div className="live-toast-icon-wrap">
+            <span className="live-toast-emoji">{liveNotice.icon || "🔔"}</span>
+            <span className="live-toast-ping"></span>
+          </div>
+          <div className="live-toast-content">
+            <div className="live-toast-header">
+              <strong>{liveNotice.title}</strong>
+              <span className="live-toast-tag">NEW DIRECTIVE</span>
+            </div>
+            <p className="live-toast-subtitle">{liveNotice.subtitle}</p>
+            <div className="live-toast-cta">
+              <span>Click to view {liveNotice.targetTab === 'meal_plan' ? 'Meal Plan' : liveNotice.targetTab === 'videos' ? 'Exercise Videos' : 'Messages'} immediately &rarr;</span>
+            </div>
+          </div>
+          <button 
+            type="button"
+            className="live-toast-dismiss"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLiveNotice(null);
+            }}
+            aria-label="Close notification"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
       {/* TOP STATUS BAR */}
       <div className="portal-top-bar">
         <div className="portal-brand">
@@ -1123,14 +1488,6 @@ export default function ResourcesPage() {
         >
           <MessageSquare size={18} />
           <span>Text Coach James {chatMessages.length > 0 && `(${chatMessages.length})`}</span>
-        </button>
-
-        <button 
-          className={`portal-tab ${activeTab === 'weighin' ? 'active' : ''}`}
-          onClick={() => setActiveTab('weighin')}
-        >
-          <Scale size={18} />
-          <span>Fasted Weigh-In Tracker</span>
         </button>
 
         <button 
@@ -1614,99 +1971,35 @@ export default function ResourcesPage() {
         </div>
       )}
 
-      {/* TAB CONTENT: FASTED WEIGH-IN LOGGER */}
-      {activeTab === 'weighin' && (
-        <div className="tab-pane-container">
-          <div className="pane-header">
-            <div>
-              <h2>Sunday Fasted Weigh-In Tracker</h2>
-              <p>Weigh yourself fasted immediately after waking up before drinking water or eating Meal 1.</p>
-            </div>
-          </div>
-
-          <div className="client-messenger-panel">
-            <form onSubmit={handleLogWeighIn} className="weigh-in-form">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', color: '#071a2b' }}>
-                    Bodyweight (kg)
-                  </label>
-                  <input 
-                    type="number" 
-                    step="0.1" 
-                    placeholder="e.g. 79.4" 
-                    value={weighInVal} 
-                    onChange={e => setWeighInVal(e.target.value)} 
-                    style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '1.1rem', fontWeight: '800' }}
-                    required 
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', color: '#071a2b' }}>
-                    Physique &amp; Energy Notes
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Waist feeling tighter, high energy throughout the day" 
-                    value={weighInNote} 
-                    onChange={e => setWeighInNote(e.target.value)} 
-                    style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.95rem' }}
-                  />
-                </div>
-              </div>
-
-              <div className="messenger-submit-row">
-                <button type="submit" className="btn-send-coach">
-                  <Scale size={16} /> Log Fasted Weigh-In
-                </button>
-
-                {weighInNotice && (
-                  <span className="msg-sent-alert">
-                    <CheckCheck size={18} /> Weigh-in recorded and synced with Coach James!
-                  </span>
-                )}
-              </div>
-            </form>
-
-            <div className="client-messages-history" style={{ marginTop: '2rem' }}>
-              <div className="history-title">Your Weigh-In Progress History ({weighInList.length} Logs)</div>
-              {weighInList.length === 0 ? (
-                <p style={{ color: '#64748b', fontSize: '0.92rem' }}>No weigh-in records logged yet.</p>
-              ) : (
-                weighInList.map(w => (
-                  <div key={w.id} className="client-message-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <strong style={{ fontSize: '1.15rem', color: 'var(--color-primary, #155eef)' }}>{w.weight} kg</strong>
-                      <p style={{ margin: '0.2rem 0 0', fontSize: '0.9rem', color: '#334155' }}>{w.notes}</p>
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                      {new Date(w.timestamp).toLocaleDateString('en-GB')}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB CONTENT 3: 13-WEEK TRANSFORMATION TIMELINE */}
+      {/* TAB CONTENT: 13-WEEK TRANSFORMATION TIMELINE (DYNAMIC REAL-TIME PROGRESSION) */}
       {activeTab === 'weeks' && (
         <div className="tab-pane-container">
           <div className="pane-header">
             <div>
               <h2>Your 13-Week Transformation Roadmap</h2>
-              <p>Every single week is calculated to push past plateaus and deliver guaranteed results.</p>
+              <p>Current Stage: <strong>Week {Number(client?.current_week) || 1} of 13</strong> &bull; Every single week is calculated to push past plateaus and deliver guaranteed results.</p>
+            </div>
+            <div className="coach-quote-pill">
+              <Sparkles size={16} />
+              <span>{client?.name}&apos;s Active Routine &bull; Week {Number(client?.current_week) || 1}</span>
             </div>
           </div>
 
           <div className="weeks-timeline-list">
             {defaultWeeks.map(w => {
+              const currentWeekNum = Number(client?.current_week) || 1;
               const isSelected = selectedWeek === w.week;
+              const isCurrent = w.week === currentWeekNum;
+              const isCompleted = w.week < currentWeekNum;
+
+              let weekStatus = 'Upcoming';
+              if (isCompleted) weekStatus = 'Completed';
+              if (isCurrent) weekStatus = 'Active (Current)';
+
               return (
                 <div 
                   key={w.week} 
-                  className={`week-row-card ${w.status.includes('Active') ? 'current-week' : ''} ${isSelected ? 'selected-week' : ''}`}
+                  className={`week-row-card ${isCurrent ? 'current-week' : ''} ${isCompleted ? 'completed-week' : ''} ${isSelected ? 'selected-week' : ''}`}
                   onClick={() => setSelectedWeek(w.week)}
                 >
                   <div className="week-number-box">
@@ -1717,8 +2010,8 @@ export default function ResourcesPage() {
                   <div className="week-main-details">
                     <div className="week-header-row">
                       <h4>{w.title}</h4>
-                      <span className={`status-badge ${w.status.includes('Active') ? 'active' : w.status.toLowerCase()}`}>
-                        {w.status}
+                      <span className={`status-badge ${isCurrent ? 'active' : (isCompleted ? 'completed' : 'upcoming')}`}>
+                        {weekStatus}
                       </span>
                     </div>
                     <p>{w.desc}</p>

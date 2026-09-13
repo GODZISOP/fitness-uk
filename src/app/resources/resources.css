@@ -2025,13 +2025,13 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.84rem;
-  min-width: 820px;
+  min-width: 980px;
 }
 
 .weekly-matrix-table th {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   color: #e2e8f0;
-  padding: 0.9rem 0.8rem;
+  padding: 0.9rem 0.85rem;
   text-align: left;
   font-weight: 800;
   border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -2039,13 +2039,15 @@
 }
 
 .th-timing {
-  width: 140px;
+  width: 150px;
+  min-width: 140px;
 }
 
 .weekly-matrix-table td {
-  padding: 0.9rem 0.8rem;
+  padding: 0.9rem 0.85rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   vertical-align: top;
+  min-width: 120px;
 }
 
 .weekly-matrix-table tr:hover {
@@ -2065,7 +2067,8 @@
 }
 
 .matrix-meal-meta-cell {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  min-width: 140px;
 }
 
 .matrix-meal-time {
@@ -2083,11 +2086,14 @@
 
 .matrix-food-cell {
   position: relative;
+  min-width: 120px;
 }
 
 .matrix-food-text {
   color: #ffffff;
   line-height: 1.45;
+  font-size: 0.83rem;
+  word-break: break-word;
 }
 
 .matrix-eaten-badge {
@@ -2096,6 +2102,50 @@
   color: #10b981;
   font-weight: 800;
   margin-top: 0.35rem;
+}
+
+/* Coach Directives & Guidelines Banner */
+.schedule-guidelines-banner {
+  margin-top: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 201, 40, 0.08) 0%, rgba(21, 94, 239, 0.06) 100%);
+  border: 1px solid rgba(255, 201, 40, 0.25);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+
+.guidelines-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.guidelines-banner-header h4 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffc928;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.guidelines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guideline-pill-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Other plans quick bottom switcher */
@@ -2747,6 +2797,158 @@
   background: #ffc928;
   color: #071a2b;
   border-color: #ffc928;
+}
+
+/* =========================================================================
+   LIVE DIRECTIVE NOTIFICATION TOAST (AUDIO CHIME + DIRECT REDIRECT)
+   ========================================================================= */
+.live-notification-toast {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 99999;
+  max-width: 440px;
+  width: calc(100vw - 2.5rem);
+  background: linear-gradient(135deg, #071a2b 0%, #0d2847 100%);
+  border: 1.5px solid #ffc928;
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 201, 40, 0.35);
+  cursor: pointer;
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.live-notification-toast:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 201, 40, 0.5);
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.live-toast-icon-wrap {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 201, 40, 0.15);
+  border: 1px solid rgba(255, 201, 40, 0.4);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.live-toast-emoji {
+  font-size: 1.4rem;
+}
+
+.live-toast-ping {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border: 2px solid #071a2b;
+  border-radius: 50%;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.live-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.live-toast-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.live-toast-header strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.live-toast-tag {
+  background: #ffc928;
+  color: #071a2b;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.live-toast-subtitle {
+  margin: 0 0 0.45rem 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+.live-toast-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ffc928;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.live-toast-dismiss {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.live-toast-dismiss:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 640px) {
+  .live-notification-toast {
+    top: 0.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    max-width: none;
+  }
 }
 
 

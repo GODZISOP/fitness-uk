@@ -64,6 +64,220 @@ function parseCoachMealPlan(text) {
     sun: 'Sunday'
   };
 
+  const dayIndexMap = {
+    'day 1': 'mon', 'day1': 'mon', 'mon': 'mon', 'monday': 'mon',
+    'day 2': 'tue', 'day2': 'tue', 'tue': 'tue', 'tuesday': 'tue',
+    'day 3': 'wed', 'day3': 'wed', 'wed': 'wed', 'wednesday': 'wed',
+    'day 4': 'thu', 'day4': 'thu', 'thu': 'thu', 'thursday': 'thu',
+    'day 5': 'fri', 'day5': 'fri', 'fri': 'fri', 'friday': 'fri',
+    'day 6': 'sat', 'day6': 'sat', 'sat': 'sat', 'saturday': 'sat',
+    'day 7': 'sun', 'day7': 'sun', 'sun': 'sun', 'sunday': 'sun'
+  };
+
+  // Check if text is organized by Day (e.g. Day 1, Day 2... or Monday, Tuesday...)
+  const isDayBased = /(?:[\*\#_]*\b)(?:day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:[\*\#_]*\b)/i.test(text);
+
+  if (isDayBased) {
+    // 1. Split text into Day blocks and Guidelines
+    const dayRegex = /(?:[\*\#_]*\b(day\s*[1-7]|monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily\s+guidelines?|guidelines?)\b[\*\#_]*\s*[:,\-–—]*)/gi;
+    
+    let matches = [];
+    let match;
+    while ((match = dayRegex.exec(text)) !== null) {
+      matches.push({
+        index: match.index,
+        header: match[1].toLowerCase().trim(),
+        fullMatchLength: match[0].length
+      });
+    }
+
+    const dayBlocks = {};
+    const guidelines = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      const current = matches[i];
+      const startIdx = current.index + current.fullMatchLength;
+      const endIdx = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
+      const content = text.substring(startIdx, endIdx).trim();
+
+      const normalizedHeader = current.header.replace(/\s+/g, ' ');
+      if (normalizedHeader.includes('guideline')) {
+        guidelines.push(content);
+      } else {
+        const dKey = dayIndexMap[normalizedHeader];
+        if (dKey) {
+          dayBlocks[dKey] = content;
+        }
+      }
+    }
+
+    // 2. Parse meals inside each day block
+    const mealRegex = /(?:^|[\n,;]|\*+)\s*(Breakfast|Morning\s*Meal|Lunch|Afternoon\s*Meal|Dinner|Evening\s*Meal|Night\s*Meal|Snack\s*\d?|Meal\s*\d?|Pre[- ]?Workout|Post[- ]?Workout)\s*[:\-–—]\s*/gi;
+
+    const parsedDays = {};
+    let maxSnacksObserved = 1;
+
+    for (const dKey of dayKeys) {
+      parsedDays[dKey] = {};
+      const block = dayBlocks[dKey];
+      if (!block) continue;
+
+      let mMatches = [];
+      let mMatch;
+      while ((mMatch = mealRegex.exec(block)) !== null) {
+        mMatches.push({
+          index: mMatch.index,
+          mealType: mMatch[1].trim(),
+          fullMatchLength: mMatch[0].length
+        });
+      }
+
+      if (mMatches.length === 0) {
+        parsedDays[dKey]['general'] = block.replace(/^[•\-\*,\s]+/, '').trim();
+        continue;
+      }
+
+      let snackCount = 0;
+      let mealCount = 0;
+
+      for (let j = 0; j < mMatches.length; j++) {
+        const curM = mMatches[j];
+        const mStart = curM.index + curM.fullMatchLength;
+        const mEnd = (j + 1 < mMatches.length) ? mMatches[j + 1].index : block.length;
+        let mealContent = block.substring(mStart, mEnd).trim().replace(/^[,;\*\s]+|[,;\*\s]+$/g, '');
+
+        const typeLower = curM.mealType.toLowerCase();
+        if (typeLower.includes('breakfast') || typeLower.includes('morning meal')) {
+          parsedDays[dKey]['breakfast'] = mealContent;
+        } else if (typeLower.includes('lunch') || typeLower.includes('afternoon meal')) {
+          parsedDays[dKey]['lunch'] = mealContent;
+        } else if (typeLower.includes('dinner') || typeLower.includes('evening meal') || typeLower.includes('night meal')) {
+          parsedDays[dKey]['dinner'] = mealContent;
+        } else if (typeLower.includes('snack')) {
+          snackCount++;
+          if (snackCount > maxSnacksObserved) maxSnacksObserved = snackCount;
+          parsedDays[dKey][`snack_${snackCount}`] = mealContent;
+        } else if (typeLower.includes('meal')) {
+          mealCount++;
+          parsedDays[dKey][`meal_${mealCount}`] = mealContent;
+        } else {
+          parsedDays[dKey][typeLower.replace(/[^a-z0-9]/g, '_')] = mealContent;
+        }
+      }
+    }
+
+    const hasBreakfast = dayKeys.some(k => !!parsedDays[k]?.breakfast);
+    const hasLunch = dayKeys.some(k => !!parsedDays[k]?.lunch);
+    const hasDinner = dayKeys.some(k => !!parsedDays[k]?.dinner);
+
+    const slotDefinitions = [];
+
+    if (hasBreakfast) {
+      slotDefinitions.push({
+        id: 'breakfast',
+        title: 'Breakfast',
+        time: '07:30 – 08:30 AM',
+        icon: 'sunrise'
+      });
+    }
+
+    if (dayKeys.some(k => !!parsedDays[k]?.snack_1)) {
+      slotDefinitions.push({
+        id: 'snack_1',
+        title: maxSnacksObserved > 1 ? 'Mid-Morning Snack' : 'Daily Snack',
+        time: '10:30 – 11:00 AM',
+        icon: 'apple'
+      });
+    }
+
+    if (hasLunch) {
+      slotDefinitions.push({
+        id: 'lunch',
+        title: 'Lunch',
+        time: '01:00 – 02:00 PM',
+        icon: 'sun'
+      });
+    }
+
+    if (dayKeys.some(k => !!parsedDays[k]?.snack_2)) {
+      slotDefinitions.push({
+        id: 'snack_2',
+        title: 'Afternoon Snack',
+        time: '04:30 – 05:00 PM',
+        icon: 'coffee'
+      });
+    }
+
+    if (hasDinner) {
+      slotDefinitions.push({
+        id: 'dinner',
+        title: 'Dinner',
+        time: '07:30 – 08:30 PM',
+        icon: 'moon'
+      });
+    }
+
+    for (let s = 3; s <= maxSnacksObserved; s++) {
+      if (dayKeys.some(k => !!parsedDays[k]?.[`snack_${s}`])) {
+        slotDefinitions.push({
+          id: `snack_${s}`,
+          title: `Evening Snack ${s}`,
+          time: '09:30 – 10:00 PM',
+          icon: 'coffee'
+        });
+      }
+    }
+
+    if (slotDefinitions.length === 0) {
+      for (let m = 1; m <= 6; m++) {
+        if (dayKeys.some(k => !!parsedDays[k]?.[`meal_${m}`])) {
+          slotDefinitions.push({
+            id: `meal_${m}`,
+            title: `Meal ${m}`,
+            time: `Meal Window ${m}`,
+            icon: 'utensils'
+          });
+        }
+      }
+    }
+
+    if (slotDefinitions.length === 0) {
+      slotDefinitions.push({
+        id: 'general_daily',
+        title: 'Daily Meal Protocol',
+        time: 'Prescribed Routine',
+        icon: 'utensils'
+      });
+    }
+
+    const sections = slotDefinitions.map(slot => {
+      const days = {};
+      for (const dKey of dayKeys) {
+        if (parsedDays[dKey]) {
+          days[dKey] = parsedDays[dKey][slot.id] || (slot.id === 'general_daily' ? parsedDays[dKey]['general'] : '');
+        }
+      }
+      return {
+        id: slot.id,
+        time: slot.time,
+        title: slot.title,
+        days: days,
+        generalItems: []
+      };
+    });
+
+    return {
+      is7Day: true,
+      sections,
+      dayKeys,
+      dayNames,
+      guidelines: guidelines.join('\n').replace(/^[,;\s]+/, '').trim()
+    };
+  }
+
+  // -------------------------------------------------------------
+  // FALLBACK: TIME-FIRST OR GENERIC FORMAT
+  // -------------------------------------------------------------
   const lines = text.split('\n');
   const sections = [];
   let currentSection = null;
@@ -103,8 +317,8 @@ function parseCoachMealPlan(text) {
     if (!currentSection) {
       currentSection = {
         id: 'slot_0',
-        time: 'General Timing',
-        title: 'Coach Protocol',
+        time: 'Scheduled Routine',
+        title: 'Prescribed Meals',
         days: {},
         generalItems: []
       };
@@ -129,7 +343,8 @@ function parseCoachMealPlan(text) {
     is7Day,
     sections,
     dayKeys,
-    dayNames
+    dayNames,
+    guidelines: ''
   };
 }
 
@@ -219,7 +434,7 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
 
           <div className="daily-meals-timeline">
             {parsed.sections.map((sec) => {
-              const foodText = sec.days[selectedDay] || (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : 'Follow daily guidelines');
+              const foodText = sec.days[selectedDay] || (parsed.is7Day ? 'No specific meal assigned for this day' : (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : 'Follow daily guidelines'));
 
               return (
                 <div key={sec.id} className="daily-meal-card">
@@ -240,6 +455,24 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
               );
             })}
           </div>
+
+          {/* COACH DIRECTIVES & GUIDELINES BANNER */}
+          {parsed.guidelines && (
+            <div className="schedule-guidelines-banner">
+              <div className="guidelines-banner-header">
+                <Shield size={16} color="#ffc928" />
+                <h4>Coach James Daily Directives &amp; Guidelines</h4>
+              </div>
+              <div className="guidelines-list">
+                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                  <div key={idx} className="guideline-pill-item">
+                    <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>{item}.</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -272,7 +505,7 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
                     </td>
 
                     {parsed.dayKeys.map(dKey => {
-                      const item = sec.days[dKey] || (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : '—');
+                      const item = sec.days[dKey] || (parsed.is7Day ? '—' : (sec.generalItems.length > 0 ? sec.generalItems.join(', ') : '—'));
 
                       return (
                         <td key={dKey} className={`matrix-food-cell ${dKey === todayKey ? 'today-col' : ''}`}>
@@ -285,6 +518,24 @@ function OrganizedMealSchedule({ plan, client, defaultMatrix = true }) {
               </tbody>
             </table>
           </div>
+
+          {/* COACH DIRECTIVES & GUIDELINES BANNER IN MATRIX VIEW */}
+          {parsed.guidelines && (
+            <div className="schedule-guidelines-banner">
+              <div className="guidelines-banner-header">
+                <Shield size={16} color="#ffc928" />
+                <h4>Coach James Daily Directives &amp; Guidelines</h4>
+              </div>
+              <div className="guidelines-list">
+                {parsed.guidelines.split(/[.\n]/).map(g => g.trim().replace(/^[,;\*\-•\s]+/, '')).filter(Boolean).map((item, idx) => (
+                  <div key={idx} className="guideline-pill-item">
+                    <CheckCircle2 size={14} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span>{item}.</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -327,6 +578,7 @@ export default function AdminPage() {
   const [clientCarbs, setClientCarbs] = useState('220g');
   const [clientFats, setClientFats] = useState('55g');
   const [clientWater, setClientWater] = useState('3.5L');
+  const [clientCurrentWeek, setClientCurrentWeek] = useState(1);
 
   // New Resource Form
   const [resClientId, setResClientId] = useState('');
@@ -761,6 +1013,7 @@ Milk or plain yogurt if you're hungry.`);
     const targetCarbs = normGram(clientCarbs, "220g");
     const targetFats = normGram(clientFats, "55g");
     const targetWater = normWater(clientWater, "3.5L");
+    const targetCurrentWeek = parseInt(clientCurrentWeek) || 1;
 
     if (clientFormMode === 'update_macros') {
       const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
@@ -773,6 +1026,7 @@ Milk or plain yogurt if you're hungry.`);
             name: clientName.trim(),
             pin_code: clientPin.trim(),
             program: clientProgram,
+            current_week: targetCurrentWeek,
             calories: targetCalories,
             protein: targetProtein,
             carbs: targetCarbs,
@@ -789,11 +1043,13 @@ Milk or plain yogurt if you're hungry.`);
           name: clientName.trim(),
           pin_code: clientPin.trim(),
           program: clientProgram,
+          current_week: targetCurrentWeek,
           calories: targetCalories,
           protein: targetProtein,
           carbs: targetCarbs,
           fats: targetFats,
-          water: targetWater
+          water: targetWater,
+          coach: "Head Coach James (London)"
         });
       }
 
@@ -804,19 +1060,21 @@ Milk or plain yogurt if you're hungry.`);
           .update({ 
             name: clientName.trim(),
             pin_code: clientPin.trim(),
+            program: clientProgram,
+            current_week: targetCurrentWeek,
             calories: targetCalories,
             protein: targetProtein,
             carbs: targetCarbs,
             fats: targetFats,
             water: targetWater
           })
-          .eq('pin_code', clientPin.trim());
+          .or(`id.eq.${selectedClientToEdit},pin_code.eq.${clientPin.trim()}`);
       } catch (err) {}
 
       window.dispatchEvent(new Event('storage'));
       fetchData();
 
-      alert(`✅ Macros & Nutrition Targets assigned to "${clientName}"!\n\n• Target Calories: ${targetCalories} kcal / day\n• Protein: ${targetProtein}\n• Carbs: ${targetCarbs}\n• Healthy Fats: ${targetFats}\n• Water: ${targetWater}\n\nClient portal (/resources with PIN ${clientPin}) updated immediately!`);
+      alert(`✅ Macros & Nutrition Targets assigned to "${clientName}"!\n\n• Transformation Stage: Week ${targetCurrentWeek} of 13\n• Target Calories: ${targetCalories} kcal / day\n• Protein: ${targetProtein}\n• Carbs: ${targetCarbs}\n• Healthy Fats: ${targetFats}\n• Water: ${targetWater}\n\nClient portal (/resources with PIN ${clientPin}) updated immediately!`);
       return;
     }
 
@@ -825,20 +1083,21 @@ Milk or plain yogurt if you're hungry.`);
       name: clientName.trim(),
       pin_code: clientPin.trim(),
       program: clientProgram,
+      current_week: targetCurrentWeek,
       calories: targetCalories,
       protein: targetProtein,
       carbs: targetCarbs,
       fats: targetFats,
-      water: targetWater
+      water: targetWater,
+      coach: "Head Coach James (London)"
     };
 
     try {
-      const { error } = await supabase.from('clients').insert([{ 
-        name: newClient.name, 
-        pin_code: newClient.pin_code 
-      }]);
+      const { error } = await supabase.from('clients').insert([newClient]);
       if (error) console.warn("Supabase insert note:", error.message);
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Supabase insert catch:", e);
+    }
 
     // Save to localStorage for instant reliability
     const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
@@ -846,9 +1105,10 @@ Milk or plain yogurt if you're hungry.`);
     localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(localClients));
 
     window.dispatchEvent(new Event('storage'));
-    alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal).`);
+    alert(`Client "${newClient.name}" created! PIN: ${newClient.pin_code} with customized macros (${newClient.calories} kcal, Week ${newClient.current_week}). Saved directly to database!`);
     setClientName('');
     setClientPin('');
+    setClientCurrentWeek(1);
     fetchData();
   };
 
@@ -859,12 +1119,33 @@ Milk or plain yogurt if you're hungry.`);
     setClientName(clientObj.name);
     setClientPin(clientObj.pin_code);
     setClientProgram(clientObj.program || '13-Week Transformation & 30-Day Meal Plan');
+    setClientCurrentWeek(Number(clientObj.current_week) || 1);
     setClientCalories(String(clientObj.calories || 2450));
     setClientProtein(clientObj.protein || '190g');
     setClientCarbs(clientObj.carbs || '220g');
     setClientFats(clientObj.fats || '55g');
     setClientWater(clientObj.water || '3.5L');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUpdateClientWeek = async (clientId, newWeek) => {
+    const weekNum = Number(newWeek) || 1;
+    // 1. Update state
+    setClients(prev => prev.map(c => c.id === clientId ? { ...c, current_week: weekNum } : c));
+
+    // 2. Update LocalStorage
+    const localClients = JSON.parse(localStorage.getItem(LOCAL_CLIENTS_KEY) || '[]');
+    const updated = localClients.map(c => c.id === clientId ? { ...c, current_week: weekNum } : c);
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(updated));
+
+    // 3. Update Supabase
+    try {
+      await supabase.from('clients').update({ current_week: weekNum }).eq('id', clientId);
+    } catch (err) {
+      console.warn("Supabase week update note:", err);
+    }
+
+    window.dispatchEvent(new Event('storage'));
   };
 
   const handleFileUpload = async (e) => {
@@ -1303,6 +1584,7 @@ Milk or plain yogurt if you're hungry.`);
                   setClientName('');
                   setClientPin('');
                   setSelectedClientToEdit('');
+                  setClientCurrentWeek(1);
                 }}
               >
                 ➕ Register New Client
@@ -1330,6 +1612,7 @@ Milk or plain yogurt if you're hungry.`);
                     setClientName(first.name);
                     setClientPin(first.pin_code);
                     setClientProgram(first.program || '13-Week Transformation & 30-Day Meal Plan');
+                    setClientCurrentWeek(Number(first.current_week) || 1);
                     setClientCalories(String(first.calories || 2450));
                     setClientProtein(first.protein || '190g');
                     setClientCarbs(first.carbs || '220g');
@@ -1356,6 +1639,7 @@ Milk or plain yogurt if you're hungry.`);
                         setClientName(target.name);
                         setClientPin(target.pin_code);
                         setClientProgram(target.program || '13-Week Transformation & 30-Day Meal Plan');
+                        setClientCurrentWeek(Number(target.current_week) || 1);
                         setClientCalories(String(target.calories || 2450));
                         setClientProtein(target.protein || '190g');
                         setClientCarbs(target.carbs || '220g');
@@ -1367,7 +1651,7 @@ Milk or plain yogurt if you're hungry.`);
                   >
                     {clients.map(c => (
                       <option key={c.id} value={c.id}>
-                        {c.name} (PIN: {c.pin_code}) &bull; Current: {c.calories || 2450} kcal, {c.protein || '190g'} P, {c.carbs || '220g'} C
+                        {c.name} (PIN: {c.pin_code}) &bull; Week {c.current_week || 1} &bull; {c.calories || 2450} kcal, {c.protein || '190g'} P, {c.carbs || '220g'} C
                       </option>
                     ))}
                   </select>
@@ -1407,6 +1691,27 @@ Milk or plain yogurt if you're hungry.`);
                     <option value="8-Week Female Recomposition">8-Week Recomposition</option>
                   </select>
                 </div>
+              </div>
+
+              {/* REAL-TIME 13-WEEK ROADMAP SELECTOR */}
+              <div className="form-group" style={{ marginBottom: '1.25rem', background: '#f0f9ff', padding: '0.75rem 0.9rem', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+                <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <span style={{ color: '#0369a1', fontWeight: '800' }}>Active 13-Week Transformation Stage:</span>
+                  <span style={{ fontSize: '0.8rem', background: '#0284c7', color: '#fff', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: '800' }}>
+                    Week {clientCurrentWeek} of 13
+                  </span>
+                </label>
+                <select 
+                  value={clientCurrentWeek} 
+                  onChange={e => setClientCurrentWeek(Number(e.target.value))}
+                  style={{ width: '100%', padding: '0.65rem 0.8rem', borderRadius: '8px', border: '1.5px solid #7dd3fc', fontWeight: '700', fontSize: '0.9rem', color: '#071a2b', background: '#ffffff' }}
+                >
+                  {Array.from({ length: 13 }, (_, i) => i + 1).map(w => (
+                    <option key={w} value={w}>
+                      Week {w} of 13 {w === 1 ? '— Metabolic Reset & Baseline Testing' : w === 2 ? '— Fat Burning Engine Ignition' : w === 3 ? '— Lower Abdominal Shredding' : w === 4 ? '— Mid-Program Recomposition (Active)' : w === 6 ? '— 6-Week Milestone & Photo Check-in' : w === 10 ? '— Stage-Conditioning Shred' : w === 13 ? '— Peak Longevity & Permanent Standard' : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* QUICK MACRO PRESETS */}
@@ -1732,6 +2037,7 @@ Milk or plain yogurt if you're hungry.`);
                   <th>Client Name</th>
                   <th>Private PIN</th>
                   <th>Purchased Program</th>
+                  <th>Transformation Stage</th>
                   <th>Calories Target</th>
                   <th>Macros Breakdown (P / C / F)</th>
                   <th>Quick Action</th>
@@ -1747,6 +2053,27 @@ Milk or plain yogurt if you're hungry.`);
                       <td><strong>{c.name}</strong></td>
                       <td><code className="pin-tag">{c.pin_code}</code></td>
                       <td>{c.program || "13-Week Transformation"}</td>
+                      <td>
+                        <select
+                          value={c.current_week || 1}
+                          onChange={(e) => handleUpdateClientWeek(c.id, e.target.value)}
+                          style={{
+                            padding: '0.35rem 0.55rem',
+                            borderRadius: '6px',
+                            border: '1.5px solid #0284c7',
+                            background: '#f0f9ff',
+                            color: '#0369a1',
+                            fontWeight: '800',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer'
+                          }}
+                          title="Change client transformation week (1-13)"
+                        >
+                          {Array.from({ length: 13 }, (_, i) => i + 1).map(w => (
+                            <option key={w} value={w}>Week {w} of 13</option>
+                          ))}
+                        </select>
+                      </td>
                       <td><span className="calorie-badge">{c.calories || 2450} kcal</span></td>
                       <td>
                         <span className="macro-summary-tag">

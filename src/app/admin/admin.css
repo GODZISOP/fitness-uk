@@ -2482,13 +2482,13 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.84rem;
-  min-width: 820px;
+  min-width: 980px;
 }
 
 .weekly-matrix-table th {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   color: #e2e8f0;
-  padding: 0.9rem 0.8rem;
+  padding: 0.9rem 0.85rem;
   text-align: left;
   font-weight: 800;
   border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -2496,13 +2496,15 @@
 }
 
 .th-timing {
-  width: 140px;
+  width: 150px;
+  min-width: 140px;
 }
 
 .weekly-matrix-table td {
-  padding: 0.9rem 0.8rem;
+  padding: 0.9rem 0.85rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   vertical-align: top;
+  min-width: 120px;
 }
 
 .weekly-matrix-table tr:hover {
@@ -2522,7 +2524,8 @@
 }
 
 .matrix-meal-meta-cell {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  min-width: 140px;
 }
 
 .matrix-meal-time {
@@ -2540,11 +2543,14 @@
 
 .matrix-food-cell {
   position: relative;
+  min-width: 120px;
 }
 
 .matrix-food-text {
   color: #ffffff;
   line-height: 1.45;
+  font-size: 0.83rem;
+  word-break: break-word;
 }
 
 .matrix-eaten-badge {
@@ -2553,6 +2559,50 @@
   color: #10b981;
   font-weight: 800;
   margin-top: 0.35rem;
+}
+
+/* Coach Directives & Guidelines Banner */
+.schedule-guidelines-banner {
+  margin-top: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 201, 40, 0.08) 0%, rgba(21, 94, 239, 0.06) 100%);
+  border: 1px solid rgba(255, 201, 40, 0.25);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+
+.guidelines-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.guidelines-banner-header h4 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffc928;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.guidelines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guideline-pill-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .raw-directives-container {
