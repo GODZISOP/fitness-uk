@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import aboutImage from "../image copy 6.png";
 
@@ -94,10 +95,14 @@ export default function AboutSection() {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.35 }}
+            style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
           >
-            <button className="about-btn">
+            <Link href="/#contact" className="about-btn">
               GET STARTED TODAY <span className="arrow">&rarr;</span>
-            </button>
+            </Link>
+            <Link href="/transformations/20-year-journey" className="about-btn" style={{ background: "transparent", border: "1px solid var(--color-primary)", color: "var(--color-primary)" }}>
+              COACH'S 20 YEAR JOURNEY <span className="arrow">&rarr;</span>
+            </Link>
           </motion.div>
         </motion.div>
 

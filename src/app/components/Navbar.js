@@ -19,7 +19,7 @@ export default function Navbar({ isScrolled, theme = "default" }) {
   const navLinks = [
     { name: "Home", href: "/", isRoute: true, hash: "#home" },
     { name: "Services", href: "/#services", isRoute: false, hash: "#services" },
-    { name: "About Us", href: "/about", isRoute: true, hash: "#about" },
+    { name: "About Us", href: "/about", isRoute: true, hash: null },
     { 
       name: "Transformations", 
       href: "/transformations", 

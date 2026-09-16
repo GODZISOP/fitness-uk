@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import faqImage from '../zjBzVg-Photoroom.png';
 
@@ -134,9 +135,9 @@ export default function ProcessSection() {
             viewport={{ once: false }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <button className="faq-join-btn">
+            <Link href="/#programs" className="faq-join-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
               JOIN TODAY &rarr;
-            </button>
+            </Link>
           </motion.div>
         </motion.div>
 

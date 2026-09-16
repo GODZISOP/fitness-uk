@@ -742,12 +742,16 @@ export default function AboutPage() {
               {masterCoach.bio}
             </motion.p>
             
-            <motion.div style={{ y: coachBtnY, opacity: coachBtnOpacity, position: 'relative', zIndex: 10 }}>
-              <Link href="/#contact" className="about-btn-yellow" style={{ marginTop: "2rem" }}>
+            <motion.div style={{ y: coachBtnY, opacity: coachBtnOpacity, position: 'relative', zIndex: 10, display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "2rem" }}>
+              <Link href="/#contact" className="about-btn-yellow">
                 <span>Train with Marcus</span>
                 <span className="about-btn-icon-circle">
                   <ArrowUpRight size={16} strokeWidth={3} />
                 </span>
+              </Link>
+              <Link href="/transformations/20-year-journey" className="about-btn-soft" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50px", padding: "0 1.5rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "#fff", textDecoration: "none" }}>
+                <span>View 20-Year Journey</span>
+                <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
             </motion.div>
           </div>

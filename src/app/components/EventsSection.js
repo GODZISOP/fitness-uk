@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import serviceImage1 from '../image copy 9.png';
 import serviceImage2 from '../image copy 4.png';
@@ -91,9 +92,9 @@ export default function EventsSection() {
               viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <button className="split-btn">
-                GET STARTED NOW
-              </button>
+              <Link href="/transformations" className="split-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                CLIENT TRANSFORMATIONS
+              </Link>
             </motion.div>
           </motion.div>
 
