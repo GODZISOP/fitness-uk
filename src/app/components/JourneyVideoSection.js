@@ -5,16 +5,16 @@ import "./JourneyVideoSection.css";
 
 // 20-Year Journey (10 steps from 2006 to 2026 for continuity)
 const journeyVideos = [
-  { src: "/VID_30360726_125933_193.mp4", year: "2006", label: "The Foundation", desc: "Where it all started. The foundation was laid with iron and sweat." },
-  { src: "/VID_28661006_121137_850.mp4", year: "2008", label: "Early Hustle", desc: "Heavy lifting and a caloric surplus. Turning potential into raw power." },
+  { src: "/InShot_20231211_172201089.mp4", year: "2006", label: "The Foundation", desc: "Where it all started. The foundation was laid with iron and sweat." },
+  { src: "/InShot_20200202_150002946.mp4", year: "2008", label: "Early Hustle", desc: "Heavy lifting and a caloric surplus. Turning potential into raw power." },
   { src: "/VID_23150317_141157_769.mp4", year: "2011", label: "Building Mass", desc: "Consistency pays off. The physique begins to take serious shape." },
   { src: "/20200212_042253.mp4", year: "2013", label: "Raw Strength", desc: "Pushing limits, breaking plateaus, and mastering the form." },
   { src: "/20200214_041437.mp4", year: "2016", label: "Gaining Size", desc: "A period of heavy bulk and uncompromising training." },
-  { src: "/InShot_20200202_150002946.mp4", year: "2018", label: "The Shred", desc: "Stripping away the fat to reveal the muscle built over the years." },
-  { src: "/InShot_20200212_051728266.mp4", year: "2020", label: "Iron Discipline", desc: "A lifestyle cemented. No days off, no excuses." },
+  { src: "/VID_28661006_121137_850.mp4", year: "2018", label: "The Shred", desc: "Stripping away the fat to reveal the muscle built over the years." },
+  { src: "/VID_30360726_125933_193.mp4", year: "2020", label: "Iron Discipline", desc: "A lifestyle cemented. No days off, no excuses." },
   { src: "/InShot_20200219_103451929.mp4", year: "2022", label: "Relentless Focus", desc: "Refining the physique. Every detail matters." },
   { src: "/w0rldfitnessz0ne_20231214_1.mp4", year: "2024", label: "Beast Mode", desc: "Unlocking a new level of density and vascularity." },
-  { src: "/InShot_20231211_172201089.mp4", year: "2026", label: "Peak Evolution", desc: "20 Years of discipline. The ultimate physical mastery." }
+  { src: "/InShot_20200212_051728266.mp4", year: "2026", label: "Peak Evolution", desc: "20 Years of discipline. The ultimate physical mastery." }
 ];
 
 export default function JourneyVideoSection() {
