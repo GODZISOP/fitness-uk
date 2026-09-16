@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/dumbbell-frames/ezgif-frame-001.png" as="image" />
       </head>
       <body className={`${inter.variable} ${outfit.variable}`}>
-        <div style={{ overflowX: "hidden", width: "100%", position: "relative" }}>
+        <div style={{ width: "100%", position: "relative" }}>
           {children}
         </div>
       </body>

@@ -1,0 +1,30 @@
+"use client";
+import { useState, useEffect } from "react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import Loader from "../../components/Loader";
+import JourneyVideoSection from "../../components/JourneyVideoSection";
+
+export default function JourneyPage() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <>
+      <Loader />
+      <Navbar isScrolled={isScrolled} theme="default" />
+      <div style={{ paddingTop: "80px", minHeight: "100vh", backgroundColor: "#0a1128", display: "flex", flexDirection: "column" }}>
+        <JourneyVideoSection />
+      </div>
+      <Footer />
+    </>
+  );
+}
