@@ -41,6 +41,7 @@ STRICT FORMATTING RULES:
           { role: 'user', content: `Please organize and format this meal plan into clean Day 1 to Day 7 plain text:\n\n${text}` }
         ],
         temperature: 0.1,
+        max_tokens: 950,
       }),
     });
 

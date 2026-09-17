@@ -17,7 +17,7 @@ export default function Footer() {
               width={180} 
               style={{ objectFit: "contain", height: "55px", width: "auto", marginBottom: "1rem" }} 
             />
-            <p>Forging unbreakable strength and resilience since 2012. Join the elite.</p>
+            <p>Forging unbreakable strength and resilience since 2007. Join the elite.</p>
           </div>
           
           <div className="footer-links-grid">
@@ -56,7 +56,7 @@ export default function Footer() {
             <a href="#" aria-label="YouTube">YT</a>
           </div>
           <p className="footer-copyright">
-            &copy; {new Date().getFullYear()} World Fitness Zone. All rights reserved.
+            &copy; {new Date().getFullYear()} World Fitness Zone. Established 2007. All rights reserved.
           </p>
         </div>
 
