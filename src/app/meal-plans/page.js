@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 // Define the meal tiers
 const mealTiers = [
   {
-    title: "Beginner",
+    title: "Amateur",
     subtitle: "Foundation & Habits",
     description: "Perfect for those just starting out. Learn the basics of macronutrients, portion control, and build sustainable eating habits without feeling overwhelmed.",
     features: [
@@ -27,7 +27,7 @@ const mealTiers = [
     delay: 0.2
   },
   {
-    title: "Amateur",
+    title: "Intermediate",
     subtitle: "Performance & Growth",
     description: "For intermediate lifters ready to take their nutrition seriously. Focused on nutrient timing, lean muscle growth, and optimizing recovery.",
     features: [
