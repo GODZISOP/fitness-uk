@@ -6,7 +6,9 @@ import "./JourneyVideoSection.css";
 // 20-Year Journey (10 steps from 2006 to 2026 for continuity)
 const journeyVideos = [
   { src: "/InShot_20231211_172201089.mp4", year: "2006", label: "The Foundation", desc: "Where it all started. The foundation was laid with iron and sweat." },
+  { src: "/1404066044405.mp4", year: "2007", label: "First Gains", desc: "Seeing the first real results of consistent heavy training." },
   { src: "/InShot_20200202_150002946.mp4", year: "2008", label: "Early Hustle", desc: "Heavy lifting and a caloric surplus. Turning potential into raw power." },
+  { src: "/InShot_20161116_142056.mp4", year: "2009", label: "Dedicated Grind", desc: "The lifestyle becomes permanent. Muscle maturity starts to show." },
   { src: "/VID_23150317_141157_769.mp4", year: "2011", label: "Building Mass", desc: "Consistency pays off. The physique begins to take serious shape." },
   { src: "/20200212_042253.mp4", year: "2013", label: "Raw Strength", desc: "Pushing limits, breaking plateaus, and mastering the form." },
   { src: "/20200214_041437.mp4", year: "2016", label: "Gaining Size", desc: "A period of heavy bulk and uncompromising training." },
