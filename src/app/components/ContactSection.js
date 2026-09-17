@@ -1,7 +1,41 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function ContactSection() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const formData = new FormData(e.target);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        message: formData.get('message'),
+      };
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("Thank you! Your message has been sent successfully. We will get back to you shortly.");
+        e.target.reset(); // Clear the form
+      } else {
+        alert("Failed to send message. Please try again or contact us directly.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="contact-section">
       <div className="contact-container">
@@ -42,7 +76,7 @@ export default function ContactSection() {
 
           {/* Right Column - Form */}
           <div className="contact-right" data-aos="fade-left" data-aos-delay="600">
-            <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="contact-form" onSubmit={handleSubmit}>
               
               <div className="form-group">
                 <label htmlFor="name">Name <span>(required)</span></label>
@@ -59,8 +93,8 @@ export default function ContactSection() {
                 <textarea id="message" name="message" rows="5" required></textarea>
               </div>
 
-              <button type="submit" className="contact-submit-btn">
-                Send me a message
+              <button type="submit" className="contact-submit-btn" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send me a message"}
               </button>
 
             </form>

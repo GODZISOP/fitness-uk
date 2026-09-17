@@ -14,7 +14,7 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  title: "Premium Fitness Coaching",
+  title: "World Fitness Zone",
   description: "Build the strongest version of you with personalized fitness coaching.",
 };
 
