@@ -17,6 +17,12 @@ const mealTiers = [
       "Hydration & portion guides",
       "Flexible cheat meal rules"
     ],
+    examplePlan: [
+      { meal: "Breakfast", food: "Oatmeal with whey protein and berries" },
+      { meal: "Lunch", food: "Grilled chicken breast, jasmine rice, and mixed vegetables" },
+      { meal: "Snack", food: "Greek yogurt with a handful of almonds" },
+      { meal: "Dinner", food: "Baked salmon, sweet potato, and asparagus" }
+    ],
     color: "#22c55e", // Green
     delay: 0.2
   },
@@ -29,6 +35,12 @@ const mealTiers = [
       "Pre/post-workout nutrition",
       "Supplementation protocols",
       "Weekly check-in adjustments"
+    ],
+    examplePlan: [
+      { meal: "Pre-Workout", food: "Cream of rice with whey isolate & honey" },
+      { meal: "Post-Workout", food: "Lean turkey breast, white rice, zero-sugar sauce" },
+      { meal: "Lunch", food: "Lean beef mince, wholewheat pasta, spinach" },
+      { meal: "Dinner", food: "White fish, quinoa, and avocado salad" }
     ],
     color: "#FFC928", // Brand Yellow
     delay: 0.4,
@@ -44,6 +56,12 @@ const mealTiers = [
       "Precision micronutrient tracking",
       "Daily check-ins & adjustments"
     ],
+    examplePlan: [
+      { meal: "Meal 1", food: "Egg whites, spinach, and black coffee (Fasted Cardio)" },
+      { meal: "Meal 2", food: "Chicken breast and 100g green beans (Low Carb Day)" },
+      { meal: "Meal 3", food: "Tilapia, asparagus, and 1 tbsp macadamia oil" },
+      { meal: "Meal 4", food: "Casein protein shake with water before bed" }
+    ],
     color: "#ef4444", // Red
     delay: 0.6
   }
@@ -54,7 +72,7 @@ export default function MealPlansPage() {
     <>
       <Navbar />
       
-      <main className="meal-plans-page" style={{ minHeight: "100vh", backgroundColor: "var(--color-deep-navy)", color: "#fff", paddingTop: "120px", paddingBottom: "80px", fontFamily: "var(--font-secondary)" }}>
+      <main className="meal-plans-page" style={{ minHeight: "100vh", backgroundColor: "var(--color-white)", color: "var(--color-charcoal)", paddingTop: "120px", paddingBottom: "80px", fontFamily: "var(--font-secondary)" }}>
         <div className="meal-plans-container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 2rem" }}>
           
           {/* Header Section */}
@@ -69,9 +87,9 @@ export default function MealPlansPage() {
               Fuel Your Transformation
             </span>
             <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", fontFamily: "var(--font-primary)", fontWeight: "800", lineHeight: "1.1", marginBottom: "1.5rem", textTransform: "uppercase" }}>
-              Nutrition <span style={{ WebkitTextStroke: "1px #fff", color: "transparent" }}>Protocols</span>
+              Nutrition <span style={{ WebkitTextStroke: "1px var(--color-charcoal)", color: "transparent" }}>Protocols</span>
             </h1>
-            <p style={{ maxWidth: "600px", margin: "0 auto", color: "rgba(255,255,255,0.7)", fontSize: "1.125rem", lineHeight: "1.6" }}>
+            <p style={{ maxWidth: "600px", margin: "0 auto", color: "#475467", fontSize: "1.125rem", lineHeight: "1.6" }}>
               You can't out-train a bad diet. Choose the nutrition protocol that matches your current experience level and transformation goals.
             </p>
           </motion.div>
@@ -86,8 +104,9 @@ export default function MealPlansPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: tier.delay, ease: "easeOut" }}
                 style={{ 
-                  backgroundColor: "rgba(255,255,255,0.03)", 
-                  border: `1px solid ${tier.recommended ? 'var(--color-action-yellow)' : 'rgba(255,255,255,0.1)'}`, 
+                  backgroundColor: "#ffffff", 
+                  border: `1px solid ${tier.recommended ? 'var(--color-action-yellow)' : '#eaecf0'}`,
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
                   borderRadius: "16px", 
                   padding: "2.5rem 2rem",
                   position: "relative",
@@ -108,17 +127,17 @@ export default function MealPlansPage() {
                 <h2 style={{ fontSize: "2rem", fontFamily: "var(--font-primary)", fontWeight: "800", marginBottom: "0.5rem", color: tier.color, textTransform: "uppercase" }}>
                   {tier.title}
                 </h2>
-                <h3 style={{ fontSize: "1.125rem", color: "#fff", fontWeight: "600", marginBottom: "1rem" }}>
+                <h3 style={{ fontSize: "1.125rem", color: "var(--color-deep-navy)", fontWeight: "600", marginBottom: "1rem" }}>
                   {tier.subtitle}
                 </h3>
                 
-                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "2rem", flexGrow: 1 }}>
+                <p style={{ color: "#475467", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "2rem", flexGrow: 1 }}>
                   {tier.description}
                 </p>
 
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, marginBottom: "2.5rem" }}>
                   {tier.features.map((feature, fIdx) => (
-                    <li key={fIdx} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem", fontSize: "0.95rem", color: "rgba(255,255,255,0.8)" }}>
+                    <li key={fIdx} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem", fontSize: "0.95rem", color: "#475467" }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tier.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "2px" }}>
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
@@ -126,6 +145,49 @@ export default function MealPlansPage() {
                     </li>
                   ))}
                 </ul>
+
+                <div style={{ backgroundColor: "#f9fafb", borderRadius: "12px", padding: "1.25rem", marginBottom: "2rem", border: "1px solid #eaecf0" }}>
+                  <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", fontWeight: "700", color: "var(--color-charcoal)", marginBottom: "1rem", letterSpacing: "1px" }}>Example Daily Plan</h4>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                    {tier.examplePlan.map((plan, pIdx) => (
+                      <li key={pIdx} style={{ marginBottom: "0.75rem", borderBottom: pIdx !== tier.examplePlan.length - 1 ? "1px solid #eaecf0" : "none", paddingBottom: pIdx !== tier.examplePlan.length - 1 ? "0.75rem" : "0" }}>
+                        <div style={{ fontSize: "0.8rem", color: tier.color, fontWeight: "700", marginBottom: "0.25rem" }}>{plan.meal}</div>
+                        <div style={{ fontSize: "0.9rem", color: "#475467", lineHeight: "1.4" }}>{plan.food}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Link 
+                  href="/#programs"
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    backgroundColor: tier.recommended ? "var(--color-action-yellow)" : "#ffffff",
+                    color: tier.recommended ? "#000" : "var(--color-charcoal)",
+                    border: tier.recommended ? "none" : "1px solid #d0d5dd",
+                    padding: "1rem",
+                    borderRadius: "50px",
+                    fontWeight: "600",
+                    textDecoration: "none",
+                    textTransform: "uppercase",
+                    fontSize: "0.9rem",
+                    transition: "all 0.3s ease",
+                    boxShadow: tier.recommended ? "0 4px 6px -1px rgba(255, 201, 40, 0.3)" : "0 1px 2px rgba(0,0,0,0.05)"
+                  }}
+                  onMouseOver={(e) => {
+                    if(!tier.recommended) {
+                      e.currentTarget.style.backgroundColor = "#f9fafb";
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if(!tier.recommended) {
+                      e.currentTarget.style.backgroundColor = "#ffffff";
+                    }
+                  }}
+                >
+                  GET PERSONALISED ACCESS
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -145,10 +207,10 @@ export default function MealPlansPage() {
               padding: "4rem 2rem"
             }}
           >
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontFamily: "var(--font-primary)", fontWeight: "800", marginBottom: "1rem", textTransform: "uppercase" }}>
-              Ready to <span style={{ color: "var(--color-action-yellow)" }}>Commit?</span>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontFamily: "var(--font-primary)", fontWeight: "800", marginBottom: "1rem", textTransform: "uppercase", color: "var(--color-deep-navy)" }}>
+              Ready to <span style={{ color: "var(--color-primary)" }}>Commit?</span>
             </h2>
-            <p style={{ maxWidth: "600px", margin: "0 auto 2.5rem auto", color: "rgba(255,255,255,0.7)", fontSize: "1.125rem", lineHeight: "1.6" }}>
+            <p style={{ maxWidth: "600px", margin: "0 auto 2.5rem auto", color: "#475467", fontSize: "1.125rem", lineHeight: "1.6" }}>
               Select your meal plan and pair it with our elite training programs to guarantee your 13-week transformation.
             </p>
             <Link 
