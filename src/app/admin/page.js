@@ -835,6 +835,18 @@ export default function AdminPage() {
     };
   }, []);
 
+  // Supabase Keep-Alive Heartbeat (fires in background once every 12 hours on visit)
+  useEffect(() => {
+    try {
+      const lastPing = Number(localStorage.getItem('wfz_last_keepalive') || 0);
+      if (Date.now() - lastPing > 12 * 60 * 60 * 1000) {
+        fetch('/api/ping', { method: 'GET' })
+          .then(() => localStorage.setItem('wfz_last_keepalive', String(Date.now())))
+          .catch(() => {});
+      }
+    } catch (e) {}
+  }, []);
+
   // Auto-scroll chat to bottom on new messages or client switch
   useEffect(() => {
     if (adminTab === 'chat') {
