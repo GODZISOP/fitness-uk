@@ -899,16 +899,17 @@ function extractClientResources(allResources, clientObj) {
   // Load persisted deleted IDs to ensure deleted plans never show in client portal
   const deletedIds = new Set(JSON.parse(localStorage.getItem('wfz_deleted_resource_ids') || '[]'));
 
-  // Strictly match resources assigned to this specific client by ID, PIN, or Name and exclude deleted items
+  // Strictly match resources assigned to this specific client by ID or PIN (never match loosely by name alone)
   const list = (allResources || []).filter(r => {
     if (!r || !r.id || deletedIds.has(r.id)) return false;
     const rClientId = String(r.client_id || '').trim();
     const rClientPin = String(r.client_pin || '').trim();
-    const rClientName = String(r.client_name || '').trim().toLowerCase();
 
-    if (rClientId && rClientId === clientIdStr) return true;
-    if (rClientPin && clientPinStr && rClientPin === clientPinStr) return true;
-    if (rClientName && clientNameStr && rClientName === clientNameStr) return true;
+    // STRICT MULTI-TENANT ISOLATION:
+    // 1. Match by unique client ID
+    if (clientIdStr && rClientId && rClientId === clientIdStr) return true;
+    // 2. Match by private client PIN
+    if (clientPinStr && rClientPin && rClientPin === clientPinStr) return true;
     return false;
   });
 
