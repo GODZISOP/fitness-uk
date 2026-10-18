@@ -1189,16 +1189,37 @@ export default function ResourcesPage() {
       if (seenResourceIdsRef.current.size === 0) {
         const savedSeenRes = JSON.parse(localStorage.getItem('wfz_seen_res_' + currentClient.id) || '[]');
         savedSeenRes.forEach(id => seenResourceIdsRef.current.add(id));
+
+        // If this is the very first visit on this browser/Vercel, mark ALL current items as already seen
+        // so that past meal plans (e.g. week 1, week 2) never spam duplicate notifications upon login!
+        if (seenResourceIdsRef.current.size === 0 && combinedRes.length > 0) {
+          combinedRes.forEach(r => {
+            if (r?.id) seenResourceIdsRef.current.add(r.id);
+          });
+          try {
+            localStorage.setItem('wfz_seen_res_' + currentClient.id, JSON.stringify(Array.from(seenResourceIdsRef.current)));
+          } catch (e) {}
+        }
       }
 
-      // Check if Coach James just uploaded a new Meal Plan or Exercise Video or Edited one!
+      // Check if Coach James just uploaded a BRAND NEW Meal Plan or Exercise Video while online!
       if (seenResourceIdsRef.current.size > 0) {
-        // Collect ALL newly added items since last login
+        // Collect ONLY truly new items assigned in recent minutes
         const newlyAddedItems = combinedRes.filter(r => {
           if (!r || !r.id) return false;
+          // Must not have been seen before
           if (seenResourceIdsRef.current.has(r.id)) return false;
+          // Must not have been notified in the last 45 seconds
           const lastTime = notifiedResourceTimestampsRef.current.get(r.id);
           if (lastTime && (Date.now() - lastTime < 45000)) return false;
+          
+          // Safety cutoff: If an item was assigned more than 15 minutes ago, it's historical!
+          // Mark as seen silently without creating duplicate spam notifications
+          const itemTime = new Date(r.assigned_at || r.created_at || 0).getTime();
+          if (itemTime > 0 && (Date.now() - itemTime > 15 * 60 * 1000)) {
+            seenResourceIdsRef.current.add(r.id);
+            return false;
+          }
           return true;
         });
 
