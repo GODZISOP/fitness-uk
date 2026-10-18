@@ -1929,9 +1929,14 @@ water 3 liters a day. workout is 5pm.`);
     );
   }
 
-  // Active chat client object & conversation
+  // Active chat client object & conversation (Strictly isolated by ID or PIN)
   const currentChatClient = clients.find(c => c.id === chatActiveClientId) || clients[0] || { id: "none", name: "Client", pin_code: "" };
-  const currentChatMessages = messages.filter(m => m.client_id === currentChatClient.id || m.client_pin === currentChatClient.pin_code);
+  const currentChatMessages = messages.filter(m => {
+    if (!m) return false;
+    const matchId = currentChatClient.id && currentChatClient.id !== 'none' && String(m.client_id || '').trim() === String(currentChatClient.id).trim();
+    const matchPin = currentChatClient.pin_code && String(m.client_pin || '').trim() === String(currentChatClient.pin_code).trim();
+    return Boolean(matchId || matchPin);
+  });
 
   return (
     <div className="admin-dashboard-wrapper">
