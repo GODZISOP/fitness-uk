@@ -22,7 +22,7 @@ export async function POST(req) {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // Send to yourself
+      to: 'worldfitnesszone@consultant.com', // Recipient of the form submission
       replyTo: email,
       subject: `New Contact Form Submission from ${name}`,
       text: `You have received a new message from your website's contact form.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,

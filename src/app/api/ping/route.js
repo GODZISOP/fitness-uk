@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // This endpoint actively queries the database to keep Supabase alive and prevent pausing after 7 days
-export async function GET() {
+async function runHeartbeat() {
   try {
     let data = null;
     if (supabase && typeof supabase.from === 'function') {
@@ -31,3 +31,16 @@ export async function GET() {
     }, { status: 200 });
   }
 }
+
+export async function GET() {
+  return runHeartbeat();
+}
+
+export async function POST() {
+  return runHeartbeat();
+}
+
+export async function HEAD() {
+  return runHeartbeat();
+}
+

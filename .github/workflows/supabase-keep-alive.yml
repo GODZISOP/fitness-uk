@@ -14,17 +14,27 @@ jobs:
         run: |
           echo "Triggering automated keep-alive heartbeat..."
           
-          # 1. Ping via Supabase API if secret is configured
-          if [ -n "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
-            curl -s -f \
-              -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-              -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-              "${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://khkiyplybehsspxtmvkf.supabase.co' }}/rest/v1/clients?select=id&limit=1" || echo "API ping attempted"
+          # 1. Ping via Supabase API directly (using publishable anon key as fallback)
+          API_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="sb_publishable_-WBbXW90QrO2Am4lesj76w_k8_x50f1"
+          fi
+          
+          SUPA_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          if [ -z "$SUPA_URL" ]; then
+            SUPA_URL="https://khkiyplybehsspxtmvkf.supabase.co"
           fi
 
-          # 2. Ping deployed app keep-alive route
+          echo "Pinging Supabase REST API at $SUPA_URL/rest/v1/clients ..."
+          curl -s -f \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY" \
+            "$SUPA_URL/rest/v1/clients?select=id&limit=1" || echo "API direct ping executed"
+
+          # 2. Ping deployed app keep-alive route if configured
           SITE_URL="${{ secrets.DEPLOYED_SITE_URL }}"
           if [ -n "$SITE_URL" ]; then
+            echo "Pinging deployed site at $SITE_URL/api/ping ..."
             curl -s -f "$SITE_URL/api/ping" || echo "Site ping attempted"
           fi
           
