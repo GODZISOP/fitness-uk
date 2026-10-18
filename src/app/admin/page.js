@@ -775,6 +775,17 @@ export default function AdminPage() {
   const seenAdminItemIdsRef = useRef(new Set());
   const chatScrollRef = useRef(null);
   const deletedResourceIdsRef = useRef(new Set()); // Tracks locally deleted IDs so polling doesn't restore them
+  const adminTabRef = useRef(adminTab);
+  const chatActiveClientIdRef = useRef(chatActiveClientId);
+  const notifiedAdminItemTimestampsRef = useRef(new Map());
+
+  useEffect(() => {
+    adminTabRef.current = adminTab;
+  }, [adminTab]);
+
+  useEffect(() => {
+    chatActiveClientIdRef.current = chatActiveClientId;
+  }, [chatActiveClientId]);
 
   useEffect(() => {
     // Check existing session
@@ -792,7 +803,12 @@ export default function AdminPage() {
     }
 
     // Mobile Audio Unlock Listener
-    const unlockHandler = () => unlockAdminAudio();
+    const unlockHandler = () => {
+      unlockAdminAudio();
+      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    };
     window.addEventListener('touchstart', unlockHandler, { passive: true });
     window.addEventListener('click', unlockHandler, { passive: true });
 
@@ -804,36 +820,41 @@ export default function AdminPage() {
     };
     window.addEventListener('storage', handleStorageChange);
 
-    // Instant Supabase Realtime channel & Fast Fallback Polling (2.5s)
-    let pollInterval;
-    let realtimeChannel;
-
-    if (savedAuth === 'true') {
-      try {
-        realtimeChannel = supabase
-          .channel(`admin_realtime_sync_${Date.now()}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => fetchData(true))
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'weigh_ins' }, () => fetchData(true))
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData(true))
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => fetchData(true))
-          .subscribe();
-      } catch (err) {
-        console.warn("Admin realtime sub note:", err);
-      }
-
-      pollInterval = setInterval(() => {
-        fetchData(true);
-      }, 2500);
-    }
-
     return () => {
       window.removeEventListener('touchstart', unlockHandler);
       window.removeEventListener('click', unlockHandler);
       window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Dedicated Live Supabase Realtime Channel & Active Polling when Authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    fetchData(true);
+
+    let realtimeChannel;
+    try {
+      realtimeChannel = supabase
+        .channel(`admin_realtime_sync_${Date.now()}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'client_messages' }, () => fetchData(true))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'weigh_ins' }, () => fetchData(true))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData(true))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => fetchData(true))
+        .subscribe();
+    } catch (err) {
+      console.warn("Admin realtime sub note:", err);
+    }
+
+    const pollInterval = setInterval(() => {
+      fetchData(true);
+    }, 2500);
+
+    return () => {
       if (pollInterval) clearInterval(pollInterval);
       if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   // Supabase Keep-Alive Heartbeat (fires in background once every 12 hours on visit)
   useEffect(() => {
@@ -1131,36 +1152,75 @@ Hydration: 3.0 Litres water daily`
 
       combinedMessages.forEach(m => {
         if (m.sender === 'client' && !seenAdminItemIdsRef.current.has("msg_" + m.id)) {
-          newlyAddedItems.push({
-            id: 'notif_' + Date.now() + Math.random(),
-            title: "New Message from " + m.client_name,
-            subtitle: `"${m.text.substring(0, 40)}..."`,
-            targetTab: 'chat',
-            targetClientId: m.client_id,
-            timestamp: new Date().toISOString()
-          });
+          // USER REQUIREMENT:
+          // If admin is actively on the chat tab viewing this specific client's chat and window has focus:
+          // DO NOT play audio chime and DO NOT show popup notification!
+          const isActivelyViewingChat = (
+            adminTabRef.current === 'chat' &&
+            chatActiveClientIdRef.current === m.client_id &&
+            typeof document !== 'undefined' &&
+            !document.hidden &&
+            document.hasFocus()
+          );
+
+          const notifId = 'notif_msg_' + m.id;
+          const lastTime = notifiedAdminItemTimestampsRef.current.get(notifId);
+
+          if (!isActivelyViewingChat && (!lastTime || Date.now() - lastTime > 45000)) {
+            notifiedAdminItemTimestampsRef.current.set(notifId, Date.now());
+            newlyAddedItems.push({
+              id: notifId,
+              title: "New Message from " + (m.client_name || 'Client'),
+              subtitle: `"${m.text ? (m.text.length > 50 ? m.text.substring(0, 50) + '...' : m.text) : 'New message'}"`,
+              targetTab: 'chat',
+              targetClientId: m.client_id,
+              timestamp: m.timestamp || new Date().toISOString()
+            });
+          }
         }
       });
 
       combinedWeighIns.forEach(w => {
         if (!seenAdminItemIdsRef.current.has("weigh_" + w.id)) {
-          newlyAddedItems.push({
-            id: 'notif_' + Date.now() + Math.random(),
-            title: "New Fasted Weigh-In",
-            subtitle: `${w.client_name} logged ${w.weight} kg`,
-            targetTab: 'weighins',
-            targetClientId: w.client_id,
-            timestamp: new Date().toISOString()
-          });
+          const isActivelyViewingWeighIns = (
+            adminTabRef.current === 'weighins' &&
+            typeof document !== 'undefined' &&
+            !document.hidden &&
+            document.hasFocus()
+          );
+
+          const notifId = 'notif_weigh_' + w.id;
+          const lastTime = notifiedAdminItemTimestampsRef.current.get(notifId);
+
+          if (!isActivelyViewingWeighIns && (!lastTime || Date.now() - lastTime > 45000)) {
+            notifiedAdminItemTimestampsRef.current.set(notifId, Date.now());
+            newlyAddedItems.push({
+              id: notifId,
+              title: "New Fasted Weigh-In",
+              subtitle: `${w.client_name || 'Client'} logged ${w.weight} kg`,
+              targetTab: 'weighins',
+              targetClientId: w.client_id,
+              timestamp: w.timestamp || new Date().toISOString()
+            });
+          }
         }
       });
 
       if (newlyAddedItems.length > 0) {
         playNotificationSound();
         setLiveNotice(newlyAddedItems[0]);
+
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) {
+          try {
+            new Notification(newlyAddedItems[0].title, { body: newlyAddedItems[0].subtitle, icon: '/favicon.ico' });
+          } catch (e) {}
+        }
         
         setAdminNotifications(prev => {
-          const updated = [...newlyAddedItems, ...prev];
+          const existingIds = new Set(prev.map(n => n.id));
+          const uniqueNew = newlyAddedItems.filter(n => !existingIds.has(n.id));
+          if (uniqueNew.length === 0) return prev;
+          const updated = [...uniqueNew, ...prev].slice(0, 50);
           localStorage.setItem(LOCAL_ADMIN_NOTIFS_KEY, JSON.stringify(updated));
           return updated;
         });
@@ -1581,11 +1641,14 @@ water 3 liters a day. workout is 5pm.`);
       });
     }
 
+    const targetClientPin = selectedClientObj?.pin_code || (resClientId === 'client-zain-1' ? '78601' : '') || '';
+    const targetClientName = selectedClientObj?.name || (resClientId === 'client-zain-1' ? 'Zain' : 'Client');
+
     const newResource = {
       id: editingResourceId || ("res_" + Date.now()),
       client_id: resClientId,
-      client_name: selectedClientObj?.name || '',
-      client_pin: selectedClientObj?.pin_code || '',
+      client_name: targetClientName,
+      client_pin: targetClientPin,
       title: resTitle.trim(),
       type: resCategory,
       category: resCategory,
@@ -1638,9 +1701,11 @@ water 3 liters a day. workout is 5pm.`);
       } else {
         if (resCategory === 'meal_plan') {
           try {
+            let archiveOr = `client_id.eq.${newResource.client_id}`;
+            if (newResource.client_pin) archiveOr += `,client_pin.eq.${newResource.client_pin}`;
             await supabase.from('resources')
               .update({ status: 'archived', archived_at: new Date().toISOString() })
-              .eq('client_id', newResource.client_id)
+              .or(archiveOr)
               .eq('category', 'meal_plan')
               .eq('status', 'active');
           } catch (archErr) {
@@ -1871,6 +1936,8 @@ water 3 liters a day. workout is 5pm.`);
     const allMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
     allMsgs.push(newCoachMsg);
     localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(allMsgs));
+    seenAdminItemIdsRef.current.add("msg_" + newCoachMsg.id);
+    window.dispatchEvent(new Event('storage'));
 
     setChatReplyText('');
     setMessages(allMsgs);
