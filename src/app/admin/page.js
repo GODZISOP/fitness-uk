@@ -762,7 +762,6 @@ export default function AdminPage() {
   const [filterResClientId, setFilterResClientId] = useState('');
   const [filterResCategory, setFilterResCategory] = useState('all'); // 'all', 'meal_plan', 'video', 'image'
   const [selectedPlanByClient, setSelectedPlanByClient] = useState({});
-  const [resourcesViewMode, setResourcesViewMode] = useState('by_client'); // 'by_client' or 'flat'
 
   // Diet History & Audit Trail State ("Pehle vs Ab")
   const [selectedAuditClientId, setSelectedAuditClientId] = useState('client-zain-1');
