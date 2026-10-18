@@ -1049,6 +1049,8 @@ export default function ResourcesPage() {
   const [notifications, setNotifications] = useState([]);
   const seenResourceIdsRef = useRef(new Set());
   const seenMessageIdsRef = useRef(new Set());
+  const notifiedResourceTimestampsRef = useRef(new Map());
+  const notifiedMessageTimestampsRef = useRef(new Map());
   const clientChatScrollRef = useRef(null);
   const clientRef = useRef(client);
 
@@ -1123,6 +1125,21 @@ export default function ResourcesPage() {
     return activeCustomPlan || sortedCustomPlans[0] || null;
   }, [sortedCustomPlans, selectedPlanId, protocolFilterType, activeCustomPlan]);
 
+  // Whenever coach publishes or activates a new protocol, automatically switch selectedPlanId to it and open schedule
+  useEffect(() => {
+    if (activeCustomPlan?.id) {
+      setSelectedPlanId(prev => {
+        if (!prev) return activeCustomPlan.id;
+        const currentSelected = sortedCustomPlans.find(p => p.id === prev);
+        if (!currentSelected || (currentSelected.status !== 'active' && activeCustomPlan.status === 'active')) {
+          setIsScheduleOpen(true);
+          return activeCustomPlan.id;
+        }
+        return prev;
+      });
+    }
+  }, [activeCustomPlan?.id, activeCustomPlan?.status]);
+
   const displayedPlans = useMemo(() => {
     if (protocolFilterType === 'active') {
       return activeCustomPlan ? [activeCustomPlan] : [];
@@ -1179,11 +1196,19 @@ export default function ResourcesPage() {
         // Collect ALL newly added items since last login
         const newlyAddedItems = combinedRes.filter(r => {
           if (!r || !r.id) return false;
-          const trackingKey = r.id + "_" + (r.assigned_at || r.created_at || "");
-          return !seenResourceIdsRef.current.has(trackingKey);
+          if (seenResourceIdsRef.current.has(r.id)) return false;
+          const lastTime = notifiedResourceTimestampsRef.current.get(r.id);
+          if (lastTime && (Date.now() - lastTime < 45000)) return false;
+          return true;
         });
 
         if (newlyAddedItems.length > 0) {
+          // Immediately mark as seen & notified to prevent duplicate calls from Supabase + localStorage
+          newlyAddedItems.forEach(item => {
+            notifiedResourceTimestampsRef.current.set(item.id, Date.now());
+            seenResourceIdsRef.current.add(item.id);
+          });
+
           playNotificationSound();
           
           // Add them all to notification history
@@ -1196,8 +1221,16 @@ export default function ResourcesPage() {
               : (isVideo ? "New Exercise Video Uploaded!" : "New Coaching Directive Assigned!");
             const icon = isMealPlan ? "🥗" : (isVideo ? "🎥" : "⚡");
 
+            // Auto-open and select the new meal plan right away!
+            if (isMealPlan) {
+              setSelectedPlanId(newlyAdded.id);
+              setIsScheduleOpen(true);
+            }
+
+            const notifId = 'notif_res_' + newlyAdded.id;
             const noticeObj = {
-              id: newlyAdded.id + "_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+              id: notifId,
+              targetResourceId: newlyAdded.id,
               title,
               subtitle: newlyAdded.title || "Tap here to review your newly assigned protocol immediately.",
               targetTab,
@@ -1207,9 +1240,20 @@ export default function ResourcesPage() {
             // Only show the live popup for the first/most recent one
             if (index === 0) setLiveNotice(noticeObj);
 
+            // Desktop notification if in background
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) {
+              try {
+                new Notification(title, { body: noticeObj.subtitle, icon: '/favicon.ico' });
+              } catch (e) {}
+            }
+
             setNotifications(prev => {
+              const exists = prev.some(n => n.id === notifId || (n.targetResourceId === newlyAdded.id && Date.now() - new Date(n.timestamp).getTime() < 45000));
+              if (exists) return prev;
               const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
-              localStorage.setItem('LOCAL_NOTIFS_' + currentClient.id, JSON.stringify(updated));
+              try {
+                localStorage.setItem('LOCAL_NOTIFS_' + currentClient.id, JSON.stringify(updated));
+              } catch (e) {}
               return updated;
             });
           });
@@ -1219,8 +1263,7 @@ export default function ResourcesPage() {
       // Update seen resources and save to localStorage
       combinedRes.forEach(r => {
         if (r?.id) {
-          const trackingKey = r.id + "_" + (r.assigned_at || r.created_at || "");
-          seenResourceIdsRef.current.add(trackingKey);
+          seenResourceIdsRef.current.add(r.id);
         }
       });
       localStorage.setItem('wfz_seen_res_' + currentClient.id, JSON.stringify(Array.from(seenResourceIdsRef.current)));
@@ -1230,10 +1273,13 @@ export default function ResourcesPage() {
       // 2. Live Fetch Messages from Supabase & LocalStorage (Never delete any message history!)
       let dbMsgs = [];
       try {
+        let msgOrQuery = `client_id.eq.${currentClient.id}`;
+        if (currentClient.pin_code) msgOrQuery += `,client_pin.eq.${currentClient.pin_code}`;
+
         const { data } = await supabase
           .from('client_messages')
           .select('*')
-          .or(`client_id.eq."${currentClient.id}",client_pin.eq."${currentClient.pin_code}"`)
+          .or(msgOrQuery)
           .order('timestamp', { ascending: true });
         if (data && data.length > 0) dbMsgs = data;
       } catch (e) { }
@@ -1256,15 +1302,38 @@ export default function ResourcesPage() {
       // Check if Coach James just sent a direct reply!
       if (seenMessageIdsRef.current.size > 0) {
         // Collect ALL newly added coach messages since last login
-        const newCoachMsgs = combinedMsgs.filter(m => m && m.id && m.sender === 'coach' && !seenMessageIdsRef.current.has(m.id));
+        const newCoachMsgs = combinedMsgs.filter(m => {
+          if (!m || !m.id || m.sender !== 'coach') return false;
+          if (seenMessageIdsRef.current.has(m.id)) return false;
+          const lastTime = notifiedMessageTimestampsRef.current.get(m.id);
+          if (lastTime && Date.now() - lastTime < 45000) return false;
+          return true;
+        });
         
         if (newCoachMsgs.length > 0) {
-          if (activeTabRef.current !== 'messenger') {
+          // Immediately mark as seen & notified
+          newCoachMsgs.forEach(m => {
+            notifiedMessageTimestampsRef.current.set(m.id, Date.now());
+            seenMessageIdsRef.current.add(m.id);
+          });
+
+          // USER REQUIREMENT:
+          // If actively inside the chat tab AND window has focus:
+          // DO NOT play audio chime and DO NOT show popup notification!
+          const isActivelyViewingChat = (
+            activeTabRef.current === 'messenger' &&
+            typeof document !== 'undefined' &&
+            !document.hidden &&
+            document.hasFocus()
+          );
+
+          if (!isActivelyViewingChat) {
             playNotificationSound();
             
             newCoachMsgs.forEach((newCoachMsg, index) => {
+              const notifId = 'notif_msg_' + newCoachMsg.id;
               const noticeObj = {
-                id: newCoachMsg.id || ('msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
+                id: notifId,
                 title: "New Message from Coach James!",
                 subtitle: newCoachMsg.text ? (newCoachMsg.text.length > 60 ? newCoachMsg.text.slice(0, 60) + '...' : newCoachMsg.text) : "Direct message received in your private thread.",
                 targetTab: 'messenger',
@@ -1273,11 +1342,20 @@ export default function ResourcesPage() {
 
               if (index === 0) setLiveNotice(noticeObj);
 
+              // Desktop notification if minimized or tab in background
+              if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) {
+                try {
+                  new Notification("New Message from Coach James", { body: noticeObj.subtitle, icon: '/favicon.ico' });
+                } catch (e) {}
+              }
+
               setNotifications(prev => {
-                const exists = prev.some(n => n.id === noticeObj.id);
+                const exists = prev.some(n => n.id === notifId);
                 if (exists) return prev;
                 const updated = [{ ...noticeObj, timestamp: new Date().toISOString(), isRead: false }, ...prev].slice(0, 50);
-                localStorage.setItem('LOCAL_NOTIFS_' + currentClient.id, JSON.stringify(updated));
+                try {
+                  localStorage.setItem('LOCAL_NOTIFS_' + currentClient.id, JSON.stringify(updated));
+                } catch (e) {}
                 return updated;
               });
             });
@@ -1624,6 +1702,8 @@ export default function ResourcesPage() {
     const allMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
     allMsgs.push(newMsg);
     localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(allMsgs));
+    seenMessageIdsRef.current.add(newMsg.id);
+    window.dispatchEvent(new Event('storage'));
 
     setChatMessages(prev => [...prev, newMsg]);
     setClientMsgText('');
@@ -1698,6 +1778,10 @@ export default function ResourcesPage() {
           className="live-notification-toast"
           onClick={() => {
             setActiveTab(liveNotice.targetTab);
+            if (liveNotice.targetTab === 'meal_plan') {
+              if (liveNotice.targetResourceId) setSelectedPlanId(liveNotice.targetResourceId);
+              setIsScheduleOpen(true);
+            }
             setLiveNotice(null);
             window.scrollTo({ top: 350, behavior: 'smooth' });
           }}
@@ -1905,7 +1989,18 @@ export default function ResourcesPage() {
               </div>
             ) : (
               notifications.map((n, idx) => (
-                <div key={n.id ? `${n.id}_${idx}` : `notif_${idx}`} onClick={() => setActiveTab(n.targetTab)} style={{ background: n.isRead ? '#f8fafc' : '#fff', border: n.isRead ? '1px solid #e2e8f0' : '1px solid #bfdbfe', borderRadius: '12px', padding: '1.25rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: n.isRead ? 'none' : '0 4px 12px rgba(59,130,246,0.08)' }}>
+                <div
+                  key={n.id ? `${n.id}_${idx}` : `notif_${idx}`}
+                  onClick={() => {
+                    setActiveTab(n.targetTab);
+                    if (n.targetTab === 'meal_plan') {
+                      if (n.targetResourceId) setSelectedPlanId(n.targetResourceId);
+                      setIsScheduleOpen(true);
+                    }
+                    window.scrollTo({ top: 350, behavior: 'smooth' });
+                  }}
+                  style={{ background: n.isRead ? '#f8fafc' : '#fff', border: n.isRead ? '1px solid #e2e8f0' : '1px solid #bfdbfe', borderRadius: '12px', padding: '1.25rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: n.isRead ? 'none' : '0 4px 12px rgba(59,130,246,0.08)' }}
+                >
                   <div style={{ fontSize: '1.5rem' }}>{n.icon}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
