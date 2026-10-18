@@ -762,6 +762,7 @@ export default function AdminPage() {
   const [filterResClientId, setFilterResClientId] = useState('');
   const [filterResCategory, setFilterResCategory] = useState('all'); // 'all', 'meal_plan', 'video', 'image'
   const [selectedPlanByClient, setSelectedPlanByClient] = useState({});
+  const [resourcesViewMode, setResourcesViewMode] = useState('by_client'); // 'by_client' or 'flat'
 
   // Diet History & Audit Trail State ("Pehle vs Ab")
   const [selectedAuditClientId, setSelectedAuditClientId] = useState('client-zain-1');
@@ -2465,7 +2466,7 @@ water 3 liters a day. workout is 5pm.`);
                 <div className="form-group">
                   <label>Category</label>
                   <select value={resCategory} onChange={e => setResCategory(e.target.value)}>
-                    <option value="meal_plan">🥗 Meal Plan of the Day</option>
+                    <option value="meal_plan">🥗 Meal Plan of the Week</option>
                     <option value="routine_video">🎥 Exercise &amp; Routine Video</option>
                     <option value="coach_note">📋 Coach James Directives &amp; Protocol</option>
                   </select>

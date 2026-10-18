@@ -1886,7 +1886,7 @@ export default function ResourcesPage() {
           onClick={() => setActiveTab('meal_plan')}
         >
           <Utensils size={18} />
-          <span>Meal Plan of the Day</span>
+          <span>Meal Plan of the Week</span>
         </button>
 
         <button
