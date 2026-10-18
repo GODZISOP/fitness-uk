@@ -901,7 +901,7 @@ function extractClientResources(allResources, clientObj) {
 
   // Strictly match resources assigned to this specific client by ID or PIN (never match loosely by name alone)
   const list = (allResources || []).filter(r => {
-    if (!r || !r.id || deletedIds.has(r.id)) return false;
+    if (!r || !r.id || r.status === 'deleted' || deletedIds.has(r.id)) return false;
     const rClientId = String(r.client_id || '').trim();
     const rClientPin = String(r.client_pin || '').trim();
 
@@ -1089,7 +1089,7 @@ export default function ResourcesPage() {
 
   // Multiple Meal Plans Filter & View State
   const [selectedPlanId, setSelectedPlanId] = useState('');
-  const [protocolFilterType, setProtocolFilterType] = useState('all'); // 'all', 'active', 'previous'
+  const [protocolFilterType, setProtocolFilterType] = useState('active'); // 'active', 'previous', 'all'
   const [isScheduleOpen, setIsScheduleOpen] = useState(false); // Collapsed by default so user controls when to view ("apni marzi se dekh lega, aise direct mat show karo")
   const [planFilterCategory, setPlanFilterCategory] = useState('all'); // 'all', 'weekly', 'daily'
   const [planSearchQuery, setPlanSearchQuery] = useState('');
@@ -1561,6 +1561,7 @@ export default function ResourcesPage() {
           .from('resources')
           .select('*')
           .or(orQuery)
+          .neq('status', 'deleted')
           .order('created_at', { ascending: false });
 
         const localRes = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');

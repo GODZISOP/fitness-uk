@@ -35,6 +35,8 @@ import {
   RotateCcw,
   Clock,
   ArrowRight,
+  ArrowLeft,
+  ChevronDown,
   X,
   ChevronRight,
   Printer,
@@ -758,6 +760,8 @@ export default function AdminPage() {
 
   // Resource Filter
   const [filterResClientId, setFilterResClientId] = useState('');
+  const [filterResCategory, setFilterResCategory] = useState('all'); // 'all', 'meal_plan', 'video', 'image'
+  const [selectedPlanByClient, setSelectedPlanByClient] = useState({});
 
   // Diet History & Audit Trail State ("Pehle vs Ab")
   const [selectedAuditClientId, setSelectedAuditClientId] = useState('client-zain-1');
@@ -1066,7 +1070,7 @@ Hydration: 3.0 Litres water daily`
     try {
       const [cResult, rResult, mResult, wResult] = await Promise.all([
         supabase.from('clients').select('*'),
-        supabase.from('resources').select('*'),
+        supabase.from('resources').select('*').neq('status', 'deleted'),
         supabase.from('client_messages').select('*').order('timestamp', { ascending: true }),
         supabase.from('weigh_ins').select('*').order('timestamp', { ascending: false })
       ]);
@@ -1099,7 +1103,7 @@ Hydration: 3.0 Litres water daily`
 
     const combinedClients = mergeByTimestamp(localClients, fetchedClients);
     const combinedResources = mergeByTimestamp(localResources, fetchedResources)
-      .filter(r => !deletedResourceIdsRef.current.has(r.id))
+      .filter(r => !deletedResourceIdsRef.current.has(r.id) && r.status !== 'deleted')
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const persistedDeletedMsgIds = new Set(JSON.parse(localStorage.getItem('wfz_deleted_message_ids') || '[]'));
     const combinedMessages = mergeByTimestamp(localMessages, fetchedMessages)
@@ -1871,32 +1875,35 @@ water 3 liters a day. workout is 5pm.`);
     setWeighIns(prev => prev.filter(w => w.client_id !== clientId && w.client_pin !== clientPin));
   };
 
-  const handleDeleteResource = (id) => {
-    if (confirm("Are you sure you want to delete this resource?")) {
-      // 1. Track in memory ref
-      deletedResourceIdsRef.current.add(id);
+  const handleDeleteResource = async (id) => {
+    if (!confirm("Are you sure you want to delete this meal plan / resource?")) return;
 
-      // 2. Persist deleted ID to localStorage permanently so it survives page refresh & prevents re-seeding
-      const deletedIds = JSON.parse(localStorage.getItem(LOCAL_DELETED_RES_KEY) || '[]');
-      if (!deletedIds.includes(id)) {
-        deletedIds.push(id);
-        localStorage.setItem(LOCAL_DELETED_RES_KEY, JSON.stringify(deletedIds));
-      }
+    // 1. Track in memory ref
+    deletedResourceIdsRef.current.add(id);
 
-      // 3. Remove from resources localStorage
-      const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
-      localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(localResources.filter(r => r.id !== id)));
+    // 2. Persist deleted ID to localStorage permanently so it survives page refresh & prevents re-seeding
+    const deletedIds = JSON.parse(localStorage.getItem(LOCAL_DELETED_RES_KEY) || '[]');
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      localStorage.setItem(LOCAL_DELETED_RES_KEY, JSON.stringify(deletedIds));
+    }
 
-      // 4. Update UI instantly (0ms delay)
-      setResources(prev => prev.filter(r => r.id !== id));
+    // 3. Remove from resources localStorage
+    const localResources = JSON.parse(localStorage.getItem(LOCAL_RESOURCES_KEY) || '[]');
+    localStorage.setItem(LOCAL_RESOURCES_KEY, JSON.stringify(localResources.filter(r => r.id !== id)));
 
-      // 5. Broadcast to all other tabs (including client portal) immediately
-      window.dispatchEvent(new Event('storage'));
+    // 4. Update UI instantly (0ms delay)
+    setResources(prev => prev.filter(r => r.id !== id));
 
-      // 6. Delete from Supabase in background (non-blocking)
-      supabase.from('resources').delete().eq('id', id).then().catch(e => {
-        console.warn("Supabase delete resource note:", e);
-      });
+    // 5. Broadcast to all other tabs (including client portal) immediately
+    window.dispatchEvent(new Event('storage'));
+
+    // 6. Delete from Supabase: mark as deleted (guaranteed across all RLS setups) + call delete
+    try {
+      await supabase.from('resources').update({ status: 'deleted' }).eq('id', id);
+      await supabase.from('resources').delete().eq('id', id);
+    } catch (e) {
+      console.warn("Supabase delete resource note:", e);
     }
   };
 
@@ -2205,31 +2212,38 @@ water 3 liters a day. workout is 5pm.`);
           className={`admin-sec-tab ${adminTab === 'overview' ? 'active' : ''}`}
           onClick={() => setAdminTab('overview')}
         >
-          <Layers size={17} /> 1. Create &amp; Assign Workspaces
+          <Layers size={17} /> 1. Assign Plans &amp; Media
         </button>
 
         <button
           className={`admin-sec-tab ${adminTab === 'chat' ? 'active' : ''}`}
           onClick={() => setAdminTab('chat')}
         >
-          <MessageSquare size={17} /> 2. Live 2-Way Chat Inbox ({messages.length})
+          <MessageSquare size={17} /> 2. Chat Inbox ({messages.length})
         </button>
 
         <button
           className={`admin-sec-tab ${adminTab === 'clients' ? 'active' : ''}`}
           onClick={() => setAdminTab('clients')}
         >
-          <Users size={17} /> 3. Client Profiles &amp; Roster ({clients.length})
+          <Users size={17} /> 3. Client List ({clients.length})
         </button>
 
         <button
           className={`admin-sec-tab ${adminTab === 'resources' ? 'active' : ''}`}
           onClick={() => setAdminTab('resources')}
         >
-          <FolderOpen size={17} /> 4. Published Plans Library ({resources.length})
+          <FolderOpen size={17} /> 4. All Published Plans ({resources.length})
         </button>
 
-
+        {adminTab === 'history' && (
+          <button
+            className="admin-sec-tab active"
+            onClick={() => setAdminTab('history')}
+          >
+            <History size={17} /> 5. Client Meal Plans &amp; History
+          </button>
+        )}
       </div>
 
       {/* =========================================================================
@@ -2741,12 +2755,12 @@ water 3 liters a day. workout is 5pm.`);
       )}
 
       {/* =========================================================================
-         TAB 3: CLIENT PROFILES & MACRO ASSIGNMENTS TABLE
+         TAB 3: CLIENT LIST & ASSIGNED MEAL PLANS
          ========================================================================= */}
       {adminTab === 'clients' && (
         <div className="admin-table-section">
           <div className="table-header">
-            <h2>Active Client Roster &amp; Macro Targets</h2>
+            <h2>Client List &amp; Assigned Meal Plans</h2>
             <span className="total-badge">{clients.length} Clients Registered</span>
           </div>
 
@@ -2756,13 +2770,12 @@ water 3 liters a day. workout is 5pm.`);
                 <tr>
                   <th>Client Name</th>
                   <th>Private PIN</th>
-                  <th>Purchased Program</th>
+                  <th>Assigned Program</th>
                   <th>Transformation Stage</th>
-                  <th>Calories Target</th>
-                  <th>Macros Breakdown (P / C / F)</th>
-                  <th>Quick Action</th>
-                  <th>Diet Audit &amp; History</th>
-                  <th>Direct Login</th>
+                  <th>Meal Plans</th>
+                  <th>Direct Chat</th>
+                  <th>Client Portal</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -2794,52 +2807,6 @@ water 3 liters a day. workout is 5pm.`);
                           ))}
                         </select>
                       </td>
-                      <td><span className="calorie-badge">{c.calories || 2450} kcal</span></td>
-                      <td>
-                        <span className="macro-summary-tag">
-                          {c.protein || '190g'} P &bull; {c.carbs || '220g'} C &bull; {c.fats || '55g'} F
-                        </span>
-                      </td>
-                      <td style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                        <button
-                          type="button"
-                          className="btn-table-edit-macros"
-                          onClick={() => handleEditClientMacros(c)}
-                          style={{
-                            background: '#eff6ff',
-                            color: '#155eef',
-                            border: '1px solid #bfdbfe',
-                            borderRadius: '6px',
-                            padding: '0.4rem 0.75rem',
-                            fontSize: '0.8rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.4rem'
-                          }}
-                        >
-                          <Flame size={13} color="#f59e0b" /> Assign / Edit Macros
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-row-del"
-                          onClick={() => handleDeleteClient(c.id, c.pin_code)}
-                          title="Delete Client"
-                          style={{
-                            padding: '0.4rem 0.6rem',
-                            background: '#fee2e2',
-                            color: '#ef4444',
-                            border: '1px solid #fecaca',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </td>
                       <td>
                         <button
                           type="button"
@@ -2848,9 +2815,46 @@ water 3 liters a day. workout is 5pm.`);
                             setSelectedAuditClientId(c.id);
                             setAdminTab('history');
                           }}
-                          title="Inspect what diet was given previously vs what is active now"
+                          style={{
+                            background: '#eff6ff',
+                            color: '#155eef',
+                            border: '1.5px solid #bfdbfe',
+                            borderRadius: '8px',
+                            padding: '0.45rem 0.85rem',
+                            fontWeight: '800',
+                            fontSize: '0.82rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            cursor: 'pointer'
+                          }}
+                          title="View all meal plans assigned to this client"
                         >
-                          <History size={13} /> View Audit ({clientMealPlans.length} Plans)
+                          <History size={14} /> View Plans ({clientMealPlans.length})
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setChatActiveClientId(c.id);
+                            setAdminTab('chat');
+                          }}
+                          style={{
+                            background: '#f8fafc',
+                            color: '#071a2b',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '8px',
+                            padding: '0.45rem 0.75rem',
+                            fontWeight: '700',
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem'
+                          }}
+                        >
+                          <MessageSquare size={13} color="#2563eb" /> Chat
                         </button>
                       </td>
                       <td>
@@ -2863,6 +2867,26 @@ water 3 liters a day. workout is 5pm.`);
                           Launch Portal (PIN: {c.pin_code}) <ExternalLink size={13} />
                         </a>
                       </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn-row-del"
+                          onClick={() => handleDeleteClient(c.id, c.pin_code)}
+                          title="Delete Client"
+                          style={{
+                            padding: '0.45rem 0.65rem',
+                            background: '#fee2e2',
+                            color: '#ef4444',
+                            border: '1px solid #fecaca',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -2873,109 +2897,517 @@ water 3 liters a day. workout is 5pm.`);
       )}
 
       {/* =========================================================================
-         TAB 4: FASTED WEIGH-IN HISTORY TRACKER
+         TAB 5: DEDICATED CLIENT MEAL PLANS & AUDIT TRAIL
          ========================================================================= */}
-      {adminTab === 'weighins' && (
-        <div className="admin-table-section">
-          <div className="table-header">
-            <h2>Sunday Morning Fasted Weigh-In History</h2>
-            <span className="total-badge">{weighIns.length} Records Logged</span>
-          </div>
+      {adminTab === 'history' && (() => {
+        const currentAuditClient = clients.find(c => c.id === selectedAuditClientId) || clients[0] || null;
+        if (!currentAuditClient) {
+          return (
+            <div className="admin-table-section" style={{ textAlign: 'center', padding: '3rem' }}>
+              <p>No clients found. Please register a client first.</p>
+              <button type="button" onClick={() => setAdminTab('clients')} className="btn-primary-action">
+                <ArrowLeft size={16} /> Back to Client List
+              </button>
+            </div>
+          );
+        }
 
-          <div className="table-responsive">
-            <table className="admin-custom-table">
-              <thead>
-                <tr>
-                  <th>Client Name</th>
-                  <th>Bodyweight (kg)</th>
-                  <th>Client Condition Notes</th>
-                  <th>Timestamp</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {weighIns.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                      No weigh-in logs submitted yet. Clients can log their weight inside <code>/resources</code>.
-                    </td>
-                  </tr>
+        const isZainSelected = currentAuditClient.name?.toLowerCase().trim() === 'zain' || currentAuditClient.pin_code === '78601' || currentAuditClient.pin_code === '8989';
+
+        // Filter and sort all meal plans for this client (active first, then newest)
+        const clientPlans = resources.filter(r => {
+          const matches = r.client_id === currentAuditClient.id ||
+            (r.client_pin && currentAuditClient.pin_code && r.client_pin === currentAuditClient.pin_code) ||
+            (isZainSelected && (r.client_id === 'client-zain-1' || r.client_name?.toLowerCase().trim() === 'zain' || r.id?.includes('zain') || r.title?.toLowerCase().includes('zain')));
+          return matches && (r.category === 'meal_plan' || r.type === 'meal_plan');
+        }).sort((a, b) => {
+          if (a.status === 'active' && b.status !== 'active') return -1;
+          if (b.status === 'active' && a.status !== 'active') return 1;
+          return new Date(b.assigned_at || b.created_at || 0) - new Date(a.assigned_at || a.created_at || 0);
+        });
+
+        const activePlan = clientPlans.find(p => p.status === 'active') || clientPlans[0] || null;
+        const previousPlans = clientPlans.filter(p => p.id !== activePlan?.id);
+
+        return (
+          <div className="admin-audit-section">
+            {/* TOP HEADER BANNER WITH BACK BUTTON */}
+            <div className="audit-header-banner">
+              <div className="audit-header-info">
+                <button
+                  type="button"
+                  onClick={() => setAdminTab('clients')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    color: '#ffffff',
+                    padding: '0.45rem 0.95rem',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    marginBottom: '1rem',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <ArrowLeft size={16} /> Back to Client List
+                </button>
+                <div className="audit-pill-badge">
+                  <Sparkles size={13} />
+                  <span>CLIENT MEAL PLAN AUDIT &bull; {clientPlans.length} PLANS ASSIGNED</span>
+                </div>
+                <h2>Meal Plans for {currentAuditClient.name}</h2>
+                <p>
+                  Manage active and previous meal plans. When you assign a new plan, previous plans are safely archived so Coach James and the client can review progress anytime.
+                </p>
+              </div>
+
+              {/* CLIENT SWITCHER DROPDOWN */}
+              <div className="audit-client-selector-box">
+                <label><Users size={14} /> Switch Client:</label>
+                <select
+                  value={currentAuditClient.id}
+                  onChange={(e) => setSelectedAuditClientId(e.target.value)}
+                  className="audit-client-select"
+                >
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} (PIN: {c.pin_code})
+                    </option>
+                  ))}
+                </select>
+                <div className="audit-client-quick-meta">
+                  <span>PIN: <code>{currentAuditClient.pin_code}</code></span>
+                  <span>Week <strong>{currentAuditClient.current_week || 1} of 13</strong></span>
+                </div>
+              </div>
+            </div>
+
+            {/* QUICK STATS STRIP */}
+            <div className="audit-stats-grid">
+              <div className="audit-stat-card active-card">
+                <span className="audit-stat-tag">🟢 Current Active Plan</span>
+                <h3>{activePlan ? activePlan.title : "None Active"}</h3>
+                <span className="audit-stat-sub">
+                  {activePlan ? `Assigned: ${new Date(activePlan.assigned_at || activePlan.created_at || Date.now()).toLocaleDateString('en-GB')}` : "Assign a plan in Tab 1"}
+                </span>
+              </div>
+
+              <div className="audit-stat-card">
+                <span className="audit-stat-tag">📜 Previous Plans</span>
+                <h3>{previousPlans.length} Archived</h3>
+                <span className="audit-stat-sub">Older protocols preserved for audit trail</span>
+              </div>
+
+              <div className="audit-stat-card">
+                <span className="audit-stat-tag">🎯 Client Stage</span>
+                <h3>Week {currentAuditClient.current_week || 1} of 13</h3>
+                <span className="audit-stat-sub">{currentAuditClient.program || "13-Week Transformation"}</span>
+              </div>
+            </div>
+
+            {/* SECTION 1: CURRENT ACTIVE PROTOCOL */}
+            <div className="audit-active-protocol-box">
+              <div className="audit-box-header">
+                <div className="audit-badge-active">
+                  <span className="dot-pulse"></span>
+                  <span>🟢 CURRENT ACTIVE PROTOCOL &bull; LIVE ON CLIENT PORTAL</span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {activePlan && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleEditResourceSetup(activePlan)}
+                        style={{
+                          background: '#ffffff',
+                          border: '1px solid #10b981',
+                          color: '#047857',
+                          padding: '0.45rem 0.85rem',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✏️ Edit Plan
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteResource(activePlan.id)}
+                        style={{
+                          background: '#fee2e2',
+                          border: '1px solid #fecaca',
+                          color: '#ef4444',
+                          padding: '0.45rem 0.75rem',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Trash2 size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '3px' }} /> Delete
+                      </button>
+                    </>
+                  )}
+                  <a
+                    href={`/resources`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-audit-preview"
+                  >
+                    Open Client Portal (PIN: {currentAuditClient.pin_code}) <ExternalLink size={13} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="active-protocol-inner">
+                {activePlan ? (
+                  <>
+                    <div className="protocol-meta-row">
+                      <div>
+                        <h3 className="protocol-title">{activePlan.title}</h3>
+                        <div className="protocol-time-meta">
+                          <Clock size={13} />
+                          <span>Assigned by Coach James on {new Date(activePlan.assigned_at || activePlan.created_at || Date.now()).toLocaleDateString('en-GB')} at {new Date(activePlan.assigned_at || activePlan.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {activePlan.change_notes && (
+                      <div className="protocol-change-note">
+                        <strong>Progression / Change Notes:</strong> {activePlan.change_notes}
+                      </div>
+                    )}
+
+                    {/* FULL 7-DAY MATRIX OR ORGANIZED SCHEDULE */}
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <OrganizedMealSchedule plan={activePlan} client={currentAuditClient} defaultMatrix={true} />
+                    </div>
+                  </>
                 ) : (
-                  weighIns.map(w => (
-                    <tr key={w.id}>
-                      <td><strong>{w.client_name}</strong></td>
-                      <td>
-                        <span className="weigh-val-pill">
-                          <Scale size={13} /> {w.weight} kg
-                        </span>
-                      </td>
-                      <td><span style={{ color: '#475569', fontSize: '0.9rem' }}>{w.notes || 'Routine check-in'}</span></td>
-                      <td><small style={{ color: '#64748b' }}>{new Date(w.timestamp).toLocaleString('en-GB')}</small></td>
-                      <td><span className="badge-cat" style={{ background: '#ecfdf5', color: '#059669' }}>Recorded</span></td>
-                    </tr>
-                  ))
+                  <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#64748b' }}>
+                    <p style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>No active meal plan assigned to {currentAuditClient.name} yet.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResClientId(currentAuditClient.id);
+                        setResCategory('meal_plan');
+                        setAdminTab('overview');
+                      }}
+                      className="btn-primary-action"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
+                    >
+                      <PlusCircle size={16} /> Create Meal Plan for {currentAuditClient.name}
+                    </button>
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+            </div>
+
+            {/* SECTION 2: PREVIOUS & ARCHIVED MEAL PLANS */}
+            <div className="audit-history-timeline-section">
+              <div className="timeline-header-row">
+                <div className="timeline-title-group">
+                  <History size={22} color="#155eef" />
+                  <div>
+                    <h3>Previous &amp; Past Meal Plans ({previousPlans.length})</h3>
+                    <p>Older meal protocols saved in {currentAuditClient.name}&apos;s history. Click &ldquo;Make This Active&rdquo; to reactivate any plan anytime.</p>
+                  </div>
+                </div>
+                <span className="archived-count-pill">{previousPlans.length} Archived Plans</span>
+              </div>
+
+              {previousPlans.length === 0 ? (
+                <div className="audit-single-plan-note">
+                  <CheckCircle2 size={24} color="#10b981" />
+                  <div>
+                    <strong>Only 1 protocol exists for this client ({activePlan?.title || 'Active Plan'}).</strong>
+                    <p>When you assign a new week&apos;s plan, previous plans will automatically be archived here so you never lose any history.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="timeline-cards-list">
+                  {previousPlans.map((p, idx) => (
+                    <div key={p.id} className="timeline-archived-card">
+                      <div className="timeline-card-left">
+                        <div className="timeline-node">#{previousPlans.length - idx}</div>
+                        <div className="timeline-card-content">
+                          <div className="timeline-badge-row">
+                            <span className="badge-archived">📜 PREVIOUS PROTOCOL</span>
+                            <span className="timeline-date">
+                              <Clock size={12} /> Assigned: {new Date(p.assigned_at || p.created_at || Date.now()).toLocaleDateString('en-GB')}
+                            </span>
+                          </div>
+                          <h4 style={{ margin: '0.2rem 0', fontSize: '1.15rem', color: '#071a2b', fontWeight: 800 }}>{p.title}</h4>
+                          {p.change_notes && (
+                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#92400e', background: '#fffbeb', padding: '0.35rem 0.65rem', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
+                              <strong>Notes:</strong> {p.change_notes}
+                            </p>
+                          )}
+                          <div style={{ marginTop: '0.5rem', background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#475569', maxHeight: '110px', overflowY: 'auto' }}>
+                            <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+                              {p.content_text ? p.content_text.substring(0, 220) + (p.content_text.length > 220 ? '...' : '') : 'Media directive'}
+                            </pre>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '150px' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleReactivatePlan(p.id, currentAuditClient.id)}
+                          style={{
+                            background: '#ecfdf5',
+                            color: '#047857',
+                            border: '1.5px solid #10b981',
+                            padding: '0.55rem 0.95rem',
+                            borderRadius: '8px',
+                            fontWeight: '800',
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.4rem',
+                            transition: 'all 0.2s'
+                          }}
+                          title="Reactivate this plan as the client's current active plan"
+                        >
+                          <Zap size={14} color="#059669" /> Make This Active
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleEditResourceSetup(p)}
+                          style={{
+                            background: '#f8fafc',
+                            color: '#475569',
+                            border: '1px solid #cbd5e1',
+                            padding: '0.45rem 0.85rem',
+                            borderRadius: '8px',
+                            fontWeight: '700',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            textAlign: 'center'
+                          }}
+                        >
+                          Edit in Form
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteResource(p.id)}
+                          style={{
+                            background: '#fef2f2',
+                            color: '#ef4444',
+                            border: '1px solid #fecaca',
+                            padding: '0.45rem 0.85rem',
+                            borderRadius: '8px',
+                            fontWeight: '700',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.35rem'
+                          }}
+                        >
+                          <Trash2 size={13} /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =========================================================================
-         TAB 5: PUBLISHED RESOURCES & DIET SHEETS
+         TAB 4: ALL PUBLISHED PLANS & RESOURCES LIBRARY
          ========================================================================= */}
-      {adminTab === 'resources' && (
-        <div className="admin-table-section">
-          <div className="table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h2>Assigned Content, Videos &amp; Written Directives</h2>
-              <span className="total-badge">{resources.length} Published Items</span>
-            </div>
-            <div>
-              <select
-                value={filterResClientId}
-                onChange={e => setFilterResClientId(e.target.value)}
-                style={{
-                  padding: '0.5rem',
-                  borderRadius: '6px',
-                  border: '1px solid #cbd5e1',
-                  background: '#f8fafc',
-                  color: '#475569',
-                  fontWeight: 600
-                }}
-              >
-                <option value="">All Clients</option>
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} (PIN: {c.pin_code})</option>
-                ))}
-              </select>
-            </div>
-          </div>
+      {adminTab === 'resources' && (() => {
+        // Filter by selected client
+        let filtered = resources.filter(r => filterResClientId ? r.client_id === filterResClientId : true);
 
-          <div className="table-responsive">
-            <table className="admin-custom-table">
-              <thead>
-                <tr>
-                  <th>Client</th>
-                  <th>Title</th>
-                  <th>Type</th>
-                  <th>Format</th>
-                  <th>Status</th>
-                  <th>Content Summary</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resources.length === 0 ? (
+        // Filter by category
+        if (filterResCategory === 'meal_plan') {
+          filtered = filtered.filter(r => r.category === 'meal_plan' || r.type === 'meal_plan');
+        } else if (filterResCategory === 'video') {
+          filtered = filtered.filter(r => r.format === 'video' || r.category === 'routine_video');
+        }
+
+        // Sort so active items appear first, followed by newest assigned_at/created_at
+        const sortedResources = [...filtered].sort((a, b) => {
+          if (a.status === 'active' && b.status !== 'active') return -1;
+          if (b.status === 'active' && a.status !== 'active') return 1;
+          return new Date(b.assigned_at || b.created_at || 0) - new Date(a.assigned_at || a.created_at || 0);
+        });
+
+        const selectedClientObj = clients.find(c => c.id === filterResClientId);
+        const selectedClientMealPlans = selectedClientObj 
+          ? resources.filter(r => r.client_id === selectedClientObj.id && (r.category === 'meal_plan' || r.type === 'meal_plan'))
+          : [];
+
+        return (
+          <div className="admin-table-section">
+            <div className="table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h2>All Assigned Content &amp; Meal Plans</h2>
+                <span className="total-badge">{sortedResources.length} Items Listed</span>
+              </div>
+
+              {/* FILTER CONTROLS: BY CLIENT & BY CATEGORY */}
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <select
+                  value={filterResClientId}
+                  onChange={e => setFilterResClientId(e.target.value)}
+                  style={{
+                    padding: '0.55rem 0.85rem',
+                    borderRadius: '8px',
+                    border: '1.5px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#071a2b',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">All Clients ({resources.length})</option>
+                  {clients.map(c => {
+                    const count = resources.filter(r => r.client_id === c.id).length;
+                    return (
+                      <option key={c.id} value={c.id}>{c.name} ({count} items)</option>
+                    );
+                  })}
+                </select>
+
+                <select
+                  value={filterResCategory}
+                  onChange={e => setFilterResCategory(e.target.value)}
+                  style={{
+                    padding: '0.55rem 0.85rem',
+                    borderRadius: '8px',
+                    border: '1.5px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#071a2b',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="all">All Content Types</option>
+                  <option value="meal_plan">🥗 Meal Plans Only</option>
+                  <option value="video">🎥 Routine Videos Only</option>
+                </select>
+              </div>
+            </div>
+
+            {/* QUICK MULTI-PLAN SELECTOR DROPDOWN (WHEN A CLIENT HAS MULTIPLE PLANS) */}
+            {selectedClientObj && selectedClientMealPlans.length > 1 && (
+              <div style={{
+                background: 'linear-gradient(to right, #f0fdf4, #eff6ff)',
+                border: '1.5px solid #86efac',
+                padding: '0.85rem 1.25rem',
+                borderRadius: '12px',
+                marginBottom: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={18} color="#15803d" />
+                  <div>
+                    <strong style={{ color: '#166534', fontSize: '0.9rem', display: 'block' }}>
+                      {selectedClientObj.name} has {selectedClientMealPlans.length} Meal Plans Assigned
+                    </strong>
+                    <span style={{ fontSize: '0.78rem', color: '#15803d' }}>
+                      Select any protocol from the dropdown to inspect its full 7-day matrix:
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <select
+                    style={{
+                      padding: '0.5rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1.5px solid #16a34a',
+                      background: '#ffffff',
+                      color: '#14532d',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer'
+                    }}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        setSelectedAuditClientId(selectedClientObj.id);
+                        setAdminTab('history');
+                      }
+                    }}
+                  >
+                    <option value="">Choose Protocol to Inspect...</option>
+                    {selectedClientMealPlans.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.status === 'active' ? '🟢 [LATEST ACTIVE]' : '📜 [PREVIOUS]'} {p.title} (Assigned: {new Date(p.assigned_at || p.created_at || Date.now()).toLocaleDateString('en-GB')})
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedAuditClientId(selectedClientObj.id);
+                      setAdminTab('history');
+                    }}
+                    style={{
+                      background: '#15803d',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '0.5rem 0.9rem',
+                      borderRadius: '8px',
+                      fontWeight: '800',
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                  >
+                    <History size={14} /> Full History
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="table-responsive">
+              <table className="admin-custom-table">
+                <thead>
                   <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                      No custom resources created yet. Use Tab 1 to give written text plans or videos!
-                    </td>
+                    <th>Client</th>
+                    <th>Title &amp; Assigned Date</th>
+                    <th>Type</th>
+                    <th>Format</th>
+                    <th>Status</th>
+                    <th>Content Summary</th>
+                    <th>Action</th>
                   </tr>
-                ) : (
-                  resources
-                    .filter(r => filterResClientId ? r.client_id === filterResClientId : true)
-                    .map(r => {
+                </thead>
+                <tbody>
+                  {sortedResources.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>
+                        No items match the current filters. Use Tab 1 to assign written plans or exercise videos!
+                      </td>
+                    </tr>
+                  ) : (
+                    sortedResources.map(r => {
                       const clientObj = clients.find(c => c.id === r.client_id);
                       const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
                       const isActive = r.status === 'active';
@@ -2983,7 +3415,45 @@ water 3 liters a day. workout is 5pm.`);
                       return (
                         <tr key={r.id}>
                           <td><strong>{clientObj?.name || r.client_name || 'Client'}</strong></td>
-                          <td>{r.title}</td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                                <strong style={{ fontSize: '0.92rem', color: '#071a2b' }}>{r.title}</strong>
+                                {isMeal && (
+                                  isActive ? (
+                                    <span style={{
+                                      background: '#ecfdf5',
+                                      color: '#047857',
+                                      border: '1.5px solid #10b981',
+                                      padding: '0.2rem 0.55rem',
+                                      borderRadius: '50px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '900',
+                                      whiteSpace: 'nowrap'
+                                    }}>
+                                      🟢 LATEST ACTIVE
+                                    </span>
+                                  ) : (
+                                    <span style={{
+                                      background: '#f8fafc',
+                                      color: '#64748b',
+                                      border: '1px solid #cbd5e1',
+                                      padding: '0.2rem 0.55rem',
+                                      borderRadius: '50px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      whiteSpace: 'nowrap'
+                                    }}>
+                                      📜 PREVIOUS
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                              <span style={{ fontSize: '0.76rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Clock size={11} /> Assigned: {new Date(r.assigned_at || r.created_at || Date.now()).toLocaleDateString('en-GB')}
+                              </span>
+                            </div>
+                          </td>
                           <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
                           <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>
                           <td>
@@ -2994,9 +3464,9 @@ water 3 liters a day. workout is 5pm.`);
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '0.3rem',
-                                  padding: '0.2rem 0.6rem',
+                                  padding: '0.25rem 0.65rem',
                                   borderRadius: '50px',
-                                  fontSize: '0.75rem',
+                                  fontSize: '0.76rem',
                                   fontWeight: 800,
                                   background: isActive ? '#ecfdf5' : '#f1f5f9',
                                   color: isActive ? '#059669' : '#64748b'
@@ -3018,7 +3488,29 @@ water 3 liters a day. workout is 5pm.`);
                             )}
                           </td>
                           <td>
-                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {isMeal && !isActive && clientObj && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReactivatePlan(r.id, clientObj.id)}
+                                  style={{
+                                    background: '#ecfdf5',
+                                    color: '#047857',
+                                    border: '1.5px solid #10b981',
+                                    padding: '0.35rem 0.65rem',
+                                    borderRadius: '6px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 800,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem'
+                                  }}
+                                  title="Make this plan active for this client"
+                                >
+                                  <Zap size={12} color="#059669" /> Make Active
+                                </button>
+                              )}
                               {isMeal && clientObj && (
                                 <button
                                   type="button"
@@ -3028,15 +3520,15 @@ water 3 liters a day. workout is 5pm.`);
                                     setAdminTab('history');
                                   }}
                                   title="Open this client's Diet Audit Timeline"
-                                  style={{ padding: '0.4rem 0.65rem', fontSize: '0.76rem' }}
+                                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
                                 >
-                                  <History size={12} /> Audit
+                                  <History size={12} /> Plans
                                 </button>
                               )}
-                              <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
+                              <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
                                 Edit
                               </button>
-                              <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete">
+                              <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete permanently">
                                 <Trash2 size={15} /> Delete
                               </button>
                             </div>
@@ -3044,12 +3536,13 @@ water 3 liters a day. workout is 5pm.`);
                         </tr>
                       );
                     })
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
     </div>
   );
