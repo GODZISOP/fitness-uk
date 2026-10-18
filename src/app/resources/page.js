@@ -1877,48 +1877,6 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      {/* DAILY MACRONUTRIENT TARGETS STRIP (DYNAMIC FROM COACH JAMES) */}
-      <div className="macro-targets-strip">
-        <div className="macro-box cal-box">
-          <div className="macro-icon-wrap"><Flame size={20} /></div>
-          <div>
-            <span className="macro-label">Daily Target</span>
-            <span className="macro-val">{client.calories || 2450} <small>kcal</small></span>
-          </div>
-        </div>
-
-        <div className="macro-box">
-          <div className="macro-icon-wrap protein"><Dumbbell size={20} /></div>
-          <div>
-            <span className="macro-label">Target Protein</span>
-            <span className="macro-val">{client.protein || "190g"}</span>
-          </div>
-        </div>
-
-        <div className="macro-box">
-          <div className="macro-icon-wrap carbs"><Utensils size={20} /></div>
-          <div>
-            <span className="macro-label">Target Carbs</span>
-            <span className="macro-val">{client.carbs || "220g"}</span>
-          </div>
-        </div>
-
-        <div className="macro-box">
-          <div className="macro-icon-wrap fats"><Sparkles size={20} /></div>
-          <div>
-            <span className="macro-label">Healthy Fats</span>
-            <span className="macro-val">{client.fats || "55g"}</span>
-          </div>
-        </div>
-
-        <div className="macro-box">
-          <div className="macro-icon-wrap water"><Droplet size={20} /></div>
-          <div>
-            <span className="macro-label">Hydration Goal</span>
-            <span className="macro-val">{client.water || "3.5L"}</span>
-          </div>
-        </div>
-      </div>
 
       {/* NAVIGATION TABS */}
       <div className="portal-tabs-nav">

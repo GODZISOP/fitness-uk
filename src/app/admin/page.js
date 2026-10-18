@@ -2190,14 +2190,6 @@ water 3 liters a day. workout is 5pm.`);
           </div>
         </div>
 
-        <div className="admin-stat-card" onClick={() => setAdminTab('weighins')}>
-          <div className="admin-stat-icon weighin"><Scale size={20} /></div>
-          <div>
-            <span className="admin-stat-number">{weighIns.length}</span>
-            <span className="admin-stat-label">Weigh-In Logs</span>
-          </div>
-        </div>
-
         <div className="admin-stat-card" onClick={() => setAdminTab('resources')}>
           <div className="admin-stat-icon plans"><FolderOpen size={20} /></div>
           <div>
@@ -2227,21 +2219,14 @@ water 3 liters a day. workout is 5pm.`);
           className={`admin-sec-tab ${adminTab === 'clients' ? 'active' : ''}`}
           onClick={() => setAdminTab('clients')}
         >
-          <Users size={17} /> 3. Client Profiles &amp; Macros ({clients.length})
-        </button>
-
-        <button
-          className={`admin-sec-tab ${adminTab === 'weighins' ? 'active' : ''}`}
-          onClick={() => setAdminTab('weighins')}
-        >
-          <Scale size={17} /> 4. Fasted Weigh-In History ({weighIns.length})
+          <Users size={17} /> 3. Client Profiles &amp; Roster ({clients.length})
         </button>
 
         <button
           className={`admin-sec-tab ${adminTab === 'resources' ? 'active' : ''}`}
           onClick={() => setAdminTab('resources')}
         >
-          <FolderOpen size={17} /> 5. Published Plans Library ({resources.length})
+          <FolderOpen size={17} /> 4. Published Plans Library ({resources.length})
         </button>
 
 
@@ -2257,9 +2242,9 @@ water 3 liters a day. workout is 5pm.`);
           <div className="admin-panel-card">
             <div className="panel-title-row">
               <UserPlus size={20} className="panel-icon-gold" />
-              <h2>1. Client Registration &amp; Macro Assignment</h2>
+              <h2>1. Client Registration &amp; Management</h2>
             </div>
-            <p className="panel-sub">Assign daily calories, protein, carbs, healthy fats, and water to new or existing clients.</p>
+            <p className="panel-sub">Register clients, assign their private PIN code, and manage their transformation stage.</p>
 
             {/* MODE SWITCHER: REGISTER NEW VS UPDATE EXISTING */}
             <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', background: '#f1f5f9', padding: '0.35rem', borderRadius: '12px' }}>
@@ -2312,22 +2297,17 @@ water 3 liters a day. workout is 5pm.`);
                     setClientPin(first.pin_code);
                     setClientProgram(first.program || '13-Week Transformation & 30-Day Meal Plan');
                     setClientCurrentWeek(Number(first.current_week) || 1);
-                    setClientCalories(String(first.calories || 2450));
-                    setClientProtein(first.protein || '190g');
-                    setClientCarbs(first.carbs || '220g');
-                    setClientFats(first.fats || '55g');
-                    setClientWater(first.water || '3.5L');
                   }
                 }}
               >
-                🎯 Assign to Existing Client ({clients.length})
+                🎯 Manage Existing Client ({clients.length})
               </button>
             </div>
 
             <form onSubmit={handleCreateClient} className="panel-form">
               {clientFormMode === 'update_macros' ? (
                 <div className="form-group" style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', marginBottom: '1rem' }}>
-                  <label style={{ color: '#071a2b', fontWeight: '800' }}>Select Target Client to Assign / Update Macros:</label>
+                  <label style={{ color: '#071a2b', fontWeight: '800' }}>Select Target Client to Update Settings:</label>
                   <select
                     value={selectedClientToEdit}
                     onChange={(e) => {
@@ -2339,18 +2319,13 @@ water 3 liters a day. workout is 5pm.`);
                         setClientPin(target.pin_code);
                         setClientProgram(target.program || '13-Week Transformation & 30-Day Meal Plan');
                         setClientCurrentWeek(Number(target.current_week) || 1);
-                        setClientCalories(String(target.calories || 2450));
-                        setClientProtein(target.protein || '190g');
-                        setClientCarbs(target.carbs || '220g');
-                        setClientFats(target.fats || '55g');
-                        setClientWater(target.water || '3.5L');
                       }
                     }}
                     style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '700', fontSize: '0.9rem', color: '#071a2b' }}
                   >
                     {clients.map(c => (
                       <option key={c.id} value={c.id}>
-                        {c.name} (PIN: {c.pin_code}) &bull; Week {c.current_week || 1} &bull; {c.calories || 2450} kcal, {c.protein || '190g'} P, {c.carbs || '220g'} C
+                        {c.name} (PIN: {c.pin_code}) &bull; Week {c.current_week || 1}
                       </option>
                     ))}
                   </select>
@@ -2413,63 +2388,14 @@ water 3 liters a day. workout is 5pm.`);
                 </select>
               </div>
 
-              {/* QUICK MACRO PRESETS */}
-              <div className="admin-macros-subpanel">
-                <div className="subpanel-header-row">
-                  <span className="subpanel-title"><Flame size={15} /> Daily Calories &amp; Macronutrients</span>
-                  <div className="macro-preset-pills">
-                    <button type="button" onClick={() => applyMacroPreset('cut')} className="btn-preset-pill">Cut (1,950)</button>
-                    <button type="button" onClick={() => applyMacroPreset('recomp')} className="btn-preset-pill active">Recomp (2,450)</button>
-                    <button type="button" onClick={() => applyMacroPreset('bulk')} className="btn-preset-pill">Bulk (2,900)</button>
-                  </div>
-                </div>
-
-                {/* FEATURED CALORIES ROW */}
-                <div className="calories-featured-row">
-                  <div className="calories-label-group">
-                    <Flame size={16} className="cal-fire-icon" />
-                    <span>Total Daily Target Calories:</span>
-                  </div>
-                  <div className="calories-input-wrap">
-                    <input
-                      type="number"
-                      value={clientCalories}
-                      onChange={e => setClientCalories(e.target.value)}
-                      placeholder="2000"
-                    />
-                    <span className="cal-unit-tag">kcal / day</span>
-                  </div>
-                </div>
-
-                {/* 4 BALANCED MACRO COLUMNS */}
-                <div className="macros-four-grid">
-                  <div className="macro-cell">
-                    <label>🍗 Protein</label>
-                    <input type="text" value={clientProtein} onChange={e => setClientProtein(e.target.value)} placeholder="250g" />
-                  </div>
-                  <div className="macro-cell">
-                    <label>🍚 Carbs</label>
-                    <input type="text" value={clientCarbs} onChange={e => setClientCarbs(e.target.value)} placeholder="20g" />
-                  </div>
-                  <div className="macro-cell">
-                    <label>🥑 Healthy Fats</label>
-                    <input type="text" value={clientFats} onChange={e => setClientFats(e.target.value)} placeholder="5g" />
-                  </div>
-                  <div className="macro-cell">
-                    <label>💧 Water</label>
-                    <input type="text" value={clientWater} onChange={e => setClientWater(e.target.value)} placeholder="3.5L" />
-                  </div>
-                </div>
-              </div>
-
               <button type="submit" className="btn-primary-action">
                 {clientFormMode === 'update_macros' ? (
                   <>
-                    <Flame size={17} /> 💾 Save &amp; Assign Macros to {clientName || 'Client'}
+                    <CheckCircle2 size={17} /> 💾 Save Client Settings for {clientName || 'Client'}
                   </>
                 ) : (
                   <>
-                    <UserPlus size={17} /> Register Client with PIN &amp; Macros
+                    <UserPlus size={17} /> Register Client with PIN
                   </>
                 )}
               </button>
