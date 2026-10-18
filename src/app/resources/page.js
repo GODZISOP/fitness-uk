@@ -1589,11 +1589,12 @@ export default function ResourcesPage() {
         const clientLocalRes = extractClientResources([...(resData || []), ...localRes], activeClientObj);
         setResources(clientLocalRes);
 
-        // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
-        const seenIds = clientLocalRes
-          .filter(r => (Date.now() - new Date(r.assigned_at || r.created_at).getTime()) > 60000)
-          .map(r => r.id + "_" + (r.assigned_at || r.created_at || ""));
+        // Mark all loaded existing resources as seen so old meal plans never trigger notifications
+        const seenIds = clientLocalRes.map(r => r.id).filter(Boolean);
         seenResourceIdsRef.current = new Set(seenIds);
+        try {
+          localStorage.setItem('wfz_seen_res_' + activeClientObj.id, JSON.stringify(seenIds));
+        } catch (e) {}
 
         // Fetch Messages without deleting any history
         let msgOrQuery = `client_id.eq.${clientData.id}`;
@@ -1650,11 +1651,12 @@ export default function ResourcesPage() {
       const clientLocalRes = extractClientResources(localRes, activeClientObj);
       setResources(clientLocalRes);
 
-      // Don't mark items created/updated in the last 60 seconds as 'seen', so they trigger a notification upon login!
-      const seenIds = clientLocalRes
-        .filter(r => (Date.now() - new Date(r.updated_at || r.created_at).getTime()) > 60000)
-        .map(r => r.id + "_" + (r.updated_at || r.created_at || ""));
+      // Mark all loaded existing resources as seen so old meal plans never trigger notifications
+      const seenIds = clientLocalRes.map(r => r.id).filter(Boolean);
       seenResourceIdsRef.current = new Set(seenIds);
+      try {
+        localStorage.setItem('wfz_seen_res_' + activeClientObj.id, JSON.stringify(seenIds));
+      } catch (e) {}
 
       const localMsgs = JSON.parse(localStorage.getItem(LOCAL_MESSAGES_KEY) || '[]');
       const filteredLocalMsgs = localMsgs.filter(m => m.client_pin === matchedClient.pin_code || m.client_id === matchedClient.id);
