@@ -3262,8 +3262,49 @@ water 3 liters a day. workout is 5pm.`);
                 <span className="total-badge">{sortedResources.length} Items Listed</span>
               </div>
 
-              {/* FILTER CONTROLS: BY CLIENT & BY CATEGORY */}
+              {/* VIEW SWITCHER & FILTER CONTROLS */}
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ display: 'inline-flex', background: '#e2e8f0', padding: '3px', borderRadius: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setResourcesViewMode('by_client')}
+                    style={{
+                      background: resourcesViewMode === 'by_client' ? '#0284c7' : 'transparent',
+                      color: resourcesViewMode === 'by_client' ? '#ffffff' : '#475569',
+                      border: 'none',
+                      padding: '0.4rem 0.75rem',
+                      borderRadius: '6px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                  >
+                    <Users size={13} /> Grouped by Client (Dropdown)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setResourcesViewMode('flat')}
+                    style={{
+                      background: resourcesViewMode === 'flat' ? '#0284c7' : 'transparent',
+                      color: resourcesViewMode === 'flat' ? '#ffffff' : '#475569',
+                      border: 'none',
+                      padding: '0.4rem 0.75rem',
+                      borderRadius: '6px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                  >
+                    <Layers size={13} /> Flat List
+                  </button>
+                </div>
+
                 <select
                   value={filterResClientId}
                   onChange={e => setFilterResClientId(e.target.value)}
@@ -3308,91 +3349,13 @@ water 3 liters a day. workout is 5pm.`);
               </div>
             </div>
 
-            {/* QUICK MULTI-PLAN SELECTOR DROPDOWN (WHEN A CLIENT HAS MULTIPLE PLANS) */}
-            {selectedClientObj && selectedClientMealPlans.length > 1 && (
-              <div style={{
-                background: 'linear-gradient(to right, #f0fdf4, #eff6ff)',
-                border: '1.5px solid #86efac',
-                padding: '0.85rem 1.25rem',
-                borderRadius: '12px',
-                marginBottom: '1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '0.75rem'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Sparkles size={18} color="#15803d" />
-                  <div>
-                    <strong style={{ color: '#166534', fontSize: '0.9rem', display: 'block' }}>
-                      {selectedClientObj.name} has {selectedClientMealPlans.length} Meal Plans Assigned
-                    </strong>
-                    <span style={{ fontSize: '0.78rem', color: '#15803d' }}>
-                      Select any protocol from the dropdown to inspect its full 7-day matrix:
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <select
-                    style={{
-                      padding: '0.5rem 0.85rem',
-                      borderRadius: '8px',
-                      border: '1.5px solid #16a34a',
-                      background: '#ffffff',
-                      color: '#14532d',
-                      fontWeight: 800,
-                      fontSize: '0.85rem',
-                      cursor: 'pointer'
-                    }}
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        setSelectedAuditClientId(selectedClientObj.id);
-                        setAdminTab('history');
-                      }
-                    }}
-                  >
-                    <option value="">Choose Protocol to Inspect...</option>
-                    {selectedClientMealPlans.map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.status === 'active' ? '🟢 [LATEST ACTIVE]' : '📜 [PREVIOUS]'} {p.title} (Assigned: {new Date(p.assigned_at || p.created_at || Date.now()).toLocaleDateString('en-GB')})
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedAuditClientId(selectedClientObj.id);
-                      setAdminTab('history');
-                    }}
-                    style={{
-                      background: '#15803d',
-                      color: '#ffffff',
-                      border: 'none',
-                      padding: '0.5rem 0.9rem',
-                      borderRadius: '8px',
-                      fontWeight: '800',
-                      fontSize: '0.82rem',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem'
-                    }}
-                  >
-                    <History size={14} /> Full History
-                  </button>
-                </div>
-              </div>
-            )}
-
+            {/* TABLE VIEW */}
             <div className="table-responsive">
               <table className="admin-custom-table">
                 <thead>
                   <tr>
                     <th>Client</th>
-                    <th>Title &amp; Assigned Date</th>
+                    <th>{resourcesViewMode === 'by_client' ? 'Assigned Meal Plan (Dropdown Menu)' : 'Title & Assigned Date'}</th>
                     <th>Type</th>
                     <th>Format</th>
                     <th>Status</th>
@@ -3401,142 +3364,394 @@ water 3 liters a day. workout is 5pm.`);
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedResources.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>
-                        No items match the current filters. Use Tab 1 to assign written plans or exercise videos!
-                      </td>
-                    </tr>
-                  ) : (
-                    sortedResources.map(r => {
-                      const clientObj = clients.find(c => c.id === r.client_id);
-                      const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
-                      const isActive = r.status === 'active';
+                  {resourcesViewMode === 'by_client' ? (
+                    // GROUPED BY CLIENT: 1 ROW PER CLIENT WITH DROPDOWN MENU
+                    (() => {
+                      const clientsToShow = filterResClientId
+                        ? clients.filter(c => c.id === filterResClientId)
+                        : clients;
 
-                      return (
-                        <tr key={r.id}>
-                          <td><strong>{clientObj?.name || r.client_name || 'Client'}</strong></td>
-                          <td>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                                <strong style={{ fontSize: '0.92rem', color: '#071a2b' }}>{r.title}</strong>
-                                {isMeal && (
-                                  isActive ? (
-                                    <span style={{
+                      if (clientsToShow.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>
+                              No clients found.
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return clientsToShow.map(c => {
+                        const clientResources = resources.filter(r => {
+                          if (r.client_id !== c.id) return false;
+                          if (filterResCategory === 'meal_plan') return r.category === 'meal_plan' || r.type === 'meal_plan';
+                          if (filterResCategory === 'video') return r.format === 'video' || r.category === 'routine_video';
+                          return true;
+                        }).sort((a, b) => {
+                          if (a.status === 'active' && b.status !== 'active') return -1;
+                          if (b.status === 'active' && a.status !== 'active') return 1;
+                          return new Date(b.assigned_at || b.created_at || 0) - new Date(a.assigned_at || a.created_at || 0);
+                        });
+
+                        const activePlan = clientResources.find(p => p.status === 'active');
+                        const selectedId = selectedPlanByClient[c.id] || (activePlan?.id || clientResources[0]?.id);
+                        const currentPlan = clientResources.find(p => p.id === selectedId) || clientResources[0];
+                        const isCurrentActive = currentPlan?.status === 'active';
+
+                        return (
+                          <tr key={c.id}>
+                            <td>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                <strong style={{ fontSize: '0.98rem', color: '#071a2b' }}>{c.name}</strong>
+                                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>PIN: {c.pin_code}</span>
+                                <span style={{
+                                  display: 'inline-block',
+                                  width: 'fit-content',
+                                  marginTop: '2px',
+                                  background: '#f1f5f9',
+                                  color: '#334155',
+                                  padding: '0.15rem 0.55rem',
+                                  borderRadius: '12px',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 800
+                                }}>
+                                  {clientResources.length} {clientResources.length === 1 ? 'Plan' : 'Plans'} Assigned
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* DROPDOWN SELECTOR COLUMN */}
+                            <td>
+                              {clientResources.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', minWidth: '240px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <select
+                                      value={currentPlan?.id || ''}
+                                      onChange={(e) => setSelectedPlanByClient(prev => ({ ...prev, [c.id]: e.target.value }))}
+                                      style={{
+                                        padding: '0.45rem 0.75rem',
+                                        borderRadius: '8px',
+                                        border: '1.5px solid #0284c7',
+                                        background: '#f0f9ff',
+                                        color: '#0369a1',
+                                        fontWeight: 800,
+                                        fontSize: '0.86rem',
+                                        cursor: 'pointer',
+                                        outline: 'none',
+                                        width: '100%',
+                                        boxShadow: '0 1px 3px rgba(2,132,199,0.1)'
+                                      }}
+                                    >
+                                      {clientResources.map(p => {
+                                        const isAct = p.status === 'active';
+                                        const dateStr = new Date(p.assigned_at || p.created_at || Date.now()).toLocaleDateString('en-GB');
+                                        return (
+                                          <option key={p.id} value={p.id}>
+                                            {isAct ? '🟢 [LATEST ACTIVE]' : '📜 [PREVIOUS]'} {p.title} ({dateStr})
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                  </div>
+
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {isCurrentActive ? (
+                                      <span style={{
+                                        background: '#ecfdf5',
+                                        color: '#047857',
+                                        border: '1px solid #10b981',
+                                        padding: '0.15rem 0.55rem',
+                                        borderRadius: '50px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 800,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem'
+                                      }}>
+                                        🟢 Live on Portal
+                                      </span>
+                                    ) : (
+                                      <span style={{
+                                        background: '#f8fafc',
+                                        color: '#64748b',
+                                        border: '1px solid #cbd5e1',
+                                        padding: '0.15rem 0.55rem',
+                                        borderRadius: '50px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 700,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem'
+                                      }}>
+                                        📜 Archived / Previous
+                                      </span>
+                                    )}
+                                    <span style={{ fontSize: '0.74rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                      <Clock size={11} /> {new Date(currentPlan?.assigned_at || currentPlan?.created_at || Date.now()).toLocaleDateString('en-GB')}
+                                    </span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div style={{ color: '#94a3b8', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                  <span>⚠️ No plans assigned yet</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setNewResource(prev => ({ ...prev, client_id: c.id, category: 'meal_plan' }));
+                                      setAdminTab('upload');
+                                    }}
+                                    style={{
+                                      background: '#0284c7',
+                                      color: '#fff',
+                                      border: 'none',
+                                      padding: '0.25rem 0.6rem',
+                                      borderRadius: '6px',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    + Assign Plan
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+
+                            <td><span className="badge-cat">{currentPlan?.type || currentPlan?.category || '—'}</span></td>
+                            <td><span className="badge-fmt">{currentPlan?.format === 'text' ? '📝 Written Text' : currentPlan?.format === 'video' ? '🎥 Video' : currentPlan ? '🖼️ Media' : '—'}</span></td>
+                            <td>
+                              {currentPlan ? (
+                                <span
+                                  className={`status-pill ${isCurrentActive ? 'active-pill' : 'archived-pill'}`}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem',
+                                    padding: '0.25rem 0.65rem',
+                                    borderRadius: '50px',
+                                    fontSize: '0.76rem',
+                                    fontWeight: 800,
+                                    background: isCurrentActive ? '#ecfdf5' : '#f1f5f9',
+                                    color: isCurrentActive ? '#059669' : '#64748b'
+                                  }}
+                                >
+                                  {isCurrentActive ? '🟢 Active' : '⚪ Archived'}
+                                </span>
+                              ) : (
+                                <span style={{ color: '#cbd5e1' }}>—</span>
+                              )}
+                            </td>
+                            <td className="content-cell">
+                              {currentPlan?.content_text ? (
+                                <span title={currentPlan.content_text}>
+                                  {currentPlan.content_text.substring(0, 75)}...
+                                </span>
+                              ) : currentPlan?.content_url ? (
+                                <span className="url-preview">{currentPlan.content_url}</span>
+                              ) : (
+                                <span style={{ color: '#cbd5e1' }}>—</span>
+                              )}
+                            </td>
+                            <td>
+                              {currentPlan ? (
+                                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                  {!isCurrentActive && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleReactivatePlan(currentPlan.id, c.id)}
+                                      style={{
+                                        background: '#ecfdf5',
+                                        color: '#047857',
+                                        border: '1.5px solid #10b981',
+                                        padding: '0.35rem 0.65rem',
+                                        borderRadius: '6px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem'
+                                      }}
+                                      title="Make this selected plan active on client portal"
+                                    >
+                                      <Zap size={12} color="#059669" /> Make Active
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    className="btn-table-history"
+                                    onClick={() => {
+                                      setSelectedAuditClientId(c.id);
+                                      setAdminTab('history');
+                                    }}
+                                    title="Open this client's Diet Audit Timeline & 7-Day Matrix"
+                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                                  >
+                                    <History size={12} /> Plans
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditResourceSetup(currentPlan)}
+                                    className="btn-table-edit"
+                                    title="Edit this plan"
+                                    style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteResource(currentPlan.id)}
+                                    className="btn-row-del"
+                                    title="Delete this plan permanently"
+                                  >
+                                    <Trash2 size={15} /> Delete
+                                  </button>
+                                </div>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>No items</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()
+                  ) : (
+                    // FLAT LIST VIEW: CLASSIC INDIVIDUAL ROWS
+                    sortedResources.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>
+                          No items match the current filters. Use Tab 1 to assign written plans or exercise videos!
+                        </td>
+                      </tr>
+                    ) : (
+                      sortedResources.map(r => {
+                        const clientObj = clients.find(c => c.id === r.client_id);
+                        const isMeal = r.category === 'meal_plan' || r.type === 'meal_plan';
+                        const isActive = r.status === 'active';
+
+                        return (
+                          <tr key={r.id}>
+                            <td><strong>{clientObj?.name || r.client_name || 'Client'}</strong></td>
+                            <td>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                                  <strong style={{ fontSize: '0.92rem', color: '#071a2b' }}>{r.title}</strong>
+                                  {isMeal && (
+                                    isActive ? (
+                                      <span style={{
+                                        background: '#ecfdf5',
+                                        color: '#047857',
+                                        border: '1.5px solid #10b981',
+                                        padding: '0.2rem 0.55rem',
+                                        borderRadius: '50px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: '900',
+                                        whiteSpace: 'nowrap'
+                                      }}>
+                                        🟢 LATEST ACTIVE
+                                      </span>
+                                    ) : (
+                                      <span style={{
+                                        background: '#f8fafc',
+                                        color: '#64748b',
+                                        border: '1px solid #cbd5e1',
+                                        padding: '0.2rem 0.55rem',
+                                        borderRadius: '50px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: '700',
+                                        whiteSpace: 'nowrap'
+                                      }}>
+                                        📜 PREVIOUS
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                                <span style={{ fontSize: '0.76rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                                  <Clock size={11} /> Assigned: {new Date(r.assigned_at || r.created_at || Date.now()).toLocaleDateString('en-GB')}
+                                </span>
+                              </div>
+                            </td>
+                            <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
+                            <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>
+                            <td>
+                              {isMeal ? (
+                                <span
+                                  className={`status-pill ${isActive ? 'active-pill' : 'archived-pill'}`}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem',
+                                    padding: '0.25rem 0.65rem',
+                                    borderRadius: '50px',
+                                    fontSize: '0.76rem',
+                                    fontWeight: 800,
+                                    background: isActive ? '#ecfdf5' : '#f1f5f9',
+                                    color: isActive ? '#059669' : '#64748b'
+                                  }}
+                                >
+                                  {isActive ? '🟢 Active' : '⚪ Archived'}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Published</span>
+                              )}
+                            </td>
+                            <td className="content-cell">
+                              {r.content_text ? (
+                                <span title={r.content_text}>
+                                  {r.content_text.substring(0, 75)}...
+                                </span>
+                              ) : (
+                                <span className="url-preview">{r.content_url || 'Media File'}</span>
+                              )}
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                {isMeal && !isActive && clientObj && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleReactivatePlan(r.id, clientObj.id)}
+                                    style={{
                                       background: '#ecfdf5',
                                       color: '#047857',
                                       border: '1.5px solid #10b981',
-                                      padding: '0.2rem 0.55rem',
-                                      borderRadius: '50px',
-                                      fontSize: '0.72rem',
-                                      fontWeight: '900',
-                                      whiteSpace: 'nowrap'
-                                    }}>
-                                      🟢 LATEST ACTIVE
-                                    </span>
-                                  ) : (
-                                    <span style={{
-                                      background: '#f8fafc',
-                                      color: '#64748b',
-                                      border: '1px solid #cbd5e1',
-                                      padding: '0.2rem 0.55rem',
-                                      borderRadius: '50px',
-                                      fontSize: '0.72rem',
-                                      fontWeight: '700',
-                                      whiteSpace: 'nowrap'
-                                    }}>
-                                      📜 PREVIOUS
-                                    </span>
-                                  )
+                                      padding: '0.35rem 0.65rem',
+                                      borderRadius: '6px',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 800,
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem'
+                                    }}
+                                    title="Make this plan active for this client"
+                                  >
+                                    <Zap size={12} color="#059669" /> Make Active
+                                  </button>
                                 )}
+                                {isMeal && clientObj && (
+                                  <button
+                                    type="button"
+                                    className="btn-table-history"
+                                    onClick={() => {
+                                      setSelectedAuditClientId(clientObj.id);
+                                      setAdminTab('history');
+                                    }}
+                                    title="Open this client's Diet Audit Timeline"
+                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                                  >
+                                    <History size={12} /> Plans
+                                  </button>
+                                )}
+                                <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
+                                  Edit
+                                </button>
+                                <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete permanently">
+                                  <Trash2 size={15} /> Delete
+                                </button>
                               </div>
-                              <span style={{ fontSize: '0.76rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                                <Clock size={11} /> Assigned: {new Date(r.assigned_at || r.created_at || Date.now()).toLocaleDateString('en-GB')}
-                              </span>
-                            </div>
-                          </td>
-                          <td><span className="badge-cat">{r.type || 'Meal Plan'}</span></td>
-                          <td><span className="badge-fmt">{r.format === 'text' ? '📝 Written Text' : r.format === 'video' ? '🎥 Video' : '🖼️ Image'}</span></td>
-                          <td>
-                            {isMeal ? (
-                              <span
-                                className={`status-pill ${isActive ? 'active-pill' : 'archived-pill'}`}
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '0.3rem',
-                                  padding: '0.25rem 0.65rem',
-                                  borderRadius: '50px',
-                                  fontSize: '0.76rem',
-                                  fontWeight: 800,
-                                  background: isActive ? '#ecfdf5' : '#f1f5f9',
-                                  color: isActive ? '#059669' : '#64748b'
-                                }}
-                              >
-                                {isActive ? '🟢 Active' : '⚪ Archived'}
-                              </span>
-                            ) : (
-                              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Published</span>
-                            )}
-                          </td>
-                          <td className="content-cell">
-                            {r.content_text ? (
-                              <span title={r.content_text}>
-                                {r.content_text.substring(0, 75)}...
-                              </span>
-                            ) : (
-                              <span className="url-preview">{r.content_url || 'Media File'}</span>
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                              {isMeal && !isActive && clientObj && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleReactivatePlan(r.id, clientObj.id)}
-                                  style={{
-                                    background: '#ecfdf5',
-                                    color: '#047857',
-                                    border: '1.5px solid #10b981',
-                                    padding: '0.35rem 0.65rem',
-                                    borderRadius: '6px',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 800,
-                                    cursor: 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.25rem'
-                                  }}
-                                  title="Make this plan active for this client"
-                                >
-                                  <Zap size={12} color="#059669" /> Make Active
-                                </button>
-                              )}
-                              {isMeal && clientObj && (
-                                <button
-                                  type="button"
-                                  className="btn-table-history"
-                                  onClick={() => {
-                                    setSelectedAuditClientId(clientObj.id);
-                                    setAdminTab('history');
-                                  }}
-                                  title="Open this client's Diet Audit Timeline"
-                                  style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
-                                >
-                                  <History size={12} /> Plans
-                                </button>
-                              )}
-                              <button onClick={() => handleEditResourceSetup(r)} className="btn-table-edit" title="Edit" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', fontWeight: 600 }}>
-                                Edit
-                              </button>
-                              <button onClick={() => handleDeleteResource(r.id)} className="btn-row-del" title="Delete permanently">
-                                <Trash2 size={15} /> Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )
                   )}
                 </tbody>
               </table>
