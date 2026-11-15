@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Image from 'next/image';
-import logoImage from '../logo.png';
+import logoDarkBg from '../logo-dark-bg.png';
 
 export default function Footer() {
   return (
@@ -11,11 +11,11 @@ export default function Footer() {
         <div className="footer-top">
           <div className="footer-brand" data-aos="fade-up">
             <Image 
-              src={logoImage} 
+              src={logoDarkBg} 
               alt="World Fitness Zone" 
-              height={55} 
-              width={180} 
-              style={{ objectFit: "contain", height: "55px", width: "auto", marginBottom: "1rem" }} 
+              height={85} 
+              width={100} 
+              style={{ objectFit: "contain", height: "85px", width: "auto", marginBottom: "1rem" }} 
             />
             <p>Forging unbreakable strength and resilience since 2007. Join the elite.</p>
           </div>
@@ -51,7 +51,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <div className="footer-social">
-            <a href="#" aria-label="Instagram">IG</a>
+            <a href="https://www.instagram.com/w0rldfitnessz0ne" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>
             <a href="#" aria-label="Twitter">TW</a>
             <a href="#" aria-label="YouTube">YT</a>
           </div>

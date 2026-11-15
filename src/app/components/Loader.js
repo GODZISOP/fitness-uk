@@ -50,7 +50,7 @@ export default function Loader() {
               <img 
                 src="/logo-compressed.webp" 
                 alt="World Fitness Zone" 
-                style={{ objectFit: "contain", height: "auto", width: "160px" }}
+                style={{ objectFit: "contain", height: "135px", width: "135px" }}
               />
             </div>
           </div>

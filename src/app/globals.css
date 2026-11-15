@@ -218,10 +218,17 @@ h6 {
 
 .hamburger {
   display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  line-height: 1;
+  border-radius: 10px;
   background: none;
   border: none;
   color: var(--color-deep-navy);
-  font-size: 2.2rem;
+  font-size: 1.75rem;
   cursor: pointer;
   z-index: 1001;
 }
@@ -239,8 +246,9 @@ h6 {
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(7, 26, 43, 0.1);
   box-shadow: -15px 0 35px rgba(0, 0, 0, 0.12);
-  z-index: 1000;
-  padding: 6rem 2rem 2.5rem;
+  z-index: 10005;
+  padding: 1rem 5% 2.5rem;
+  overflow-y: auto;
 }
 
 .mobile-nav-links {
@@ -545,7 +553,7 @@ h6 {
   }
 
   .hamburger {
-    display: block;
+    display: flex;
   }
 
   .hero-title {
@@ -3327,7 +3335,7 @@ h6 {
   }
 
   .hamburger {
-    display: block;
+    display: flex;
   }
 
   /* Hero */
@@ -3510,7 +3518,14 @@ h6 {
 
   /* ── Navbar ── */
   .navbar {
-    padding: 1.2rem 5%;
+    padding: 0.7rem 5%;
+    min-height: 64px;
+  }
+
+  .mobile-nav-overlay {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.7rem 5% 2rem;
   }
 
   .nav-brand {
@@ -3523,8 +3538,8 @@ h6 {
   }
 
   .hamburger {
-    display: block;
-    font-size: 1.4rem;
+    display: flex;
+    font-size: 1.55rem;
   }
 
   /* ── Hero (HeroSection scroll-lock) ── */

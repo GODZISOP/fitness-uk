@@ -1,5 +1,6 @@
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import CoachChatbot from "./components/CoachChatbot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,6 +17,14 @@ const outfit = Outfit({
 export const metadata = {
   title: "World Fitness Zone",
   description: "Build the strongest version of you with personalized fitness coaching.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport = {
@@ -35,6 +44,7 @@ export default function RootLayout({ children }) {
         <div style={{ width: "100%", position: "relative" }}>
           {children}
         </div>
+        <CoachChatbot />
       </body>
     </html>
   );

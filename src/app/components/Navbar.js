@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import logoImage from "../logo.png";
+import logoDarkBg from "../logo-dark-bg.png";
 import { ChevronDown } from "lucide-react";
 
 export default function Navbar({ isScrolled, theme = "default" }) {
@@ -139,6 +140,17 @@ export default function Navbar({ isScrolled, theme = "default" }) {
           background: rgba(255, 201, 40, 0.1);
           border-left: 3px solid var(--color-action-yellow);
         }
+        .nav-logo-img {
+          height: 58px;
+          width: auto;
+          object-fit: contain;
+          display: block;
+        }
+        @media (max-width: 767px) {
+          .nav-logo-img {
+            height: 44px;
+          }
+        }
       `}} />
 
       <motion.nav
@@ -150,11 +162,12 @@ export default function Navbar({ isScrolled, theme = "default" }) {
         <div className="nav-brand">
           <Link href="/" style={{ display: "flex", alignItems: "center" }}>
             <Image
-              src={logoImage}
+              src={isDark && !isScrolled ? logoDarkBg : logoImage}
               alt="World Fitness Zone"
-              height={50}
-              width={160}
-              style={{ objectFit: "contain", height: "48px", width: "auto" }}
+              className="nav-logo-img"
+              height={64}
+              width={74}
+              style={{ objectFit: "contain", width: "auto" }}
               priority
             />
           </Link>
@@ -230,11 +243,43 @@ export default function Navbar({ isScrolled, theme = "default" }) {
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
-            <div className="mobile-nav-header" style={{ display: "flex", justifyContent: "flex-end", marginBottom: "2rem" }}>
+            <div
+              className="mobile-nav-header"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1.5rem",
+                paddingBottom: "0.85rem",
+                borderBottom: "1px solid rgba(7, 26, 43, 0.08)",
+              }}
+            >
+              <Link href="/" onClick={() => setIsOpen(false)} style={{ display: "flex", alignItems: "center" }}>
+                <Image
+                  src={logoImage}
+                  alt="World Fitness Zone"
+                  height={44}
+                  width={52}
+                  style={{ objectFit: "contain", height: "44px", width: "auto" }}
+                />
+              </Link>
               <button 
                 className="mobile-close-btn" 
                 onClick={() => setIsOpen(false)}
-                style={{ background: "none", border: "none", fontSize: "2rem", cursor: "pointer", color: "var(--color-deep-navy)" }}
+                style={{
+                  width: "42px",
+                  height: "42px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(7, 26, 43, 0.05)",
+                  border: "none",
+                  borderRadius: "10px",
+                  fontSize: "1.35rem",
+                  lineHeight: 1,
+                  cursor: "pointer",
+                  color: "var(--color-deep-navy)",
+                }}
                 aria-label="Close Menu"
               >
                 ✕

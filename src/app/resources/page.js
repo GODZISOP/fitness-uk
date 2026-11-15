@@ -1746,6 +1746,13 @@ export default function ResourcesPage() {
     return (
       <div className="resources-login-container">
         <div className="login-box">
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
+            <img
+              src="/logo.png"
+              alt="World Fitness Zone"
+              style={{ height: '84px', width: 'auto', objectFit: 'contain' }}
+            />
+          </div>
           <div className="login-badge">
             <Lock size={16} />
             <span>PRIVATE CLIENT ACCESS</span>
@@ -1842,6 +1849,11 @@ export default function ResourcesPage() {
       {/* TOP STATUS BAR */}
       <div className="portal-top-bar">
         <div className="portal-brand">
+          <img
+            src="/logo.png"
+            alt="World Fitness Zone"
+            style={{ height: '38px', width: 'auto', objectFit: 'contain' }}
+          />
           <div className="brand-dot"></div>
           <span>WORLD FITNESS ZONE &bull; CLIENT PORTAL</span>
         </div>

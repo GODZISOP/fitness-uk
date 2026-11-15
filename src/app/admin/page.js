@@ -1980,6 +1980,13 @@ water 3 liters a day. workout is 5pm.`);
     return (
       <div className="admin-lock-screen">
         <div className="admin-lock-card">
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
+            <img
+              src="/logo-dark-bg.png"
+              alt="World Fitness Zone"
+              style={{ height: '82px', width: 'auto', objectFit: 'contain' }}
+            />
+          </div>
           <div className="admin-shield-icon">
             <Lock size={32} />
           </div>
@@ -2054,13 +2061,20 @@ water 3 liters a day. workout is 5pm.`);
 
       {/* CLEAN TOP BRAND & HEADER */}
       <div className="admin-nav-bar">
-        <div className="admin-brand-info">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
-            <span className="admin-pill">HEAD COACH JAMES &bull; ADMIN COMMAND CENTER</span>
-            <span className="coach-live-indicator"><span className="live-dot"></span> SYSTEM ACTIVE</span>
+        <div className="admin-brand-info" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <img
+            src="/logo.png"
+            alt="World Fitness Zone"
+            style={{ height: '54px', width: 'auto', objectFit: 'contain', flexShrink: 0 }}
+          />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
+              <span className="admin-pill">HEAD COACH JAMES &bull; ADMIN COMMAND CENTER</span>
+              <span className="coach-live-indicator"><span className="live-dot"></span> SYSTEM ACTIVE</span>
+            </div>
+            <h1>World Fitness Zone &bull; Trainer Portal</h1>
+            <p>Assign customized meal plans, written diet routines, training videos, and respond to client check-ins.</p>
           </div>
-          <h1>World Fitness Zone &bull; Trainer Portal</h1>
-          <p>Assign customized meal plans, written diet routines, training videos, and respond to client check-ins.</p>
         </div>
 
         <div className="admin-header-actions" style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
