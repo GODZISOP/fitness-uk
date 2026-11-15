@@ -212,9 +212,11 @@ export async function POST(req) {
       });
     }
 
-    // 2. Question is new / unmatched -> call Groq API
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
+    // 2. Question is new / unmatched -> call Groq API (prefer dedicated chatbot key, fallback to GROQ_API_KEY)
+    const apiKeys = Array.from(
+      new Set([process.env.GROQ_CHAT_API_KEY, process.env.GROQ_API_KEY].filter(Boolean))
+    );
+    if (apiKeys.length === 0) {
       return NextResponse.json(
         { error: "Chat service is not configured on the server." },
         { status: 500 }
@@ -223,56 +225,64 @@ export async function POST(req) {
 
     let lastError = "Failed to reach Groq AI.";
 
-    for (const model of MODELS) {
-      try {
-        const res = await fetch(GROQ_API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: COACH_SYSTEM_PROMPT },
-              ...sanitizedMessages,
-            ],
-            temperature: 0.65,
-            max_tokens: 700,
-          }),
-        });
+    for (let keyIdx = 0; keyIdx < apiKeys.length; keyIdx++) {
+      const apiKey = apiKeys[keyIdx];
+      const hasFallbackKey = keyIdx + 1 < apiKeys.length;
 
-        if (!res.ok) {
-          const errText = await res.text();
-          lastError = `${model} (${res.status}): ${errText.slice(0, 200)}`;
-          continue;
-        }
-
-        const data = await res.json();
-        const rawReply = data?.choices?.[0]?.message?.content;
-        const reply = cleanModelOutput(rawReply);
-
-        if (reply) {
-          // 3. Deduplicate & automatically persist the new Q&A in the local DB
-          const upsertResult = deduplicateAndUpsertFaq(dbList, latestQuestion, reply, {
-            source: "groq_learned",
+      for (const model of MODELS) {
+        try {
+          const res = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: "system", content: COACH_SYSTEM_PROMPT },
+                ...sanitizedMessages,
+              ],
+              temperature: 0.65,
+              max_tokens: 700,
+            }),
           });
 
-          if (upsertResult.action !== "skipped") {
-            await saveLocalFaqDb(upsertResult.list);
+          if (!res.ok) {
+            const errText = await res.text();
+            lastError = `${model} (${res.status}): ${errText.slice(0, 200)}`;
+            if (hasFallbackKey && (res.status === 401 || res.status === 403 || res.status === 429)) {
+              break;
+            }
+            continue;
           }
 
-          return NextResponse.json({
-            reply,
-            source: "groq_api",
-            model,
-            savedEntry: upsertResult.entry,
-            memoryAction: upsertResult.action,
-          });
+          const data = await res.json();
+          const rawReply = data?.choices?.[0]?.message?.content;
+          const reply = cleanModelOutput(rawReply);
+
+          if (reply) {
+            // 3. Deduplicate & automatically persist the new Q&A in the local DB
+            const upsertResult = deduplicateAndUpsertFaq(dbList, latestQuestion, reply, {
+              source: "groq_learned",
+            });
+
+            if (upsertResult.action !== "skipped") {
+              await saveLocalFaqDb(upsertResult.list);
+            }
+
+            return NextResponse.json({
+              reply,
+              source: "groq_api",
+              model,
+              savedEntry: upsertResult.entry,
+              memoryAction: upsertResult.action,
+            });
+          }
+          lastError = `${model} returned an empty response.`;
+        } catch (err) {
+          lastError = `${model}: ${err?.message || "Network error"}`;
         }
-        lastError = `${model} returned an empty response.`;
-      } catch (err) {
-        lastError = `${model}: ${err?.message || "Network error"}`;
       }
     }
 
