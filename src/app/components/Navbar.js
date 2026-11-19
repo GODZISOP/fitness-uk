@@ -11,7 +11,7 @@ import { ChevronDown } from "lucide-react";
 
 export default function Navbar({ isScrolled, theme = "default" }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -22,6 +22,16 @@ export default function Navbar({ isScrolled, theme = "default" }) {
     { name: "Services", href: "/#services", isRoute: false, hash: "#services" },
     { name: "About Us", href: "/about", isRoute: true, hash: null },
     { name: "Meal Plans", href: "/meal-plans", isRoute: true, hash: null },
+    {
+      name: "Exercises",
+      href: "/exercises/men",
+      isRoute: true,
+      hash: null,
+      dropdown: [
+        { name: "For Men", href: "/exercises/men" },
+        { name: "For Women", href: "/exercises/women" }
+      ]
+    },
     { 
       name: "Transformations", 
       href: "/transformations", 
@@ -288,24 +298,25 @@ export default function Navbar({ isScrolled, theme = "default" }) {
             <div className="mobile-nav-links">
               {navLinks.map((link, idx) => {
                 if (link.dropdown) {
+                  const isDropdownOpen = openMobileDropdown === link.name;
                   return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                       <div 
                         className="mobile-nav-link" 
                         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                        onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                        onClick={() => setOpenMobileDropdown(isDropdownOpen ? null : link.name)}
                       >
                         {link.name}
                         <ChevronDown 
                           size={20} 
                           style={{ 
-                            transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'none',
+                            transform: isDropdownOpen ? 'rotate(180deg)' : 'none',
                             transition: 'transform 0.3s'
                           }} 
                         />
                       </div>
                       <AnimatePresence>
-                        {isMobileDropdownOpen && (
+                        {isDropdownOpen && (
                           <motion.div 
                             className="mobile-dropdown-menu"
                             initial={{ height: 0, opacity: 0 }}
