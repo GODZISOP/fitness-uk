@@ -378,8 +378,10 @@ export default function ExerciseShowcase({
                           Get personalised access with extra personalised training, exact form cues, and progressive weekly plans.
                         </p>
 
-                        <Link
-                          href="/#programs"
+                        <a
+                          href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -397,7 +399,7 @@ export default function ExerciseShowcase({
                           }}
                         >
                           GET PERSONALISED ACCESS &rarr;
-                        </Link>
+                        </a>
                       </div>
                     ) : (
                       <span
@@ -521,8 +523,10 @@ export default function ExerciseShowcase({
                     </ul>
 
                     {isLocked && (
-                      <Link
-                        href="/#programs"
+                      <a
+                        href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         style={{
                           marginTop: "auto",
                           display: "block",
@@ -539,7 +543,7 @@ export default function ExerciseShowcase({
                         }}
                       >
                         Get Personalised Access + Extra Training &rarr;
-                      </Link>
+                      </a>
                     )}
                   </div>
                 </motion.article>
@@ -695,8 +699,10 @@ export default function ExerciseShowcase({
             </p>
 
             <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-              <Link
-                href="/#programs"
+              <a
+                href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -713,9 +719,11 @@ export default function ExerciseShowcase({
                 }}
               >
                 GET PERSONALISED ACCESS WITH EXTRA TRAINING &rarr;
-              </Link>
-              <Link
-                href="/#contact"
+              </a>
+              <a
+                href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20book%20a%20free%20consultation!"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -731,7 +739,7 @@ export default function ExerciseShowcase({
                 }}
               >
                 Book Free Consultation
-              </Link>
+              </a>
             </div>
           </motion.section>
         </div>

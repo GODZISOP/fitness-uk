@@ -135,9 +135,15 @@ export default function ProcessSection() {
             viewport={{ once: false }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <Link href="/#programs" className="faq-join-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <a
+              href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20join%20World%20Fitness%20Zone!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="faq-join-btn"
+              style={{ textDecoration: 'none', display: 'inline-block' }}
+            >
               JOIN TODAY &rarr;
-            </Link>
+            </a>
           </motion.div>
         </motion.div>
 

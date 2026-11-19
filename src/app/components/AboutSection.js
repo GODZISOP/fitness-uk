@@ -97,9 +97,9 @@ export default function AboutSection() {
             transition={{ duration: 0.5, delay: 0.35 }}
             style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
           >
-            <Link href="/#contact" className="about-btn">
+            <a href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!" target="_blank" rel="noopener noreferrer" className="about-btn">
               GET STARTED TODAY <span className="arrow">&rarr;</span>
-            </Link>
+            </a>
             <Link href="/transformations/20-year-journey" className="about-btn" style={{ background: "transparent", border: "1px solid var(--color-primary)", color: "var(--color-primary)" }}>
               COACH'S 20 YEAR JOURNEY <span className="arrow">&rarr;</span>
             </Link>

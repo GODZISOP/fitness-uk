@@ -158,8 +158,10 @@ export default function MealPlansPage() {
                   </ul>
                 </div>
 
-                <Link 
-                  href="/#programs"
+                <a 
+                  href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     display: "block",
                     textAlign: "center",
@@ -187,7 +189,7 @@ export default function MealPlansPage() {
                   }}
                 >
                   GET PERSONALISED ACCESS
-                </Link>
+                </a>
               </motion.div>
             ))}
           </div>
@@ -213,8 +215,10 @@ export default function MealPlansPage() {
             <p style={{ maxWidth: "600px", margin: "0 auto 2.5rem auto", color: "#475467", fontSize: "1.125rem", lineHeight: "1.6" }}>
               Select your meal plan and pair it with our elite training programs to guarantee your 13-week transformation.
             </p>
-            <Link 
-              href="/#programs" 
+            <a 
+              href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!" 
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ 
                 display: "inline-flex", 
                 alignItems: "center",
@@ -233,7 +237,7 @@ export default function MealPlansPage() {
               onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
             >
               GET PERSONALISED ACCESS &rarr;
-            </Link>
+            </a>
           </motion.div>
 
         </div>

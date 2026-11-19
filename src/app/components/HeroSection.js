@@ -143,7 +143,7 @@ export default function HeroSection() {
               We focus on a structured, definitive transformation. Our goal isn't to keep you indefinitely—it's to get you results in maximum 13 weeks, and help you move forward.
             </p>
             <div className="hero-actions">
-              <Link href="/#programs" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</Link>
+              <a href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
               <Link href="/about" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>How It Works</Link>
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function HeroSection() {
               </p>
 
               <div ref={actionsRef} className="hero-actions">
-                <Link href="/#programs" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</Link>
+                <a href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
                 <Link href="/about" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>How It Works</Link>
               </div>
             </div>

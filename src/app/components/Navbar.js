@@ -72,16 +72,13 @@ export default function Navbar({ isScrolled, theme = "default" }) {
   };
 
   const handleContactClick = (e) => {
+    e.preventDefault();
     setIsOpen(false);
-    if (pathname === "/") {
-      e.preventDefault();
-      const targetEl = document.querySelector("#contact");
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
-    router.push("/#contact");
+    window.open(
+      "https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!",
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   const isDark = theme === "dark";
