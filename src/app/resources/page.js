@@ -2462,7 +2462,7 @@ export default function ResourcesPage() {
           <div className="pane-header">
             <div>
               <h2>Your 13-Week Transformation Roadmap</h2>
-              <p>Current Stage: <strong>Week {Number(client?.current_week) || 1} of 13</strong> &bull; Every single week is calculated to push past plateaus and deliver guaranteed results.</p>
+              <p>Current Stage: <strong>Week {Number(client?.current_week) || 1} of 13</strong> &bull; Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline.</p>
             </div>
             <div className="coach-quote-pill">
               <Sparkles size={16} />
@@ -2526,8 +2526,8 @@ export default function ResourcesPage() {
             <div className="guideline-card">
               <div className="guide-num">01</div>
               <div className="guide-body">
-                <h3>12 Weeks Of Discipline &bull; Zero Excuses</h3>
-                <p>Results do not come from motivation; they come from discipline. Never skip a meal, never skip a planned training session, and log your weights every workout.</p>
+                <h3>Week 1 Preparation + 12 Weeks Of Discipline &bull; Zero Excuses</h3>
+                <p>Week 1 sets your preparation and baseline; Weeks 2–13 demand 12 weeks of momentum, hard work, and mental &amp; physical discipline. Results do not come from motivation—never skip a meal, never skip a planned session, and log your weights every workout.</p>
               </div>
             </div>
 

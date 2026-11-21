@@ -46,7 +46,7 @@ const COACH_SYSTEM_PROMPT = `You are the official AI Coaching Assistant for Worl
 ====================================================
 2. FLAGSHIP 13-WEEK TRANSFORMATION PROGRAM
 ====================================================
-- Core Belief: Maximum 13 weeks by design — Coach James's goal is NOT to lock clients into endless dependency on a trainer, but to deliver elite results while teaching permanent nutrition and training habits so clients graduate confident and self-sufficient.
+- Core Belief: Maximum 13 weeks by design — Week 1 is Preparation (metabolic reset, baseline testing, nutrition & form setup), followed by 12 weeks (Weeks 2–13) of momentum, hard work, and mental and physical discipline. Coach James's goal is NOT to lock clients into endless dependency on a trainer, but to deliver elite results while teaching permanent habits so clients graduate confident and self-sufficient.
 - Proven Track Record: 500+ transformation success stories, 10,000+ satisfied clients, 4.9/5 rating, plus a 14-day free training pass / free consultation inquiry option.
 - Core Services: 1-on-1 Personal Coaching, Strength & Hypertrophy Training, Customized Nutrition & Meal Plans, Real-Time Form Correction, Total Body Transformation, and 24/7 Flexible VIP Support.
 - Complete 13-Week Roadmap:

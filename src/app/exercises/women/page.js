@@ -102,7 +102,7 @@ export default function WomenExercisesPage() {
       benefits={WOMEN_BENEFITS}
       ctaTitle="Get Personalised Access With"
       ctaHighlight="Extra Personalised Training"
-      ctaDescription="Want full access to every female workout chart, custom glute & core splits, weekly form checks, and your personalised meal plan? Enroll with Coach James today."
+      ctaDescription="Want full access to every female workout chart, custom glute & core splits, and our 13-week system (Week 1 preparation + 12 weeks of momentum, hard work, and mental & physical discipline)? Enroll with Coach James today."
     />
   );
 }

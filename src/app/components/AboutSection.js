@@ -87,7 +87,7 @@ export default function AboutSection() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
           >
-            Our philosophy is simple: we don't want to keep you as a client forever. We provide a structured, intensive 13-week program designed to get you results, equipping you with the tools to confidently move forward.
+            Our philosophy is simple: we don&apos;t want to keep you as a client forever. Across 13 structured weeks—Week 1 of preparation followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline—we deliver real results and equip you to confidently move forward.
           </motion.p>
 
           <motion.div

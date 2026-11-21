@@ -103,7 +103,7 @@ export default function MenExercisesPage() {
       benefits={MEN_BENEFITS}
       ctaTitle="Get Personalised Access With"
       ctaHighlight="Extra Personalised Training"
-      ctaDescription="Ready to unlock all 4+ muscle splits, custom weekly programming, form correction, and your 13-week transformation meal plan? Enroll with Coach James today."
+      ctaDescription="Ready to unlock all 4+ muscle splits, custom weekly programming, form correction, and our 13-week system (Week 1 preparation + 12 weeks of momentum, hard work, and mental & physical discipline)? Enroll with Coach James today."
     />
   );
 }

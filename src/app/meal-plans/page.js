@@ -212,8 +212,8 @@ export default function MealPlansPage() {
             <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontFamily: "var(--font-primary)", fontWeight: "800", marginBottom: "1rem", textTransform: "uppercase", color: "var(--color-deep-navy)" }}>
               Ready to <span style={{ color: "var(--color-primary)" }}>Commit?</span>
             </h2>
-            <p style={{ maxWidth: "600px", margin: "0 auto 2.5rem auto", color: "#475467", fontSize: "1.125rem", lineHeight: "1.6" }}>
-              Select your meal plan and pair it with our elite training programs to guarantee your 13-week transformation.
+            <p style={{ maxWidth: "660px", margin: "0 auto 2.5rem auto", color: "#475467", fontSize: "1.125rem", lineHeight: "1.6" }}>
+              Select your meal plan and pair it with our 13-week coaching program: Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline.
             </p>
             <a 
               href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!" 

@@ -7,13 +7,13 @@ export default function ProgramsSection() {
       title: "13-WEEK TRANSFORMATION",
       price: "Enquire",
       period: " Now",
-      subtitle: "The Ultimate Results-Driven Program",
+      subtitle: "Week 1 Preparation + 12 Weeks of Momentum & Discipline",
       features: [
-        "13 Weeks of Intensive, Structured Training",
+        "Week 1: Preparation, Baseline Testing & Metabolic Reset",
+        "Weeks 2–13: 12 Weeks of Momentum, Hard Work & Mental/Physical Discipline",
         "Customized Nutrition & Meal Plans",
         "Direct 1-on-1 Support & Accountability",
-        "Weekly Form & Progress Reviews",
-        "Learn Sustainable Habits to Move Forward"
+        "Weekly Form & Progress Reviews"
       ],
       cardClass: "program-card-yellow",
       btnClass: "btn-navy",
@@ -27,7 +27,7 @@ export default function ProgramsSection() {
       <div className="programs-container">
         <div className="programs-header" data-aos="fade-up">
           <h2 className="programs-title">Your 13-Week Journey</h2>
-          <p className="programs-subtitle">Discover our comprehensive program designed for those serious about achieving real, lasting results without being tied down forever.</p>
+          <p className="programs-subtitle">13 weeks total: Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental and physical discipline—built for those serious about lasting results without being tied down forever.</p>
         </div>
 
         <div className="programs-grid" style={{ display: 'flex', justifyContent: 'center', margin: '0 auto', maxWidth: '600px' }}>

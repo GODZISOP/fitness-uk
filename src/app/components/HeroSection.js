@@ -140,7 +140,7 @@ export default function HeroSection() {
               <span className="title-outline" style={{ display: "block" }}>13 WEEKS</span>
             </h1>
             <p className="hero-description">
-              We focus on a structured, definitive transformation. Our goal isn't to keep you indefinitely—it's to get you results in maximum 13 weeks, and help you move forward.
+              Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline. Our goal isn&apos;t to keep you indefinitely—it&apos;s to get you results in maximum 13 weeks, and help you move forward.
             </p>
             <div className="hero-actions">
               <a href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>Let&apos;s Get Started →</a>
@@ -203,7 +203,7 @@ export default function HeroSection() {
               </h1>
 
               <p ref={descRef} className="hero-description">
-                We focus on a structured, definitive transformation. Our goal isn't to keep you indefinitely—it's to get you results in maximum 13 weeks, and help you move forward.
+                Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline. Our goal isn&apos;t to keep you indefinitely—it&apos;s to get you results in maximum 13 weeks, and help you move forward.
               </p>
 
               <div ref={actionsRef} className="hero-actions">
