@@ -136,7 +136,7 @@ export default function ProcessSection() {
             transition={{ duration: 0.5, delay: 0.5 }}
           >
             <a
-              href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20join%20World%20Fitness%20Zone!"
+              href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20join%20World%20Fitness%20Zone!"
               target="_blank"
               rel="noopener noreferrer"
               className="faq-join-btn"

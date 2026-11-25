@@ -1787,7 +1787,15 @@ export default function ResourcesPage() {
             </span>
           </div>
 
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <a
+              href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20need%20help%20with%20my%20Client%20Portal%20PIN."
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '0.82rem', color: '#155eef', textDecoration: 'none', fontWeight: '600' }}
+            >
+              Need your PIN? WhatsApp Coach James: <strong>+44 7776899913</strong>
+            </a>
             <a
               href="/admin"
               style={{ fontSize: '0.82rem', color: '#64748b', textDecoration: 'none', fontWeight: '600' }}

@@ -159,7 +159,7 @@ export default function MealPlansPage() {
                 </div>
 
                 <a 
-                  href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!"
+                  href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -216,7 +216,7 @@ export default function MealPlansPage() {
               Select your meal plan and pair it with our 13-week coaching program: Week 1 is preparation, followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline.
             </p>
             <a 
-              href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!" 
+              href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20to%20your%20Meal%20Plans%20and%20Coaching!" 
               target="_blank"
               rel="noopener noreferrer"
               style={{ 

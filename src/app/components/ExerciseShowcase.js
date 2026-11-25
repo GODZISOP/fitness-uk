@@ -379,7 +379,7 @@ export default function ExerciseShowcase({
                         </p>
 
                         <a
-                          href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                          href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
@@ -524,7 +524,7 @@ export default function ExerciseShowcase({
 
                     {isLocked && (
                       <a
-                        href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                        href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -700,7 +700,7 @@ export default function ExerciseShowcase({
 
             <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
               <a
-                href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
+                href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%20want%20Personalised%20Access%20with%20Extra%20Personalised%20Training!"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -721,7 +721,7 @@ export default function ExerciseShowcase({
                 GET PERSONALISED ACCESS WITH EXTRA TRAINING &rarr;
               </a>
               <a
-                href="https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20book%20a%20free%20consultation!"
+                href="https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20book%20a%20free%20consultation!"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

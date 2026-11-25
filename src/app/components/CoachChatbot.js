@@ -11,7 +11,7 @@ import {
   mergeFaqLists,
 } from "../../lib/chatbotMemory";
 
-const STORAGE_KEY = "wfz_chatbot_qa_memory_v1";
+const STORAGE_KEY = "wfz_chatbot_qa_memory_v2";
 
 const INITIAL_MESSAGE = {
   id: "welcome",
@@ -241,7 +241,7 @@ export default function CoachChatbot() {
     } catch (err) {
       setErrorMsg(
         err?.message ||
-          "Connection hiccup. You can also WhatsApp Coach James on 07984498444."
+          "Connection hiccup. You can also WhatsApp Coach James on +44 7776899913."
       );
     } finally {
       setIsLoading(false);
@@ -881,13 +881,13 @@ export default function CoachChatbot() {
               {/* Bottom CTA Bar */}
               <div className="wfz-cb-cta-bar">
                 <a
-                  href="https://wa.me/447984498444"
+                  href="https://wa.me/447776899913"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="wfz-cb-cta-wa"
                 >
                   <MessageCircle size={14} color="#155EEF" />
-                  WhatsApp Coach: 07984498444
+                  WhatsApp Coach: +44 7776899913
                 </a>
                 <Link
                   href="/#contact"

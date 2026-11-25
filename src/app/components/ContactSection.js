@@ -54,8 +54,13 @@ export default function ContactSection() {
               </a>
             </p>
             <p className="contact-subtext">
-              <a href="https://wa.me/447984498444" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
-                WhatsApp: 07984498444
+              <a href="tel:+447776899913" style={{ color: 'inherit', textDecoration: 'none' }}>
+                Phone: +44 7776899913
+              </a>
+            </p>
+            <p className="contact-subtext">
+              <a href="https://wa.me/447776899913" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                WhatsApp: +44 7776899913
               </a>
             </p>
           </div>

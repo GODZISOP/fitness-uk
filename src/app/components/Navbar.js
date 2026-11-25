@@ -75,7 +75,7 @@ export default function Navbar({ isScrolled, theme = "default" }) {
     e.preventDefault();
     setIsOpen(false);
     window.open(
-      "https://wa.me/447984498444?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!",
+      "https://wa.me/447776899913?text=Hi%20Coach%20James%2C%20I%27d%20like%20to%20get%20started%20with%20World%20Fitness%20Zone!",
       "_blank",
       "noopener,noreferrer"
     );

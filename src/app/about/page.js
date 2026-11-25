@@ -443,7 +443,7 @@ export default function AboutPage() {
               <h3 className="bento-yellow-title">
                 Get 14 days for free
               </h3>
-              <p className="bento-yellow-desc">Just give us a call or message us in the chat</p>
+              <p className="bento-yellow-desc">Call or WhatsApp +44 7776899913 or message us in the chat</p>
             </div>
           </Link>
         </motion.div>

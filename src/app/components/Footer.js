@@ -34,7 +34,8 @@ export default function Footer() {
               <h4>CONTACT</h4>
               <ul>
                 <li><a href="mailto:worldfitnesszone@consultant.com">worldfitnesszone@consultant.com</a></li>
-                <li><a href="https://wa.me/447984498444">WhatsApp: 07984498444</a></li>
+                <li><a href="tel:+447776899913">Phone: +44 7776899913</a></li>
+                <li><a href="https://wa.me/447776899913" target="_blank" rel="noopener noreferrer">WhatsApp: +44 7776899913</a></li>
               </ul>
             </div>
             
