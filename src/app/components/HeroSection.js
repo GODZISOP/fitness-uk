@@ -154,14 +154,6 @@ export default function HeroSection() {
               <div className="hero-shape" />
               <div className="hero-watermark">WORLD FITNESS</div>
               <Image src={heroImage} alt="Fitness Trainer" className="hero-character" priority />
-              <div className="stat-block card-top-right">
-                <div className="stat-number">100%</div>
-                <div className="stat-text">Structured Focus. Every program is built around your specific transformation goals.</div>
-              </div>
-              <div className="stat-block card-bottom-left">
-                <div className="stat-number">13</div>
-                <div className="stat-text">Weeks Maximum. Achieve your results, then confidently move forward.</div>
-              </div>
             </div>
           </div>
         </div>
@@ -218,16 +210,6 @@ export default function HeroSection() {
                 <div className="hero-shape" />
                 <div className="hero-watermark">WORLD FITNESS</div>
                 <Image src={heroImage} alt="Fitness Trainer" className="hero-character" priority />
-
-                <div ref={stat1Ref} className="stat-block card-top-right">
-                  <div className="stat-number">100%</div>
-                  <div className="stat-text">Structured Focus. Every program is built around your specific transformation goals.</div>
-                </div>
-
-                <div ref={stat2Ref} className="stat-block card-bottom-left">
-                  <div className="stat-number">13</div>
-                  <div className="stat-text">Weeks Maximum. Achieve your results, then confidently move forward.</div>
-                </div>
               </div>
             </div>
           </div>
