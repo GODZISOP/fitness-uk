@@ -448,14 +448,14 @@ h6 {
   right: 15%;
 }
 
-.card-top-right {
-  top: 15%;
-  right: -5%;
+.hero-character-wrapper .card-top-right {
+  top: 12%;
+  right: 12px;
 }
 
-.card-bottom-left {
-  bottom: 15%;
-  left: 0;
+.hero-character-wrapper .card-bottom-left {
+  bottom: 12%;
+  left: 12px;
 }
 
 .stat-block {
@@ -3646,14 +3646,14 @@ h6 {
     line-height: 1.25;
   }
 
-  .card-top-right {
+  .hero-character-wrapper .card-top-right {
     top: 10px;
-    right: -5px;
+    right: 8px;
   }
 
-  .card-bottom-left {
+  .hero-character-wrapper .card-bottom-left {
     bottom: 10px;
-    left: -5px;
+    left: 8px;
   }
 
   /* ── Gallery Intro ── */
