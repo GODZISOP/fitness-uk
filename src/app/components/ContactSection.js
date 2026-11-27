@@ -78,17 +78,17 @@ export default function ContactSection() {
         <div className="contact-content">
           
           {/* Left Column */}
-          <div className="contact-left" data-aos="fade-right" data-aos-delay="400">
+          <div className="contact-left" data-aos="fade-up" data-aos-delay="150">
             <h3 className="contact-subtitle">SEND US A MESSAGE</h3>
             <div className="contact-text">
               <p>Want to partner on your next big fitness journey? Looking to apply a fresh coat of paint to your workout routine?</p>
               <br/>
-              <p>Send us a message and let's see if it's a good fit. We're always looking for dedicated individuals ready to put in the work.</p>
+              <p>Send us a message and let&apos;s see if it&apos;s a good fit. We&apos;re always looking for dedicated individuals ready to put in the work.</p>
             </div>
           </div>
 
           {/* Right Column - Form */}
-          <div className="contact-right" data-aos="fade-left" data-aos-delay="600">
+          <div className="contact-right" data-aos="fade-up" data-aos-delay="250">
             <form className="contact-form" onSubmit={handleSubmit}>
               
               <div className="form-group">

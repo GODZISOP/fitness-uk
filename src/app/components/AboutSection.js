@@ -17,7 +17,7 @@ function StatCard({ label, value, suffix, index }) {
       transition={{ duration: 0.6, delay: 0.15 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="stat-label">
-        <span className="slash">///</span> {label}
+        <span className="slash">{'///'}</span> {label}
       </div>
       <div className="stat-value">
         <motion.span
@@ -101,7 +101,7 @@ export default function AboutSection() {
               GET STARTED TODAY <span className="arrow">&rarr;</span>
             </a>
             <Link href="/transformations/20-year-journey" className="about-btn" style={{ background: "transparent", border: "1px solid var(--color-primary)", color: "var(--color-primary)" }}>
-              COACH'S 20 YEAR JOURNEY <span className="arrow">&rarr;</span>
+              COACH&apos;S 20 YEAR JOURNEY <span className="arrow">&rarr;</span>
             </Link>
           </motion.div>
         </motion.div>

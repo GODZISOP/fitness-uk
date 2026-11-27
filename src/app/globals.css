@@ -306,9 +306,11 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
+  padding: 2rem 5%;
   width: 100%;
-  gap: 2rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  gap: 2.5rem;
 }
 
 .hero-content-left {
@@ -405,9 +407,9 @@ h6 {
 /* Right Side - Image Layout */
 .hero-content-right {
   position: relative;
-  flex: 1.15;
-  height: 100%;
-  min-height: 600px;
+  flex: 1;
+  height: auto;
+  min-height: 520px;
   display: flex;
   justify-content: center;
   align-items: center;
