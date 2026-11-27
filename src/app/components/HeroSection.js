@@ -3,12 +3,36 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Flame, Trophy, Sparkles } from "lucide-react";
 import heroImage from "../hero-20-years.jpg";
 
 export default function HeroSection() {
   const [isMobile, setIsMobile] = useState(false);
   const spacerRef = useRef(null);
   const panelRef  = useRef(null);
+
+  // Interactive 3D tilt springs for desktop poster showcase
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const smoothX = useSpring(mouseX, { stiffness: 140, damping: 20, mass: 0.6 });
+  const smoothY = useSpring(mouseY, { stiffness: 140, damping: 20, mass: 0.6 });
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [7, -7]);
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-8, 8]);
+
+  const handleStageMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const nx = (e.clientX - rect.left) / rect.width - 0.5;
+    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(nx);
+    mouseY.set(ny);
+  };
+
+  const handleStageMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   // Each content element ref
   const pillRef    = useRef(null);
@@ -151,9 +175,51 @@ export default function HeroSection() {
           <div className="hero-content-right">
             <div className="hero-character-wrapper">
               <div className="hero-glow" />
+              <div className="hero-orbit-ring" />
               <div className="hero-shape" />
               <div className="hero-watermark">WORLD FITNESS</div>
-              <Image src={heroImage} alt="20 Years of Hard Work - World Fitness Zone" className="hero-character" priority />
+
+              <motion.div
+                className="hero-stage-float"
+                initial={{ opacity: 0, y: 28, scale: 0.94 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="hero-poster-frame">
+                  <div className="hero-poster-border-spin" aria-hidden="true" />
+                  <div className="hero-poster-inner">
+                    <Image
+                      src={heroImage}
+                      alt="20 Years of Hard Work - World Fitness Zone"
+                      className="hero-character"
+                      priority
+                    />
+                    <div className="hero-poster-sheen" aria-hidden="true" />
+                  </div>
+                </div>
+
+                {/* Top-Left Animated Badge */}
+                <div className="hero-floating-chip chip-top-left">
+                  <span className="hero-chip-icon icon-blue">
+                    <Flame size={15} />
+                  </span>
+                  <div className="hero-chip-copy">
+                    <span className="hero-chip-title">20 Years Strong</span>
+                    <span className="hero-chip-sub">Est. 2007 &bull; London</span>
+                  </div>
+                </div>
+
+                {/* Bottom-Right Animated Badge */}
+                <div className="hero-floating-chip chip-bottom-right">
+                  <span className="hero-chip-icon icon-gold">
+                    <Trophy size={15} />
+                  </span>
+                  <div className="hero-chip-copy">
+                    <span className="hero-chip-title">500+ Results</span>
+                    <span className="hero-chip-sub">Proven Discipline</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -205,11 +271,70 @@ export default function HeroSection() {
             </div>
 
             <div className="hero-content-right">
-              <div ref={imageRef} className="hero-character-wrapper">
+              <div
+                ref={imageRef}
+                className="hero-character-wrapper"
+                onMouseMove={handleStageMouseMove}
+                onMouseLeave={handleStageMouseLeave}
+              >
                 <div className="hero-glow" />
+                <div className="hero-orbit-ring" />
                 <div className="hero-shape" />
                 <div className="hero-watermark">WORLD FITNESS</div>
-                <Image src={heroImage} alt="20 Years of Hard Work - World Fitness Zone" className="hero-character" priority />
+
+                <motion.div
+                  className="hero-stage-perspective"
+                  style={{
+                    rotateX,
+                    rotateY,
+                    transformStyle: "preserve-3d",
+                  }}
+                  initial={{ opacity: 0, scale: 0.92, y: 24 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <div className="hero-stage-float">
+                    <div className="hero-poster-frame">
+                      <div className="hero-poster-border-spin" aria-hidden="true" />
+                      <div className="hero-poster-inner">
+                        <Image
+                          src={heroImage}
+                          alt="20 Years of Hard Work - World Fitness Zone"
+                          className="hero-character"
+                          priority
+                        />
+                        <div className="hero-poster-sheen" aria-hidden="true" />
+                      </div>
+                    </div>
+
+                    {/* Sparkle Accent Orb */}
+                    <div className="hero-sparkle-orb" aria-hidden="true">
+                      <Sparkles size={16} />
+                    </div>
+
+                    {/* Top-Left Animated Glass Pill */}
+                    <div className="hero-floating-chip chip-top-left">
+                      <span className="hero-chip-icon icon-blue">
+                        <Flame size={16} />
+                      </span>
+                      <div className="hero-chip-copy">
+                        <span className="hero-chip-title">20 Years Strong</span>
+                        <span className="hero-chip-sub">Est. 2007 &bull; London</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom-Right Animated Glass Pill */}
+                    <div className="hero-floating-chip chip-bottom-right">
+                      <span className="hero-chip-icon icon-gold">
+                        <Trophy size={16} />
+                      </span>
+                      <div className="hero-chip-copy">
+                        <span className="hero-chip-title">500+ Transformations</span>
+                        <span className="hero-chip-sub">Real Results &bull; 13 Weeks</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </div>
