@@ -51,14 +51,14 @@ export default function ProcessSection() {
           className="faq-left-content"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.span 
             className="faq-eyebrow"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
             WHY CHOOSE US
@@ -68,7 +68,7 @@ export default function ProcessSection() {
             className="faq-main-title"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             Why Should People Choose <span className="highlight-brand">World Fitness Zone</span> Services
@@ -84,7 +84,7 @@ export default function ProcessSection() {
                   onClick={() => toggleFAQ(index)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.15 + index * 0.1 }}
                 >
                   <div className="faq-item-header">
@@ -132,7 +132,7 @@ export default function ProcessSection() {
             className="faq-cta-wrap"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
             <a
@@ -154,7 +154,7 @@ export default function ProcessSection() {
             className="faq-bg-circle"
             initial={{ opacity: 0, scale: 0.5, x: "-50%", y: "-50%" }}
             whileInView={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
-            viewport={{ once: false, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           />
 
@@ -163,7 +163,7 @@ export default function ProcessSection() {
             className="faq-image-wrapper"
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
             <Image
