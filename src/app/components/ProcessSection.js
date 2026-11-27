@@ -177,14 +177,13 @@ export default function ProcessSection() {
           {/* Floating Stat Card 1: Heart Rate */}
           <motion.div
             className="faq-stat-card card-top-right"
-            initial={{ opacity: 0, x: 40, scale: 0.8 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: false }}
-            animate={{ y: [0, -8, 0] }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            animate={{ y: [0, -6, 0] }}
             transition={{ 
-              opacity: { duration: 0.6, delay: 0.4 },
-              x: { duration: 0.6, delay: 0.4 },
-              scale: { duration: 0.6, delay: 0.4 },
+              opacity: { duration: 0.5, delay: 0.3 },
+              scale: { duration: 0.5, delay: 0.3 },
               y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
             }}
           >
@@ -202,14 +201,13 @@ export default function ProcessSection() {
           {/* Floating Stat Card 2: Fat Burning */}
           <motion.div
             className="faq-stat-card card-bottom-left"
-            initial={{ opacity: 0, x: -40, scale: 0.8 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: false }}
-            animate={{ y: [0, 8, 0] }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            animate={{ y: [0, 6, 0] }}
             transition={{ 
-              opacity: { duration: 0.6, delay: 0.5 },
-              x: { duration: 0.6, delay: 0.5 },
-              scale: { duration: 0.6, delay: 0.5 },
+              opacity: { duration: 0.5, delay: 0.4 },
+              scale: { duration: 0.5, delay: 0.4 },
               y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
             }}
           >
