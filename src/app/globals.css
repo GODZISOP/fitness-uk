@@ -430,7 +430,7 @@ h6 {
 
 .hero-orbit-ring {
   position: absolute;
-  width: min(650px, 94%);
+  width: min(550px, 88%);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 1.5px dashed rgba(21, 94, 239, 0.22);
@@ -481,15 +481,15 @@ h6 {
 
 .hero-shape {
   position: absolute;
-  width: 490px;
-  height: 620px;
+  width: 430px;
+  height: 530px;
   background: linear-gradient(145deg, #e0edff 0%, #eef4ff 55%, rgba(255, 201, 40, 0.16) 100%);
   border: 1px solid rgba(21, 94, 239, 0.12);
   border-radius: 36px;
   transform: rotate(-7deg);
   z-index: 1;
-  top: 7%;
-  right: 8%;
+  top: 10%;
+  right: 11%;
   animation: heroBackplateFloat 6.5s ease-in-out infinite;
 }
 
@@ -607,8 +607,8 @@ h6 {
   z-index: 2;
   display: block;
   width: auto;
-  max-width: min(50vw, 710px);
-  height: min(85vh, 780px);
+  max-width: min(44vw, 520px);
+  height: min(68vh, 565px);
   object-fit: contain;
   border-radius: 22px;
   transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
@@ -639,9 +639,9 @@ h6 {
   z-index: 6;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem 0.95rem;
-  border-radius: 16px;
+  gap: 0.55rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -653,14 +653,14 @@ h6 {
 }
 
 .hero-floating-chip.chip-top-left {
-  top: 16px;
-  left: -34px;
+  top: 36%;
+  left: -56px;
   animation: heroChipFloatA 4.2s ease-in-out infinite;
 }
 
 .hero-floating-chip.chip-bottom-right {
-  bottom: 20px;
-  right: -32px;
+  bottom: 24%;
+  right: -52px;
   animation: heroChipFloatB 4.6s ease-in-out infinite;
 }
 
@@ -780,15 +780,6 @@ h6 {
   }
 }
 
-@keyframes heroSparklePulse {
-  0%, 100% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.12) rotate(12deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-stage-float,
   .hero-poster-border-spin,
@@ -796,8 +787,7 @@ h6 {
   .hero-glow,
   .hero-orbit-ring,
   .hero-shape,
-  .hero-floating-chip,
-  .hero-sparkle-orb {
+  .hero-floating-chip {
     animation: none !important;
   }
 }
@@ -3925,8 +3915,8 @@ h6 {
 
   .hero-character {
     height: auto;
-    max-height: 520px;
-    max-width: 93vw;
+    max-height: 410px;
+    max-width: 88vw;
     width: auto;
     transform: none;
     margin: 0 auto;
