@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import heroImage from "../image.png";
+import heroImage from "../hero-20-years.jpg";
 
 export default function HeroSection() {
   const [isMobile, setIsMobile] = useState(false);
@@ -153,7 +153,7 @@ export default function HeroSection() {
               <div className="hero-glow" />
               <div className="hero-shape" />
               <div className="hero-watermark">WORLD FITNESS</div>
-              <Image src={heroImage} alt="Fitness Trainer" className="hero-character" priority />
+              <Image src={heroImage} alt="20 Years of Hard Work - World Fitness Zone" className="hero-character" priority />
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function HeroSection() {
                 <div className="hero-glow" />
                 <div className="hero-shape" />
                 <div className="hero-watermark">WORLD FITNESS</div>
-                <Image src={heroImage} alt="Fitness Trainer" className="hero-character" priority />
+                <Image src={heroImage} alt="20 Years of Hard Work - World Fitness Zone" className="hero-character" priority />
               </div>
             </div>
           </div>

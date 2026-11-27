@@ -497,12 +497,13 @@ h6 {
 .hero-character {
   position: relative;
   z-index: 2;
-  max-width: 120%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-height: 800px;
+  max-height: min(76vh, 660px);
   object-fit: contain;
-  /* Push it slightly down */
-  transform: translateY(5%);
+  border-radius: 20px;
+  box-shadow: 0 24px 55px rgba(7, 26, 43, 0.22);
 }
 
 @media (max-width: 1200px) {
@@ -3625,11 +3626,15 @@ h6 {
   }
 
   .hero-character {
-    max-height: 320px;
+    max-height: 420px;
     max-width: 95%;
+    width: auto;
+    height: auto;
     transform: none;
     margin: 0 auto;
     display: block;
+    border-radius: 16px;
+    box-shadow: 0 16px 36px rgba(7, 26, 43, 0.18);
   }
 
   .stat-block {
