@@ -1,4 +1,5 @@
 :root {
+  --max-width: 1360px;
   --color-primary: #155EEF;
   --color-deep-navy: #071A2B;
   --color-action-yellow: #FFC928;
@@ -12,14 +13,23 @@
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   background-color: var(--color-white);
   color: var(--color-charcoal);
   font-family: var(--font-inter), sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
+
+.site-root-shell {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  position: relative;
 }
 
 * {
@@ -46,10 +56,14 @@ h6 {
 .hero-container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: clamp(620px, 100svh, 920px);
+  height: auto;
+  padding-top: 88px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  justify-content: center;
+  overflow-x: clip;
+  overflow-y: visible;
   background-color: var(--color-white);
 }
 
@@ -62,7 +76,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 5%;
+  padding: 1.25rem max(5%, calc((100% - var(--max-width)) / 2));
   background: transparent;
   transition: padding 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
@@ -126,7 +140,7 @@ h6 {
 }
 
 .navbar-scrolled {
-  padding: 0.85rem 5%;
+  padding: 0.85rem max(5%, calc((100% - var(--max-width)) / 2));
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -607,8 +621,9 @@ h6 {
   z-index: 2;
   display: block;
   width: auto;
-  max-width: min(44vw, 520px);
-  height: min(68vh, 565px);
+  max-width: min(44vw, 500px);
+  height: auto;
+  max-height: min(68vh, 550px);
   object-fit: contain;
   border-radius: 22px;
   transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
@@ -868,7 +883,7 @@ h6 {
 /* --- Gallery Section GSAP Styles --- */
 .gallery-section {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
   background-color: var(--color-off-white);
@@ -1035,22 +1050,23 @@ h6 {
 ========================================= */
 .programs-section {
   background-color: var(--color-soft-blue);
-  padding: 8rem 5%;
-  min-height: 100vh;
+  padding: 6.5rem 5%;
+  min-height: auto;
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .programs-container {
-  max-width: 1400px;
+  max-width: var(--max-width);
   margin: 0 auto;
   width: 100%;
 }
 
 .programs-header {
   text-align: center;
-  margin-bottom: 5rem;
+  margin-bottom: 4rem;
 }
 
 .programs-title {
@@ -1070,94 +1086,21 @@ h6 {
 }
 
 .programs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  display: flex;
+  justify-content: center;
   align-items: stretch;
+  gap: 2rem;
+  width: 100%;
 }
 
 .program-card {
   border-radius: 24px;
-  padding: 1.75rem;
+  padding: 2rem;
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s ease, opacity 0.5s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-/* Overlapping Deck Layout on Desktop */
-@media (min-width: 1025px) {
-  .programs-grid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0;
-    position: relative;
-    padding: 5.5rem 0 2rem;
-  }
-
-  .program-card {
-    width: 370px;
-    flex-shrink: 0;
-    padding: 1.75rem;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, opacity 0.5s ease;
-    transition-delay: 0s !important;
-  }
-
-  /* Left Card default tucked inside behind center */
-  .program-card:nth-child(1) {
-    z-index: 2;
-    transform: translateX(300px);
-    opacity: 0.75;
-  }
-
-  /* Center Card shifted MUCH HIGHER in default resting state */
-  .program-card:nth-child(2) {
-    z-index: 5;
-    transform: translateY(-90px);
-  }
-
-  /* Right Card default tucked inside behind center */
-  .program-card:nth-child(3) {
-    z-index: 2;
-    transform: translateX(-300px);
-    opacity: 0.75;
-  }
-
-  /* Hovering ANY card or grid spreads BOTH left & right cards outward SIMULTANEOUSLY */
-  .programs-grid:hover .program-card:nth-child(1) {
-    transform: translateX(-50px);
-    opacity: 1;
-    z-index: 4;
-  }
-
-  .programs-grid:hover .program-card:nth-child(2) {
-    transform: translateY(-96px);
-    z-index: 5;
-  }
-
-  .programs-grid:hover .program-card:nth-child(3) {
-    transform: translateX(50px);
-    opacity: 1;
-    z-index: 4;
-  }
-
-  /* Hovering individual card brings it to front with lift */
-  .programs-grid:hover .program-card:nth-child(1):hover {
-    z-index: 10 !important;
-    transform: translateX(-50px) translateY(-10px) !important;
-  }
-
-  .programs-grid:hover .program-card:nth-child(2):hover {
-    z-index: 10 !important;
-    transform: translateY(-106px) !important;
-  }
-
-  .programs-grid:hover .program-card:nth-child(3):hover {
-    z-index: 10 !important;
-    transform: translateX(50px) translateY(-10px) !important;
-  }
 }
 
 /* Left Navy Card */
@@ -1239,12 +1182,11 @@ h6 {
 .program-card-yellow {
   background: var(--color-action-yellow);
   color: var(--color-deep-navy);
-  box-shadow: 0 25px 60px rgba(255, 201, 40, 0.4);
-  transform: scale(1.04);
+  box-shadow: 0 25px 60px rgba(255, 201, 40, 0.35);
 }
 
 .program-card-yellow:hover {
-  transform: scale(1.04) translateY(-8px);
+  transform: translateY(-6px);
 }
 
 .popular-badge {
@@ -1571,10 +1513,14 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8rem 5%;
+  padding: 6.5rem 5%;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
   position: relative;
   z-index: 2;
-  min-height: 85vh;
+  min-height: auto;
+  gap: 2rem;
 }
 
 /* Left Content */
@@ -1727,8 +1673,9 @@ h6 {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 550px;
-  height: 550px;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 520px;
   border: 1px dashed rgba(7, 26, 43, 0.15);
   border-radius: 50%;
   z-index: 1;
@@ -1863,7 +1810,7 @@ h6 {
   display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px), (max-height: 619px) {
   .desktop-only-gallery {
     display: none !important;
   }
@@ -2252,17 +2199,18 @@ h6 {
 /* Mobile Single Dumbbell Full Viewport Section */
 .mobile-single-dumbbell-section {
   width: 100%;
-  min-height: 80vh;
-  padding: 5rem 5% 3rem;
+  min-height: auto;
+  padding: 4.5rem 5% 4rem;
   background-color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow-x: clip;
 }
 
 .mobile-single-dumbbell-container {
-  max-width: 500px;
+  max-width: 680px;
   width: 100%;
   margin: 0 auto;
 }
@@ -2532,18 +2480,20 @@ h6 {
 .contact-section {
   background-color: var(--color-deep-navy);
   color: var(--color-white);
-  padding: 8rem 5%;
+  padding: 7rem 5%;
   position: relative;
   isolation: isolate;
+  overflow-x: clip;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .contact-container {
-  max-width: 1400px;
+  max-width: var(--max-width);
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 6rem;
+  gap: 5rem;
 }
 
 .contact-header {
@@ -2684,7 +2634,8 @@ h6 {
 }
 
 .footer-container {
-  max-width: 1400px;
+  max-width: var(--max-width);
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -2857,7 +2808,8 @@ h6 {
 }
 
 .faq-process-container {
-  max-width: 1300px;
+  max-width: var(--max-width);
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -3137,14 +3089,22 @@ h6 {
 
 @media (max-width: 640px) {
   .faq-process-section {
-    padding: 3rem 4% 4rem;
+    padding: 4.5rem 5% 5rem;
   }
 
   .faq-right-image-area {
-    min-height: 380px;
-    transform: scale(0.8);
-    transform-origin: center center;
-    margin: -30px 0;
+    min-height: 340px;
+    margin: 0;
+  }
+
+  .faq-bg-circle {
+    width: 260px;
+    height: 260px;
+  }
+
+  .faq-image-wrapper {
+    max-width: 300px;
+    height: 340px;
   }
 
   .faq-item-desc {
@@ -3152,15 +3112,15 @@ h6 {
   }
 
   .card-top-right {
-    top: -5%;
-    right: -15px;
-    padding: 0.6rem 0.85rem;
+    top: 4%;
+    right: 0;
+    padding: 0.55rem 0.8rem;
   }
 
   .card-bottom-left {
-    bottom: -5%;
-    left: -15px;
-    padding: 0.6rem 0.85rem;
+    bottom: 4%;
+    left: 0;
+    padding: 0.55rem 0.8rem;
   }
 
   .stat-value {
@@ -3186,10 +3146,9 @@ h6 {
   position: relative;
   width: 100%;
   background: var(--color-primary);
-  /* Uses the vibrant blue by default */
   padding: 0;
-  margin-top: 0;
-  /* Flows seamlessly from previous section */
+  margin-top: clamp(44px, 7vw, 110px);
+  margin-bottom: clamp(44px, 7vw, 110px);
 }
 
 /* SVG Waves */
@@ -3201,27 +3160,26 @@ h6 {
   overflow: hidden;
   line-height: 0;
   z-index: 2;
+  pointer-events: none;
 }
 
 .events-wave-top {
   top: auto;
   bottom: 100%;
   margin-bottom: -2px;
-  /* Overlap to perfectly remove the 1px gap */
 }
 
 .events-wave-bottom {
   top: 100%;
   bottom: auto;
   margin-top: -2px;
-  /* Overlap to perfectly remove the 1px gap */
 }
 
 .events-wave-top svg,
 .events-wave-bottom svg {
   display: block;
   width: 100%;
-  height: 160px;
+  height: clamp(44px, 7vw, 110px);
 }
 
 .events-container {
@@ -3831,10 +3789,12 @@ h6 {
     font-size: 1.55rem;
   }
 
-  /* ── Hero (HeroSection scroll-lock) ── */
+  /* ── Hero (Normal Flow, Mobile Stable) ── */
   .hero-container {
-    min-height: 100vh;
+    min-height: auto;
     height: auto;
+    padding-top: 76px;
+    padding-bottom: 2.5rem;
   }
 
   .hero-content-wrapper {
@@ -4134,6 +4094,7 @@ h6 {
     max-width: 320px;
     margin: 0 auto;
     object-fit: contain;
+    transform: none;
   }
 
   .about-right {
