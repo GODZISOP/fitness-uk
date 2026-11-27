@@ -49,8 +49,8 @@ export default function ProcessSection() {
         {/* Left Side FAQ / Why Choose Content */}
         <motion.div 
           className="faq-left-content"
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >

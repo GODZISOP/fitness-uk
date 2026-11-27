@@ -30,7 +30,6 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -41,7 +40,7 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/dumbbell-frames/ezgif-frame-001.png" as="image" />
       </head>
       <body className={`${inter.variable} ${outfit.variable}`}>
-        <div style={{ width: "100%", position: "relative" }}>
+        <div className="site-root-shell">
           {children}
         </div>
         <CoachChatbot />

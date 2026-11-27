@@ -28,14 +28,13 @@ export default function GallerySection() {
     { id: "04", title: "Agility & Form", src: img4, tag: "PERFORMANCE" },
   ];
 
-  // GSAP Horizontal Scroll for Desktop (runs only when window >= 768px)
+  // GSAP Horizontal Scroll for Desktop (auto-cleans up on zoom/mobile via matchMedia)
   useGSAP(() => {
-    if (typeof window === "undefined" || window.innerWidth < 768) return;
+    if (typeof window === "undefined") return;
 
-    let timeoutId;
-    let triggers = [];
+    const mm = gsap.matchMedia();
 
-    timeoutId = setTimeout(() => {
+    mm.add("(min-width: 1024px) and (min-height: 620px)", () => {
       if (!containerRef.current || !trackRef.current) return;
 
       const track = trackRef.current;
@@ -43,37 +42,35 @@ export default function GallerySection() {
 
       const getScrollAmount = () => {
         const trackWidth = track.scrollWidth;
-        const rightSectionWidth = track.parentElement.offsetWidth;
+        const rightSectionWidth = track.parentElement ? track.parentElement.offsetWidth : window.innerWidth * 0.65;
         return Math.max(0, trackWidth - rightSectionWidth);
       };
 
-      const t1 = gsap.fromTo(".gallery-left-content > *", {
-        x: -40, opacity: 0
+      gsap.fromTo(".gallery-left-content > *", {
+        y: 24, opacity: 0
       }, {
-        x: 0, opacity: 1,
-        stagger: 0.15, duration: 0.8, ease: "power2.out",
+        y: 0, opacity: 1,
+        stagger: 0.12, duration: 0.7, ease: "power2.out",
         scrollTrigger: {
           trigger: container,
           start: "top 80%",
-          toggleActions: "restart none none reverse"
+          toggleActions: "play none none none"
         }
       });
-      triggers.push(t1);
 
-      const t2 = gsap.fromTo(".desktop-gallery-card", {
-        y: 40, opacity: 0
+      gsap.fromTo(".desktop-gallery-card", {
+        y: 28, opacity: 0
       }, {
         y: 0, opacity: 1,
-        stagger: 0.15, duration: 0.8, ease: "power2.out",
+        stagger: 0.12, duration: 0.7, ease: "power2.out",
         scrollTrigger: {
           trigger: container,
-          start: "top 70%",
-          toggleActions: "restart none none reverse"
+          start: "top 75%",
+          toggleActions: "play none none none"
         }
       });
-      triggers.push(t2);
 
-      const t3 = gsap.to(track, {
+      gsap.to(track, {
         x: () => -getScrollAmount(),
         ease: "none",
         scrollTrigger: {
@@ -85,18 +82,9 @@ export default function GallerySection() {
           invalidateOnRefresh: true,
         }
       });
-      triggers.push(t3);
+    });
 
-      ScrollTrigger.refresh();
-    }, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      triggers.forEach(t => {
-        if (t && t.scrollTrigger) t.scrollTrigger.kill();
-        if (t && t.kill) t.kill();
-      });
-    };
+    return () => mm.revert();
   }, { scope: containerRef });
 
   const handlePrev = (e) => {
@@ -183,7 +171,7 @@ export default function GallerySection() {
               className="clean-gallery-header"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6 }}
             >
               <span className="gallery-badge">WORKOUT GALLERY</span>
@@ -210,7 +198,7 @@ export default function GallerySection() {
                     onClick={() => setSelectedIdx(index)}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: false, amount: 0.2 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.4, delay: index * 0.08 }}
                     whileTap={{ scale: 0.96 }}
                   >

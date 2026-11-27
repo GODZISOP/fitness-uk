@@ -35,16 +35,16 @@ export default function EventsSection() {
           {/* Top Row Text (Left) */}
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: -35 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <motion.h2 
               className="split-title"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
               OUR SERVICES
@@ -54,7 +54,7 @@ export default function EventsSection() {
               className="split-subtitle"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               A STEP TO CHANGE YOUR LIFE
@@ -64,7 +64,7 @@ export default function EventsSection() {
               className="split-desc"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               We provide world-class personal training, custom nutrition plans, and expert guidance. Click the button below to start achieving your fitness goals today.
@@ -77,7 +77,7 @@ export default function EventsSection() {
                   className="split-feature-item"
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
                 >
                   <span className="split-feature-icon">✓</span>
@@ -89,7 +89,7 @@ export default function EventsSection() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <Link href="/transformations" className="split-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
@@ -103,7 +103,7 @@ export default function EventsSection() {
             className="split-image-wrapper large relative"
             initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{ position: 'relative', width: '100%' }}
           >
@@ -123,16 +123,16 @@ export default function EventsSection() {
           {/* Bottom Row Text */}
           <motion.div 
             className="split-text"
-            initial={{ opacity: 0, x: 35 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <motion.h2 
               className="split-title"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
               RECENT BLOG POSTS
@@ -142,7 +142,7 @@ export default function EventsSection() {
               className="split-subtitle"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               LATEST FITNESS INSIGHTS
@@ -152,7 +152,7 @@ export default function EventsSection() {
               className="split-desc"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Read our latest articles on strength training, recovery, and building a sustainable lifestyle. We share everything you need to know to stay on top of your game.
@@ -165,7 +165,7 @@ export default function EventsSection() {
                   className="split-feature-item"
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
                 >
                   <span className="split-feature-icon">✓</span>
@@ -177,7 +177,7 @@ export default function EventsSection() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <button className="split-btn">
@@ -191,7 +191,7 @@ export default function EventsSection() {
             className="split-image-wrapper small gsap-image-container relative overflow-hidden rounded-2xl"
             initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{ position: 'relative', width: '100%' }}
           >

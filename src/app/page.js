@@ -19,12 +19,12 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    // Initialize AOS
+    // Initialize AOS — run once without mirror so scrolling/zooming never shifts sections
     AOS.init({
-      duration: 800,
-      once: true, // Only trigger animations once
-      mirror: true, // Whether elements should animate out while scrolling past them
-      offset: 100,
+      duration: 700,
+      once: true,
+      mirror: false,
+      offset: 60,
     });
 
     // Force a recalculation of positions after a short delay (crucial for React)

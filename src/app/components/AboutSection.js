@@ -11,9 +11,9 @@ function StatCard({ label, value, suffix, index }) {
   return (
     <motion.div
       className="about-stat-card"
-      initial={{ opacity: 0, x: 35, y: 20 }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, delay: 0.15 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="stat-label">
@@ -24,7 +24,7 @@ function StatCard({ label, value, suffix, index }) {
           className="stat-number"
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }}
+          viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
         >
           {value}
@@ -49,16 +49,16 @@ export default function AboutSection() {
         {/* Left Content */}
         <motion.div
           className="about-left"
-          initial={{ opacity: 0, x: -35 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.div
             className="about-watermark"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.85, ease: "easeOut" }}
           >
             ABOUT
@@ -67,7 +67,7 @@ export default function AboutSection() {
           <ScrollHeading
             as="h2"
             className="about-title"
-            once={false}
+            once={true}
             duration={0.95}
             stagger={0.22}
           >
@@ -84,7 +84,7 @@ export default function AboutSection() {
             className="about-description"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
           >
             Our philosophy is simple: we don&apos;t want to keep you as a client forever. Across 13 structured weeks—Week 1 of preparation followed by 12 weeks of momentum, hard work, and mental &amp; physical discipline—we deliver real results and equip you to confidently move forward.
@@ -93,7 +93,7 @@ export default function AboutSection() {
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.35 }}
             style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}
           >
@@ -111,7 +111,7 @@ export default function AboutSection() {
           className="about-center"
           initial={{ opacity: 0, y: 35, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
           <div className="about-image-wrap" style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -128,7 +128,7 @@ export default function AboutSection() {
             className="floating-badge"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
             <span className="badge-text">100%</span>

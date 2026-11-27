@@ -29,12 +29,13 @@ export default function DumbbellAnimation() {
   const textRefs   = useRef([]);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const checkCompactMode = () => {
+      const isTouch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      setIsMobile(window.innerWidth < 1024 || window.innerHeight < 560 || isTouch);
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    checkCompactMode();
+    window.addEventListener("resize", checkCompactMode);
+    return () => window.removeEventListener("resize", checkCompactMode);
   }, []);
 
   useEffect(() => {
@@ -63,8 +64,8 @@ export default function DumbbellAnimation() {
 
     function sizeCanvas() {
       if (!srcW || !srcH) return;
-      const pw = window.innerWidth;
-      const ph = window.innerHeight;
+      const pw = Math.min(window.innerWidth, 1280);
+      const ph = Math.min(window.innerHeight * 0.58, 560);
       const ia = srcW / srcH;
       const pa = pw / ph;
 
