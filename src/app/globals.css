@@ -292,7 +292,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 5%;
+  padding: 1rem 5%;
   width: 100%;
   gap: 2rem;
 }
@@ -391,7 +391,7 @@ h6 {
 /* Right Side - Image Layout */
 .hero-content-right {
   position: relative;
-  flex: 1;
+  flex: 1.15;
   height: 100%;
   min-height: 600px;
   display: flex;
@@ -607,9 +607,8 @@ h6 {
   z-index: 2;
   display: block;
   width: auto;
-  max-width: min(96vw, 660px);
-  height: auto;
-  max-height: min(83vh, 750px);
+  max-width: min(50vw, 710px);
+  height: min(85vh, 780px);
   object-fit: contain;
   border-radius: 22px;
   transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
@@ -633,24 +632,6 @@ h6 {
   );
   transform: translateX(-130%);
   animation: heroLightSweep 6s ease-in-out infinite;
-}
-
-.hero-sparkle-orb {
-  position: absolute;
-  top: -16px;
-  right: 26px;
-  z-index: 6;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffc928 0%, #f59e0b 100%);
-  color: #071a2b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 24px rgba(255, 201, 40, 0.45);
-  border: 2px solid #ffffff;
-  animation: heroSparklePulse 3s ease-in-out infinite;
 }
 
 .hero-floating-chip {
@@ -3688,7 +3669,9 @@ h6 {
   }
 
   .hero-character {
-    max-height: 480px;
+    height: auto;
+    max-height: 600px;
+    max-width: 90vw;
   }
 
   .stat-block {
@@ -3941,10 +3924,10 @@ h6 {
   }
 
   .hero-character {
-    max-height: 480px;
-    max-width: 92vw;
-    width: auto;
     height: auto;
+    max-height: 520px;
+    max-width: 93vw;
+    width: auto;
     transform: none;
     margin: 0 auto;
     display: block;

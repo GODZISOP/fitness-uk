@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Flame, Trophy, Sparkles } from "lucide-react";
+import { Flame, Trophy } from "lucide-react";
 import heroImage from "../hero-20-years.jpg";
 
 export default function HeroSection() {
@@ -305,11 +305,6 @@ export default function HeroSection() {
                         />
                         <div className="hero-poster-sheen" aria-hidden="true" />
                       </div>
-                    </div>
-
-                    {/* Sparkle Accent Orb */}
-                    <div className="hero-sparkle-orb" aria-hidden="true">
-                      <Sparkles size={16} />
                     </div>
 
                     {/* Top-Left Animated Glass Pill */}
